@@ -24,6 +24,8 @@ export default ts.config(
   react.configs.flat.recommended,
   react.configs.flat['jsx-runtime'],
   {
+    settings: {react: {version: '18.3'}},
+
     plugins: {
       'react-hooks': reactHooks,
       'react-refresh': reactRefresh,

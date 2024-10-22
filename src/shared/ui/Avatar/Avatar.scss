@@ -1,12 +1,4 @@
 .avatar {
-  $colors: 'pink', 'blue', 'yellow', 'green', 'purple', 'orange';
-
-  @each $color in $colors {
-    &--#{$color} {
-      background-image: var(--avatar-#{$color});
-    }
-  }
-
   display: flex;
   justify-content: center;
   align-items: center;
@@ -17,6 +9,14 @@
   text-transform: uppercase;
   border-radius: 50%;
   font-size: 20px;
+
+  $colors: 'pink', 'blue', 'yellow', 'green', 'purple', 'orange';
+
+  @each $color in $colors {
+    &--#{$color} {
+      background-image: var(--avatar-#{$color});
+    }
+  }
 
   &--small {
     width: 30px;
