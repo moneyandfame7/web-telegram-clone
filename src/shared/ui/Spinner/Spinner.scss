@@ -1,0 +1,55 @@
+.Spinner {
+  &-inner {
+    width: 48px;
+    height: 48px;
+    border: 3px solid var(--c-primary);
+    border-bottom-color: transparent !important;
+    border-radius: 50%;
+    display: inline-block;
+    box-sizing: border-box;
+
+    animation: rotation 1s linear infinite;
+  }
+
+  &-medium {
+    > .Spinner-inner {
+      width: 34px;
+      height: 34px;
+    }
+  }
+  &-large {
+    > .Spinner-inner {
+      width: 48px;
+      height: 48px;
+    }
+  }
+  &-small {
+    > .Spinner-inner {
+      width: 24px;
+      height: 24px;
+      border-width: 2px;
+    }
+  }
+
+  &-primary {
+    > .Spinner-inner {
+      border-color: var(--c-primary);
+    }
+  }
+  &-yellow {
+    > .Spinner-inner {
+      border-color: var(--c-warn);
+    }
+  }
+  &-neutral {
+    > .Spinner-inner {
+      border-color: var(--c-neutral-secondary);
+    }
+  }
+  &-white {
+    > .Spinner-inner {
+      border-color: white;
+      border-width: 2px;
+    }
+  }
+}

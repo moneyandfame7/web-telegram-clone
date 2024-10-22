@@ -1,0 +1,31 @@
+.icon-button {
+  background-color: transparent;
+  height: 40px;
+  width: 40px;
+  padding: 4px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  &:hover {
+    background-color: var(--c-ripple);
+  }
+
+  &.primary {
+    background-color: var(--c-primary);
+  }
+
+  &.large {
+    width: 50px;
+    height: 50px;
+  }
+
+  &--loading {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+
+    opacity: 0.5;
+  }
+}

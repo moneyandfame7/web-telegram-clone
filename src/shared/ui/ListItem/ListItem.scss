@@ -1,0 +1,49 @@
+.list-item {
+  border: 1px solid red;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--c-ripple);
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0; /* Додаємо, щоб правильно працювало обрізання тексту */
+  }
+
+  &__title {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Додаємо три крапки в кінці */
+  }
+  &__title-right {
+    color: var(--c-font-secondary);
+    font-size: 12px;
+  }
+
+  &__subtitle {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 90%;
+    color: var(--c-font-secondary);
+    font-size: 15px;
+  }
+  &__subtitle-right {
+    color: red;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+}

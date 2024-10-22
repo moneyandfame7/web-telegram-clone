@@ -1,0 +1,99 @@
+@use 'sass:color';
+
+$c-primary: #3390ec;
+$c-primary-hover: darken($c-primary, 2%);
+$c-primary-light: #3a8cdd;
+$c-primary-transparent: rgba(darken($c-primary, 10%), 0.1);
+
+$c-font-secondary: #707579;
+
+$c-ripple: rgba(0, 0, 0, 6%);
+
+$c-surface: #fff;
+$c-bg: #f4f4f5;
+$c-bg-body: #fff;
+
+:root {
+  --z-modal: 4;
+  --z-menu-backdrop: 10;
+  --z-menu: 11;
+  --c-primary: #{$c-primary};
+  --c-primary-hover: #{$c-primary-hover};
+  --c-primary-light: #{$c-primary-light};
+
+  --c-surface: #{$c-surface};
+  --c-surface-2: #{lighten($c-surface, 2%)};
+  --c-surface-3: #{lighten($c-surface, 5%)};
+
+  --c-warn: #fdd764;
+
+  --c-neutral-secondary: #94989b;
+
+  --c-font-primary: #000;
+  --c-font-secondary: #{$c-font-secondary};
+
+  --c-ripple: #{$c-ripple};
+
+  --c-shadow-default: rgb(114, 114, 114, 0.251);
+
+  --menu-bg: rgb(255 255 255 / 80%);
+  --menu-hover: #{rgba(0, 0, 0, 0.06)};
+
+  --avatar-yellow: linear-gradient(
+    111.4deg,
+    rgba(238, 113, 113, 1) 1%,
+    rgba(246, 215, 148, 1) 58%
+  );
+  --user-yellow: rgb(195, 151, 55);
+  --avatar-blue: radial-gradient(
+    circle farthest-corner at 10% 20%,
+    rgba(126, 155, 212, 1) 0%,
+    rgba(87, 83, 247, 1) 90%
+  );
+  --user-blue: rgb(67, 66, 149);
+  --avatar-green: linear-gradient(
+    109.6deg,
+    rgba(61, 131, 97, 1) 11.2%,
+    rgba(28, 103, 88, 1) 91.1%
+  );
+  // $c-user-green: rgba(61, 131, 97, 1);
+  --user-green: #03c1a6;
+  --avatar-pink: linear-gradient(
+    90deg,
+    #ff9a8b 0%,
+    hsl(348, 100%, 71%) 55%,
+    #ff99ac 100%
+  );
+  --user-pink: #ff99ac;
+  --avatar-orange: linear-gradient(
+    to right,
+    rgb(255, 153, 102),
+    rgb(255, 94, 98)
+  );
+  --user-orange: rgb(255, 153, 102);
+  --avatar-purple: linear-gradient(to right, #cc2b5e, #753a88);
+  --user-purple: #753a88;
+
+  &.night {
+    $c-surface: #212121;
+    $c-surface-3: ligthen($c-surface, 5%);
+
+    $c-bg: #000;
+    $c-bg-body: #181818;
+
+    --c-font-primary: #fff;
+
+    --c-shadow-default: rgb(16 16 16 / 61%);
+
+    --c-bg: #181818;
+    --c-bg-body: #{$c-bg-body};
+    --c-bg-2: #0f0f0f;
+
+    --c-surface: #{$c-surface};
+    --c-surface-2: #{lighten($c-surface, 2%)};
+    --c-surface-3: #{$c-surface-3};
+
+    --menu-bg: rgb(33 33 33 / 85%);
+    --menu-hover: #{rgba(0, 0, 0, 0.3)};
+  }
+}

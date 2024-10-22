@@ -1,0 +1,148 @@
+.forward-enter {
+  opacity: 0;
+  transform: translateX(100%);
+}
+.forward-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.forward-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+.forward-exit-active {
+  opacity: 0;
+  transform: translateX(-100%);
+  transition: opacity 300ms, transform 300ms;
+}
+
+/* Стилі для анімацій повернення назад */
+.backward-enter {
+  opacity: 0;
+  transform: translateX(-100%);
+}
+.backward-enter-active {
+  opacity: 1;
+  transform: translateX(0);
+  transition: opacity 300ms, transform 300ms;
+}
+.backward-exit {
+  opacity: 1;
+  transform: translateX(0);
+}
+.backward-exit-active {
+  opacity: 0;
+  transform: translateX(100%);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.navigation-stack {
+  height: 100%;
+  position: relative;
+  overflow: hidden;
+
+  > .navigation-item {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    animation-fill-mode: forwards !important;
+    &_inactive {
+      display: none !important;
+    }
+    &_hide {
+      display: initial !important;
+      visibility: hidden;
+    }
+  }
+
+  &-zoomSlide {
+    /* Exited */
+    > .navigation-item_from {
+      transform: scale(1);
+      transform-origin: center;
+      opacity: 1;
+      animation: zoom-fade-out 0.25s ease-in-out;
+
+      // &.scrollable,
+      // .scrollable {
+      //   scrollbar-color: transparent !important;
+
+      //   &::-webkit-scrollbar-thumb {
+      //     background-color: transparent !important;
+      //   }
+      // }
+    }
+
+    /* Entered */
+    > .navigation-item_to {
+      transform: translateX(100%);
+      animation: slide-in-200 0.25s ease-in-out;
+    }
+  }
+
+  &-zoomSlideBackwards {
+    /* Exited */
+    > .navigation-item_from {
+      animation: slide-in-200-backwards 0.25s ease-in-out;
+    }
+
+    /* Entered */
+    > .navigation-item_to {
+      transform: scale(0.8);
+      opacity: 0;
+      animation: zoom-fade-out-backwards 0.25s ease-in-out;
+    }
+  }
+}
+
+.home,
+.about {
+  width: 400px;
+  height: 100%;
+  border: 1px solid red;
+}
+
+@keyframes zoom-fade-out {
+  0% {
+    transform: scale(1);
+
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+
+    opacity: 0;
+  }
+}
+@keyframes zoom-fade-out-backwards {
+  0% {
+    transform: scale(0.8);
+
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-200 {
+  0% {
+    transform: translateX(200%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes slide-in-200-backwards {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}

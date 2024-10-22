@@ -1,0 +1,25 @@
+.left-column {
+  border: 1px solid red;
+  width: 420px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  &__header {
+    display: flex;
+    align-items: center;
+
+    input {
+      width: 100%;
+      border: 1px solid var(--c-font-secondary);
+      border-radius: 10px;
+      padding: 10px;
+    }
+  }
+}
+
+.left-main {
+  position: relative;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}

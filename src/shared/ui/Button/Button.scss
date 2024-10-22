@@ -1,0 +1,42 @@
+.button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 15px;
+  flex-shrink: 0;
+
+  height: 50px;
+  padding: 5px 15px;
+  border-radius: 12px;
+
+  font-size: 16px;
+  font-weight: 500;
+  text-transform: uppercase;
+  color: #fff;
+  background-color: var(--c-primary);
+
+  user-select: none;
+
+  position: relative;
+
+  &:hover {
+    background-color: var(--c-primary-hover);
+  }
+
+  &:disabled {
+    pointer-events: none;
+
+    opacity: 0.5;
+  }
+
+  &--fullWidth {
+    width: 100%;
+  }
+
+  &--loading {
+  }
+
+  &--small {
+    height: 35px;
+  }
+}

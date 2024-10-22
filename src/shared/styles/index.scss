@@ -1,0 +1,24 @@
+@import 'reset';
+@import 'animations';
+@import 'variables';
+@import 'partials';
+@import 'typography';
+
+#root {
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  // overscroll-behavior: none;
+}
+html,
+body {
+  font-family: var(--font-family);
+
+  --font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Roboto',
+    'Apple Color Emoji', 'Helvetica Neue', sans-serif;
+  // --font-family: 'Roboto', -apple-system, BlinkMacSystemFont,
+  //   'Apple Color Emoji', 'Segoe UI', Oxygen, Ubuntu, Cantarell, 'Fira Sans',
+  //   'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}

@@ -1,0 +1,57 @@
+.chat-item {
+  border: 1px solid red;
+  border-radius: 10px;
+  padding: 5px;
+  margin: 5px;
+  display: flex;
+  gap: 10px;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+
+  &:hover {
+    background-color: var(--c-ripple);
+  }
+
+  &__info {
+    flex: 1;
+    min-width: 0; /* Додаємо, щоб правильно працювало обрізання тексту */
+  }
+
+  .avatar {
+    border: 1px solid blue;
+    border-radius: 50%;
+    width: 54px;
+    height: 54px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0; /* Щоб аватар не змінював розмір */
+  }
+
+  &__title {
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Додаємо три крапки в кінці */
+  }
+
+  &__message {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 90%;
+    color: var(--c-font-secondary);
+    font-size: 15px;
+  }
+  &__date {
+    color: var(--c-font-secondary);
+    font-size: 12px;
+  }
+
+  &__row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Центруємо елементи */
+  }
+}

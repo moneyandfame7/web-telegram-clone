@@ -1,0 +1,212 @@
+/*
+* анімації: 
+https://github.com/morethanwords/tweb/blob/a86ac835c45ad0255caf12fa4af36657e4fe28ae/src/scss/partials/_transition.scss#L18
+*/
+
+.transition-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  animation-fill-mode: forwards !important;
+  &_inactive {
+    display: none !important;
+  }
+  &_ui-lock {
+    &.transition_item-from,
+    &.transition-item_to {
+      pointer-events: none !important;
+      user-select: none !important;
+    }
+  }
+}
+.transition {
+  position: relative;
+  width: 100%;
+  height: 100%;
+
+  &_layout {
+    transform-style: preserve-3d;
+  }
+
+  &-zoomSlide {
+    /* Exited */
+    > .transition-item_from {
+      transform: scale(1);
+      transform-origin: center;
+      opacity: 1;
+      animation: zoom-fade-out 0.25s ease-in-out;
+    }
+
+    /* Entered */
+    > .transition-item_to {
+      transform: translateX(100%);
+      animation: slide-in-200 0.25s ease-in-out;
+    }
+  }
+
+  &-zoomSlideBackwards {
+    /* Exited */
+    > .transition-item_from {
+      animation: slide-in-200-backwards 0.25s ease-in-out;
+    }
+
+    /* Entered */
+    > .transition-item_to {
+      transform: scale(0.8);
+      opacity: 0;
+      animation: zoom-fade-out-backwards 0.25s ease-in-out;
+    }
+  }
+
+  &-zoomFade {
+    > .transition-item_from {
+      animation: fade-out 0.15s ease;
+    }
+
+    > .transition-item_to {
+      animation: fade-in 0.15s ease, zoom-fade-in-move 0.15s ease;
+    }
+  }
+  &-zoomFadeBackwards {
+    > .transition-item_from {
+      transform: scale(1);
+      animation: fade-in-backwards 0.1s ease,
+        zoom-fade-in-backwards-move 0.15s ease;
+    }
+
+    > .transition-item_to {
+      transform: scale(0.95);
+
+      animation: fade-out-backwards 0.15s ease,
+        zoom-fade-out-backwards-move 0.15s ease;
+    }
+  }
+
+  &-fade,
+  &-fadeBackwards {
+    > .transition-item_from,
+    &_from {
+      animation: fade-out 0.25s ease-out;
+    }
+
+    > .transition-item_to,
+    &_to {
+      animation: fade-in 0.25s ease-out;
+    }
+  }
+}
+
+@keyframes zoom-fade-in {
+  0% {
+    transform: scale(0.8);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+@keyframes zoom-fade-out {
+  0% {
+    transform: scale(1);
+
+    opacity: 1;
+  }
+  100% {
+    transform: scale(0.8);
+
+    opacity: 0;
+  }
+}
+@keyframes zoom-fade-out-backwards {
+  0% {
+    transform: scale(0.8);
+
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+
+    opacity: 1;
+  }
+}
+
+@keyframes slide-in-200 {
+  0% {
+    transform: translateX(200%);
+  }
+  100% {
+    transform: translateX(0);
+  }
+}
+@keyframes slide-in-200-backwards {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(200%);
+  }
+}
+
+@keyframes fade-out {
+  0% {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+@keyframes fade-in {
+  0% {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+@keyframes fade-in-backwards {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+@keyframes fade-out-backwards {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+@keyframes zoom-fade-in-move {
+  0% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+@keyframes zoom-fade-in-backwards-move {
+  0% {
+    transform: scale(1);
+  }
+  100% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes zoom-fade-out-backwards-move {
+  0% {
+    transform: scale(0.95);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
