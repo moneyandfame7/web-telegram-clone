@@ -12,6 +12,8 @@ interface ListItemProps {
 
   avatarUrl?: string
   itemColor?: ChatColor
+
+  checked?: boolean
 }
 export const ListItem: FC<ListItemProps> = ({
   title,
@@ -22,10 +24,14 @@ export const ListItem: FC<ListItemProps> = ({
 
   avatarUrl,
   itemColor,
+  checked,
 }) => {
   return (
     <div className="list-item" onClick={onClick}>
       {/* <div className="avatar">{title[0]}</div> */}
+      {typeof checked === 'boolean' && (
+        <input type="checkbox" checked={checked} />
+      )}
       <Avatar url={avatarUrl} color={itemColor} title={title} />
       <div className="list-item__info">
         <div className="list-item__row">

@@ -1,5 +1,6 @@
 .chat-list {
   height: 100%;
+  overflow-y: auto;
 
   .create-chat-button {
     position: absolute;

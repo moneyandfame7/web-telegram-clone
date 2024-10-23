@@ -1,3 +1,5 @@
+import {ChatColor} from '../../app/types'
+
 export enum AuthScreen {
   Username,
   Password,
@@ -25,6 +27,7 @@ export interface User {
   username: string
   firstName: string
   lastName?: string
+  color: ChatColor
 
   isSelf: boolean
   isContact: boolean
