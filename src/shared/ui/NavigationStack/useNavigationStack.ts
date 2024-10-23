@@ -8,6 +8,12 @@ export interface NavigationItem {
 export interface PopItemOptions {
   toRoot: boolean
 }
+export interface PushItemParams {
+  screen: ReactNode
+  header?: ReactNode
+  title?: string
+  toolbar?: ReactNode
+}
 export interface NavigationStackStore {
   push: (item: NavigationItem['component']) => void
   pop: (options?: PopItemOptions) => void

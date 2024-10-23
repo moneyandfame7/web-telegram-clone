@@ -14,7 +14,7 @@ import './LeftColumn.scss'
 export const LeftColumn: FC = memo(() => {
   return (
     <div className="left-column">
-      <NavigationStack rootScreen={<LeftMain />} />
+      <NavigationStack initialScreen={<LeftMain />} />
     </div>
   )
 })

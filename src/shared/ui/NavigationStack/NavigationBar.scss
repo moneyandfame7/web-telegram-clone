@@ -1,0 +1,18 @@
+.navigation-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 5px;
+  // background-color: red;
+
+  // &__title {
+  //   flex: 1;
+  // }
+
+  &::after {
+    content: '';
+    width: 40px;
+    height: 40px;
+  }
+}

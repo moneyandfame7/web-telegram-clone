@@ -35,6 +35,8 @@ export function getTransitionTimeout(name: TransitionName, timeout?: number) {
       return 250
     case 'zoomFade':
       return 150
+    case 'slideDark':
+      return 300
     default:
       return FALLBACK_TIMEOUT
   }

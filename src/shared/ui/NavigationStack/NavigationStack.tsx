@@ -17,21 +17,21 @@ import {
   NavigationContext,
   type PopItemOptions,
 } from './useNavigationStack'
+import {NavigationBar} from './NavigationBar'
 
 interface NavigationStackProps extends PropsWithChildren {
-  rootScreen: ReactNode
-  rootScreenHeader?: ReactNode
+  initialScreen: ReactNode
   showHeader?: boolean
 }
 
 export const NavigationStack: FC<NavigationStackProps> = ({
-  rootScreen,
+  initialScreen,
   children,
 }) => {
   const [stack, setStack] = useState<NavigationItem[]>([
     {
       id: 0,
-      component: rootScreen,
+      component: initialScreen,
       ref: createRef(),
     },
   ])
@@ -69,7 +69,7 @@ export const NavigationStack: FC<NavigationStackProps> = ({
 
   const currentScreen = stack[stack.length - 1]
 
-  const stackClassname = `navigation-stack navigation-stack-zoomSlide${
+  const stackClassname = `navigation-stack navigation-stack-slideDark${
     direction === 'backward' ? 'Backwards' : ''
   }`
 
@@ -86,7 +86,8 @@ export const NavigationStack: FC<NavigationStackProps> = ({
           exitActive: 'navigation-item_from',
           exitDone: 'navigation-item_inactive',
         }}
-        transitionName="zoomSlide"
+        className="navigation-item"
+        transitionName="slideDark"
         in={false}
       >
         {item.component}
@@ -100,6 +101,7 @@ export const NavigationStack: FC<NavigationStackProps> = ({
       {/* {currentScreen.header && (
         <header className="navigation-header">{currentScreen.header}</header>
       )} */}
+      <NavigationBar />
       <TransitionGroup
         className={stackClassname}
         /**
