@@ -7,7 +7,7 @@ export const useGetCurrentUser = () => {
 
   return async () => {
     if (id) {
-      await dispatch(usersThunks.getUser({id})).unwrap()
+      return dispatch(usersThunks.getUser({id})).unwrap()
     }
   }
 }

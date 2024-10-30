@@ -101,7 +101,7 @@ export const NavigationStack: FC<NavigationStackProps> = ({
       {/* {currentScreen.header && (
         <header className="navigation-header">{currentScreen.header}</header>
       )} */}
-      <NavigationBar />
+      {/* <NavigationBar /> */}
       <TransitionGroup
         className={stackClassname}
         /**

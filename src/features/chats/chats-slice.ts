@@ -31,6 +31,7 @@ const chatsSlice = createSlice({
       state.currentChatId = action.payload
     },
     setAllChats: chatsAdapter.setAll,
+    addOne: chatsAdapter.addOne,
   },
   extraReducers: (builder) => {
     builder.addCase(chatsThunks.createChat.fulfilled, (state, action) => {
