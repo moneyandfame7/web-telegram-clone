@@ -7,3 +7,10 @@ export interface IdPayload {
 export type ChatColor = (typeof CHAT_COLORS)[number]
 
 export type Status = 'idle' | 'pending' | 'succeeded' | 'failed'
+
+export interface ApiError {
+  status: number
+  code: string
+  message: string
+  details?: object
+}

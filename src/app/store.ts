@@ -9,7 +9,10 @@ import {
 } from '@reduxjs/toolkit'
 import {type TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux'
 
-import {persistedAuthReducer} from '../features/auth/store/auth-slice'
+import {
+  authActions,
+  persistedAuthReducer,
+} from '../features/auth/store/auth-slice'
 import storage from 'redux-persist/lib/storage'
 import {
   FLUSH,
@@ -24,6 +27,7 @@ import {
 import {uiReducer} from '../shared/store/ui-slice'
 import {persistedChatsReducer} from '../features/chats/chats-slice'
 import {persistedUsersReducer} from '../features/users/users-slice'
+import {authThunks} from '../features/auth/api'
 
 const persistConfig = {
   key: 'root',

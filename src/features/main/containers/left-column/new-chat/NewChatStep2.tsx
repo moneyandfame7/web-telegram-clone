@@ -3,7 +3,13 @@ import {useNavigationStack} from '../../../../../shared/ui/NavigationStack/useNa
 import {Column} from '../../../../../shared/ui/Column/Column'
 import {IconButton} from '../../../../../shared/ui/IconButton/IconButton'
 import {useAppDispatch} from '../../../../../app/store'
-import {chatsThunks} from '../../../../chats/api'
+import {emitEventWithHandling, WsException} from '../../../../../app/socket'
+import {chatsActions} from '../../../../chats/chats-slice'
+import {Chat, CreateChatParams} from '../../../../chats/types'
+import {useBoolean} from '../../../../../shared/hooks/useBoolean'
+import {Modal} from '../../../../../shared/ui/Modal/Modal'
+import {Button} from '../../../../../shared/ui'
+import {ApiError} from '../../../../../app/types'
 
 interface NewChatStep2Props {
   isGroup: boolean
@@ -16,21 +22,34 @@ export const NewChatStep2: FC<NewChatStep2Props> = ({isGroup, selectedIds}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-
+  const [error, setError] = useState<string | null>(null)
   const chatType = isGroup ? 'Group' : 'Channel'
 
   const handleSubmit = async () => {
     setIsLoading(true)
-    await dispatch(
-      chatsThunks.createChat({
-        title,
-        description,
-        users: selectedIds,
-        type: isGroup ? 'GROUP' : 'CHANNEL',
-      })
-    ).unwrap()
-    setIsLoading(false)
-    pop({toRoot: true})
+
+    try {
+      const result = await emitEventWithHandling<CreateChatParams, Chat>(
+        'createChat',
+        {
+          title,
+          description,
+          users: selectedIds,
+          type: isGroup ? 'GROUP' : 'CHANNEL',
+        }
+      )
+      dispatch(chatsActions.addOne(result))
+
+      console.log({result})
+      pop({toRoot: true})
+    } catch (error) {
+      const castedError = error as ApiError
+      if (castedError?.code === 'VALIDATION_ERROR') {
+        setError(castedError.code)
+      }
+    } finally {
+      setIsLoading(false)
+    }
   }
   return (
     <Column title={`New ${chatType}`} onGoBack={pop}>
@@ -41,6 +60,15 @@ export const NewChatStep2: FC<NewChatStep2Props> = ({isGroup, selectedIds}) => {
           setTitle(e.currentTarget.value)
         }}
       />
+      {chatType === 'Channel' && (
+        <input
+          placeholder={`Description`}
+          value={description}
+          onChange={(e) => {
+            setDescription(e.currentTarget.value)
+          }}
+        />
+      )}
       {title.length > 0 && (
         <IconButton
           onClick={handleSubmit}
@@ -57,6 +85,13 @@ export const NewChatStep2: FC<NewChatStep2Props> = ({isGroup, selectedIds}) => {
           isLoading={isLoading}
         />
       )}
+      <Modal
+        isOpen={!!error}
+        onClose={() => setError(null)}
+        content={error}
+        header={'Something went wrong'}
+        actions={<Button onClick={() => setError(null)}>Ok</Button>}
+      />
     </Column>
   )
 }

@@ -8,7 +8,7 @@ export interface Chat {
   description?: string
   createdAt: Date
 }
-export interface CreateChatPayload {
+export interface CreateChatParams {
   users: string[]
   title: string
   description?: string

@@ -1,9 +1,9 @@
 import {createAsyncThunk} from '@reduxjs/toolkit'
-import type {Chat, CreateChatPayload} from './types'
+import type {Chat, CreateChatParams} from './types'
 import {api} from '../../app/api'
 import {AxiosError} from 'axios'
 
-const createChat = createAsyncThunk<Chat, CreateChatPayload>(
+const createChat = createAsyncThunk<Chat, CreateChatParams>(
   'chats/createChat',
   async (arg, thunkApi) => {
     try {

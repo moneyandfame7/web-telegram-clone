@@ -1,7 +1,8 @@
 import axios, {type AxiosError} from 'axios'
-import {ACTION_TYPES, store} from './store'
 import {authThunks} from '../features/auth/api'
 import {authActions} from '../features/auth/store/auth-slice'
+
+import {ACTION_TYPES, store} from './store'
 
 const api = axios.create({
   baseURL: 'http://localhost:3000',
@@ -19,6 +20,39 @@ api.interceptors.request.use((config) => {
 })
 
 let isTokenRefreshing = false
+
+export const refreshToken = async (): Promise<string | undefined> => {
+  if (isTokenRefreshing) {
+    console.error('TOKEN IS ALREADY REFRESHING')
+    return
+  }
+  const state = store.getState()
+  const refreshToken = state.auth.session?.refreshToken
+
+  if (!refreshToken) {
+    store.dispatch({type: ACTION_TYPES.RESET})
+
+    return
+  }
+
+  try {
+    isTokenRefreshing = true
+
+    const newAccessToken = await store
+      .dispatch(authThunks.refreshToken({refreshToken}))
+      .unwrap()
+
+    store.dispatch(authActions.setAccessToken(newAccessToken))
+
+    return newAccessToken
+  } catch (err) {
+    await store.dispatch(authThunks.logOut())
+
+    throw err
+  } finally {
+    isTokenRefreshing = false
+  }
+}
 api.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
@@ -28,23 +62,15 @@ api.interceptors.response.use(
       return Promise.reject(error)
     }
 
-    if (error.response?.status !== 401 || isTokenRefreshing) {
+    if (error.response?.status !== 401) {
       return Promise.reject(error)
-    }
-    isTokenRefreshing = true
-    const state = store.getState()
-    const refreshToken = state.auth.session?.refreshToken
-
-    if (!refreshToken) {
-      return store.dispatch({type: ACTION_TYPES.RESET})
     }
 
     try {
-      const newAccessToken = await store
-        .dispatch(authThunks.refreshToken({refreshToken}))
-        .unwrap()
-
-      store.dispatch(authActions.setAccessToken(newAccessToken))
+      const newAccessToken = await refreshToken()
+      if (!newAccessToken) {
+        return Promise.reject(error)
+      }
 
       originalRequest.headers.Authorization = `Bearer ${newAccessToken}`
 
@@ -53,8 +79,6 @@ api.interceptors.response.use(
       await store.dispatch(authThunks.logOut())
 
       return Promise.reject(err)
-    } finally {
-      isTokenRefreshing = false
     }
   }
 )
