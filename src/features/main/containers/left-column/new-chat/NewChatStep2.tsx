@@ -3,13 +3,12 @@ import {useNavigationStack} from '../../../../../shared/ui/NavigationStack/useNa
 import {Column} from '../../../../../shared/ui/Column/Column'
 import {IconButton} from '../../../../../shared/ui/IconButton/IconButton'
 import {useAppDispatch} from '../../../../../app/store'
-import {emitEventWithHandling, WsException} from '../../../../../app/socket'
-import {chatsActions} from '../../../../chats/chats-slice'
+import {emitEventWithHandling} from '../../../../../app/socket'
 import {Chat, CreateChatParams} from '../../../../chats/types'
-import {useBoolean} from '../../../../../shared/hooks/useBoolean'
 import {Modal} from '../../../../../shared/ui/Modal/Modal'
 import {Button} from '../../../../../shared/ui'
 import {ApiError} from '../../../../../app/types'
+import {chatsActions} from '../../../../chats/state'
 
 interface NewChatStep2Props {
   isGroup: boolean

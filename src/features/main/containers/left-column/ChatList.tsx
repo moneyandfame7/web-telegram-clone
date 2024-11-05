@@ -1,42 +1,43 @@
 import {useState, type FC} from 'react'
 import {useAppDispatch, useAppSelector} from '../../../../app/store'
-import {chatsActions, chatsSelectors} from '../../../chats/chats-slice'
-import {ChatItem} from '../../../chats/components/ChatItem/ChatItem'
+
 import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 import {DropdownMenu} from '../../../../shared/ui/DropdownMenu/DropdownMenu'
 import {MenuItem} from '../../../../shared/ui/Menu/MenuItem'
-
-import {NewChatStep1} from './new-chat/NewChatStep1'
-
+import {ListItem} from '../../../../shared/ui/ListItem/ListItem'
 import {Button} from '../../../../shared/ui'
+
 import {useNavigationStack} from '../../../../shared/ui/NavigationStack/useNavigationStack'
 
-import './ChatList.scss'
+import {chatsThunks} from '../../../chats/api'
+import {chatsSelectors} from '../../../chats/state'
+
+import {NewChatStep1} from './new-chat/NewChatStep1'
 import {Contacts} from './Contacts'
-import {ListItem} from '../../../../shared/ui/ListItem/ListItem'
+
+import './ChatList.scss'
 
 export const ChatList: FC = () => {
-  const dispatch = useAppDispatch()
-  const currentChat = useAppSelector((state) => state.chats.currentChatId)
   const {push} = useNavigationStack()
 
+  const dispatch = useAppDispatch()
+
+  const currentChatId = useAppSelector((state) => state.chats.currentChatId)
   const chats = useAppSelector(chatsSelectors.selectAll)
 
   return (
     <div className="chat-list">
-      <h1>ChatList</h1>
-
-      <h1>Current chat?: {currentChat}</h1>
       {chats.map((chat) => (
         <ListItem
+          key={chat.id}
           title={chat.title}
           titleRight="Right"
           subtitle="Subtitle..."
           subtitleRight="Right"
-          key={chat.id}
           itemColor={chat.color}
+          selected={currentChatId === chat.id}
           onClick={() => {
-            dispatch(chatsActions.setCurrentChat(chat.id))
+            dispatch(chatsThunks.openChat({id: chat.id}))
           }}
         />
       ))}

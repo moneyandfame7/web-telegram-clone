@@ -1,9 +1,16 @@
 import {io, Socket} from 'socket.io-client'
-import {Chat, CreateChatParams} from '../features/chats/types'
+import {
+  Chat,
+  CreateChatParams,
+  Message,
+  SendMessageParams,
+} from '../features/chats/types'
 
 export interface ListenEvents {
   ['chat:created']: (chat: Chat) => void
   ['auth:unauthorized']: () => void
+  ['onNewMessage']: (message: Message, chat: Chat) => void
+
   exception: (data: any) => void
 }
 
@@ -18,6 +25,11 @@ interface EmitEvents {
    * CHAT
    */
   createChat: EventWithAck<CreateChatParams, Chat>
+
+  /**
+   * MESSAGES
+   */
+  sendMessage: EventWithAck<SendMessageParams, Message>
 }
 
 export const socket: Socket<ListenEvents, EmitEvents> = io(
@@ -26,14 +38,6 @@ export const socket: Socket<ListenEvents, EmitEvents> = io(
     autoConnect: false,
   }
 )
-export class WsException extends Error {
-  private readonly error
-  constructor(error: string | object) {
-    super(error)
-  }
-  initMessage(): void
-  getError(): string | object
-}
 
 export const emitEventWithHandling = async <Params, Result>(
   event: keyof EmitEvents,

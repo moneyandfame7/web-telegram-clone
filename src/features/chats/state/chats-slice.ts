@@ -1,25 +1,14 @@
-import {
-  createEntityAdapter,
-  createSlice,
-  type PayloadAction,
-} from '@reduxjs/toolkit'
+import {createSlice, type PayloadAction} from '@reduxjs/toolkit'
 import persistReducer from 'redux-persist/es/persistReducer'
 import storage from 'redux-persist/lib/storage'
-
-import type {Chat} from './types'
-import type {RootState} from '../../app/store'
-import {chatsThunks} from './api'
+import {Chat} from '../types'
+import {chatsThunks} from '../api'
+import {chatsAdapter} from './chats-adapter'
 
 interface ChatsState {
   currentChatId?: string
   isMessagesLoading: boolean
 }
-
-const chatsAdapter = createEntityAdapter<Chat, string>({
-  selectId: (chat) => chat.id,
-  sortComparer: (a, b) =>
-    new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-})
 
 const chatsSlice = createSlice({
   name: 'chatsSlice',
@@ -31,7 +20,9 @@ const chatsSlice = createSlice({
       state.currentChatId = action.payload
     },
     setAllChats: chatsAdapter.setAll,
-    addOne: chatsAdapter.addOne,
+    addOne: (state, action: PayloadAction<Chat>) => {
+      chatsAdapter.addOne(state, action.payload)
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(chatsThunks.createChat.fulfilled, (state, action) => {
@@ -41,12 +32,12 @@ const chatsSlice = createSlice({
     builder.addCase(chatsThunks.getChats.fulfilled, (state, action) => {
       chatsAdapter.setAll(state, action.payload)
     })
+
+    builder.addCase(chatsThunks.getChat.fulfilled, (state, action) => {
+      chatsAdapter.setOne(state, action.payload)
+    })
   },
 })
-
-export const chatsSelectors = chatsAdapter.getSelectors<RootState>(
-  (state) => state.chats
-)
 
 export const chatsActions = chatsSlice.actions
 
@@ -54,7 +45,7 @@ export const persistedChatsReducer = persistReducer(
   {
     key: 'chats',
     storage: storage,
-    blacklist: ['currentChatId'] as Array<keyof ChatsState>,
+    blacklist: ['currentChatId'] as (keyof ChatsState)[],
   },
   chatsSlice.reducer
 )

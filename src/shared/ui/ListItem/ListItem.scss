@@ -1,5 +1,4 @@
 .list-item {
-  border: 1px solid red;
   border-radius: 10px;
   padding: 5px;
   margin: 5px;
@@ -9,6 +8,16 @@
   align-items: center;
   cursor: pointer;
 
+  &--selected {
+    background-color: var(--c-primary) !important;
+
+    .list-item__title,
+    .list-item__subtitle,
+    .list-item__title-right,
+    .list-item__subtitle-right {
+      color: #fff;
+    }
+  }
   &:hover {
     background-color: var(--c-ripple);
   }
@@ -19,7 +28,9 @@
   }
 
   &__title {
-    font-weight: 500;
+    font-weight: 600;
+    font-size: 15px;
+    line-height: 1.3215;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis; /* Додаємо три крапки в кінці */
@@ -35,7 +46,7 @@
     text-overflow: ellipsis;
     width: 90%;
     color: var(--c-font-secondary);
-    font-size: 15px;
+    font-size: 14px;
   }
   &__subtitle-right {
     color: red;

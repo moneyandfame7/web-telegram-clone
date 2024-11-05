@@ -1,0 +1,32 @@
+.chat-header {
+  background-color: var(--c-surface);
+  padding: 10px 25px;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  .chat-info {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex: 1;
+    cursor: pointer;
+    &__content {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+    &__title {
+      font-weight: 600;
+    }
+    &__subtitle {
+      color: var(--c-font-secondary);
+      font-size: 14px;
+    }
+  }
+
+  .chat-utils {
+    display: flex;
+  }
+}

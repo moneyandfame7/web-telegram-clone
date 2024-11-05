@@ -40,9 +40,7 @@ export default ts.config(
       'react/jsx-fragments': ['error', 'syntax'],
       'react/button-has-type': 'error',
       'react/display-name': 'error',
-
-      // 'no-unnecessary-condition': 'error',
-      // 'ts-lint/no-unnecessary-condition': 'error',
+      '@typescript-eslint/no-invalid-void-type': 'off',
     },
   }
 )

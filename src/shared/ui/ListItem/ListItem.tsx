@@ -1,8 +1,12 @@
 import {MouseEvent, type FC} from 'react'
 import {Avatar} from '../Avatar/Avatar'
 
-import './ListItem.scss'
 import {ChatColor} from '../../../app/types'
+
+import clsx from 'clsx'
+
+import './ListItem.scss'
+
 interface ListItemProps {
   title: string
   titleRight?: string
@@ -14,6 +18,7 @@ interface ListItemProps {
   itemColor?: ChatColor
 
   checked?: boolean
+  selected?: boolean
 }
 export const ListItem: FC<ListItemProps> = ({
   title,
@@ -25,10 +30,13 @@ export const ListItem: FC<ListItemProps> = ({
   avatarUrl,
   itemColor,
   checked,
+  selected,
 }) => {
+  const className = clsx('list-item', {
+    'list-item--selected': selected,
+  })
   return (
-    <div className="list-item" onClick={onClick}>
-      {/* <div className="avatar">{title[0]}</div> */}
+    <div className={className} onClick={onClick}>
       {typeof checked === 'boolean' && (
         <input type="checkbox" checked={checked} />
       )}

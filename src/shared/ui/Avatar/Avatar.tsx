@@ -8,7 +8,7 @@ interface AvatarProps {
   url?: string
   color?: ChatColor
   title?: string
-  size?: Size
+  size?: Size | 'extra-small'
 }
 export const Avatar: FC<AvatarProps> = ({
   url,

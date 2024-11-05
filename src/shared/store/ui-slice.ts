@@ -1,8 +1,10 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
+import type {RightColumnScreen} from '../types/ui-types'
 
 export interface UIState {
   isUpdating: boolean
   settingsScreen: string
+  rightColumnScreen?: RightColumnScreen
 }
 
 const initialState: UIState = {
@@ -17,9 +19,15 @@ export const uiSlice = createSlice({
     setIsUpdating: (state, action: PayloadAction<boolean>) => {
       state.isUpdating = action.payload
     },
+    setRightColumn: (
+      state,
+      action: PayloadAction<RightColumnScreen | undefined>
+    ) => {
+      state.rightColumnScreen = action.payload
+    },
   },
 })
 
-export const {setIsUpdating} = uiSlice.actions
+export const uiActions = uiSlice.actions
 
 export const uiReducer = uiSlice.reducer
