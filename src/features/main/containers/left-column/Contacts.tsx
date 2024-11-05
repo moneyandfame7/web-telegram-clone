@@ -9,6 +9,8 @@ import {useAppDispatch, useAppSelector} from '../../../../app/store'
 import {usersSelectors} from '../../../users/users-slice'
 import {usersThunks} from '../../../users/api'
 import {ListItem} from '../../../../shared/ui/ListItem/ListItem'
+import {chatsActions} from '../../../chats/chats-slice'
+import {chatsThunks} from '../../../chats/api'
 
 export const Contacts: FC = () => {
   const {pop} = useNavigationStack()
@@ -39,14 +41,14 @@ export const Contacts: FC = () => {
 
       {contacts.map((contact) => (
         <ListItem
-          title={contact.firstName + ' ' + contact.lastName}
+          title={contact.firstName + ' ' + (contact.lastName ?? '')}
           titleRight="Right"
           subtitle="Subtitle..."
           subtitleRight="Right"
           key={contact.id}
           itemColor={'BLUE'}
           onClick={() => {
-            // dispatch(chatsActions.setCurrentChat(chat.id))
+            dispatch(chatsThunks.openChat({id: `u_${contact.id}`}))
           }}
         />
       ))}

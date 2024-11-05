@@ -9,7 +9,7 @@
   text-transform: uppercase;
   border-radius: 50%;
   font-size: 20px;
-
+  user-select: none;
   $colors: 'pink', 'blue', 'yellow', 'green', 'purple', 'orange';
 
   @each $color in $colors {
@@ -18,9 +18,14 @@
     }
   }
 
-  &--small {
+  &--extra-small {
     width: 30px;
     height: 30px;
+    font-size: 14px;
+  }
+  &--small {
+    width: 40px;
+    height: 40px;
   }
   &--medium {
     width: 54px;

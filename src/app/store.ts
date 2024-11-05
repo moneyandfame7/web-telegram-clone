@@ -8,12 +8,9 @@ import {
   type UnknownAction,
 } from '@reduxjs/toolkit'
 import {type TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux'
-
-import {
-  authActions,
-  persistedAuthReducer,
-} from '../features/auth/store/auth-slice'
 import storage from 'redux-persist/lib/storage'
+
+import {persistedAuthReducer} from '../features/auth/store/auth-slice'
 import {
   FLUSH,
   PAUSE,
@@ -24,15 +21,16 @@ import {
   REGISTER,
   REHYDRATE,
 } from 'redux-persist'
-import {uiReducer} from '../shared/store/ui-slice'
-import {persistedChatsReducer} from '../features/chats/chats-slice'
 import {persistedUsersReducer} from '../features/users/users-slice'
-import {authThunks} from '../features/auth/api'
+import {persistedMessagesReducer} from '../features/messages/state/messages-slice'
+
+import {uiReducer} from '../shared/store/ui-slice'
+import {persistedChatsReducer} from '../features/chats/state/chats-slice'
 
 const persistConfig = {
   key: 'root',
   storage,
-  blacklist: ['auth', 'chats', 'users', 'ui'],
+  blacklist: ['auth', 'chats', 'messages', 'users', 'ui'],
 }
 
 export const ACTION_TYPES = {
@@ -43,13 +41,16 @@ const rootReducer = combineReducers({
   auth: persistedAuthReducer,
   chats: persistedChatsReducer,
   users: persistedUsersReducer,
+  messages: persistedMessagesReducer,
   ui: uiReducer,
 })
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const reducerProxy = (state: any, action: Action) => {
   if (action.type === ACTION_TYPES.RESET) {
     storage.removeItem('persist:auth')
     storage.removeItem('persist:chats')
+    storage.removeItem('persist:messages')
     storage.removeItem('persist:users')
     storage.removeItem('persist:root')
 

@@ -12,6 +12,7 @@ $c-ripple: rgba(0, 0, 0, 6%);
 $c-surface: #fff;
 $c-bg: #f4f4f5;
 $c-bg-body: #fff;
+$c-message-bg: #dcf8c5;
 
 :root {
   --z-modal: 4;
@@ -26,6 +27,8 @@ $c-bg-body: #fff;
   --c-surface-3: #{lighten($c-surface, 5%)};
 
   --c-warn: #fdd764;
+  --c-danger: #df3f40;
+  --c-danger-transparent: #{rgba(var(--c-danger), 0.1)};
 
   --c-neutral-secondary: #94989b;
 
@@ -35,6 +38,9 @@ $c-bg-body: #fff;
   --c-ripple: #{$c-ripple};
 
   --c-shadow-default: rgb(114, 114, 114, 0.251);
+
+  --c-message-bg: #{$c-message-bg};
+  --c-message-info: #{darken($c-message-bg, 50%)};
 
   --menu-bg: rgb(255 255 255 / 80%);
   --menu-hover: #{rgba(0, 0, 0, 0.06)};
@@ -75,6 +81,9 @@ $c-bg-body: #fff;
   --user-purple: #753a88;
 
   &.night {
+    $c-primary: #8572dd;
+    $c-primary-dark: lighten($c-primary, 15%);
+
     $c-surface: #212121;
     $c-surface-3: ligthen($c-surface, 5%);
 
@@ -92,6 +101,9 @@ $c-bg-body: #fff;
     --c-surface: #{$c-surface};
     --c-surface-2: #{lighten($c-surface, 2%)};
     --c-surface-3: #{$c-surface-3};
+
+    --c-message-bg: #{$c-primary};
+    --c-message-info: #{$c-primary-dark};
 
     --menu-bg: rgb(33 33 33 / 85%);
     --menu-hover: #{rgba(0, 0, 0, 0.3)};
