@@ -1,11 +1,10 @@
 import {type FC, useEffect} from 'react'
-import {useNavigate} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router-dom'
 
 import {useGetCurrentUser} from '../users/hooks/useGetCurrentUser'
 import {useAppDispatch, useAppSelector} from '../../app/store'
 import {uiActions} from '../../shared/store/ui-slice'
 import {LeftColumn} from './containers/left-column/LeftColumn'
-
 import {MiddleColumn} from './containers/middle-column/MiddleColumn'
 
 import {chatsThunks} from '../chats/api'
@@ -13,25 +12,23 @@ import {usersThunks} from '../users/api'
 
 import {ListenEvents, socket} from '../../app/socket'
 
-import './Main.scss'
 import {ServerError} from '../../app/error-code.enum'
 import {refreshToken} from '../../app/api'
 import {chatsActions} from '../chats/state/chats-slice'
 import {messagesActions} from '../messages/state/messages-slice'
-import {SingleTransition} from '../../shared/ui/Transition/Transition'
 import {RightColumn} from './containers/right-column/RightColumn'
+import './Main.scss'
 
 console.log('MAIN.tsx')
 export const Main: FC = () => {
   const navigate = useNavigate()
   const dispatch = useAppDispatch()
   const getCurrentUser = useGetCurrentUser()
+  const {chatId} = useParams() as {chatId: string}
 
   const accessToken = useAppSelector((state) => state.auth.accessToken)
   const currentChatId = useAppSelector((state) => state.chats.currentChatId)
-  const rightColumnScreen = useAppSelector(
-    (state) => state.ui.rightColumnScreen
-  )
+
   useEffect(() => {
     if (!accessToken) {
       return
@@ -117,10 +114,15 @@ export const Main: FC = () => {
   }, [])
 
   useEffect(() => {
+    if (chatId) {
+      console.log({chatId})
+      dispatch(chatsActions.setCurrentChat(chatId))
+    }
+  }, [])
+
+  useEffect(() => {
     if (currentChatId) {
       navigate(`/${currentChatId}`)
-    } else {
-      navigate('/')
     }
   }, [currentChatId])
 

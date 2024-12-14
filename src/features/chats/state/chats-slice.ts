@@ -7,19 +7,15 @@ import {chatsAdapter} from './chats-adapter'
 
 interface ChatsState {
   currentChatId?: string
-  isMessagesLoading: boolean
 }
 
 const chatsSlice = createSlice({
   name: 'chatsSlice',
-  initialState: chatsAdapter.getInitialState<ChatsState>({
-    isMessagesLoading: false,
-  }),
+  initialState: chatsAdapter.getInitialState<ChatsState>({}),
   reducers: {
     setCurrentChat: (state, action: PayloadAction<string | undefined>) => {
       state.currentChatId = action.payload
     },
-    setAllChats: chatsAdapter.setAll,
     addOne: (state, action: PayloadAction<Chat>) => {
       chatsAdapter.addOne(state, action.payload)
     },
@@ -30,7 +26,7 @@ const chatsSlice = createSlice({
     })
 
     builder.addCase(chatsThunks.getChats.fulfilled, (state, action) => {
-      chatsAdapter.setAll(state, action.payload)
+      chatsAdapter.setMany(state, action.payload)
     })
 
     builder.addCase(chatsThunks.getChat.fulfilled, (state, action) => {

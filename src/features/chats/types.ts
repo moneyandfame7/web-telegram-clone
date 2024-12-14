@@ -13,7 +13,14 @@ export interface Chat {
   title: string
   description?: string
   membersCount?: number
+  firstMessageSequenceId?: number
+  lastMessageSequenceId?: number
   createdAt: Date
+  isSavedMessages: boolean
+  isPinned: boolean
+  isMuted: boolean
+  isArchived: boolean
+  isOwner: boolean
 }
 export interface CreateChatParams {
   users: string[]

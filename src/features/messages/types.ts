@@ -1,6 +1,6 @@
 export interface Message {
   id: string
-  orderedId: number
+  sequenceId: number
   chatId: string
   senderId: string
   text?: string
@@ -9,4 +9,19 @@ export interface Message {
 
   isOutgoing: boolean
   isSilent: boolean
+
+  /** client only props */
+  isHighlighted?: boolean
+}
+export enum GetMessagesDirection {
+  OLDER = 'OLDER',
+  NEWER = 'NEWER',
+  AROUND = 'AROUND',
+}
+export interface GetMessagesParams {
+  chatId: string
+  sequenceId?: number
+  skipCursor?: boolean
+  limit?: number
+  direction?: GetMessagesDirection
 }

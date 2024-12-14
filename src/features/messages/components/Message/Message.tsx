@@ -22,6 +22,7 @@ export const Message: FC<MessageProps> = ({message}) => {
   const buildedClass = clsx('message', {
     outgoing: message.isOutgoing,
     incoming: !message.isOutgoing,
+    highlighted: message.isHighlighted,
   })
   return (
     <div className={buildedClass}>
@@ -36,6 +37,8 @@ export const Message: FC<MessageProps> = ({message}) => {
       <div className="message-content">
         <div className="message-content__sender"></div>
         <div className="message-content__text">
+          <b>[{message.sequenceId}] </b>
+
           {message.text}
           <MessageInfo message={message} />
         </div>

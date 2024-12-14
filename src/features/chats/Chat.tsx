@@ -1,7 +1,7 @@
-import {useState, type FC} from 'react'
+import {useEffect, useState, type FC} from 'react'
 import {useParams} from 'react-router-dom'
 
-import {useAppDispatch} from '../../app/store'
+import {useAppDispatch, useAppSelector} from '../../app/store'
 import {emitEventWithHandling} from '../../app/socket'
 
 import {Button} from '../../shared/ui'
@@ -15,6 +15,7 @@ import {ChatHeader} from './components/ChatHeader/ChatHeader'
 import {Chat as ChatType, SendMessageParams} from './types'
 
 import './Chat.scss'
+
 export const Chat: FC = () => {
   const dispatch = useAppDispatch()
   const {chatId} = useParams() as {chatId: string}
@@ -44,7 +45,7 @@ export const Chat: FC = () => {
     <div className="chat">
       <ChatHeader chatId={chatId} />
 
-      <MessageList chatId={chatId} />
+      <MessageList key={chatId} chatId={chatId} />
       <input
         className="chat-input"
         value={text}
