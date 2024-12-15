@@ -29,15 +29,15 @@ export const ChatList: FC = () => {
     <div className="chat-list">
       {chats.map((chat) => (
         <ListItem
-          key={chat.id}
+          key={chat._realChatId}
           title={chat.title}
           titleRight="Right"
           subtitle="Subtitle..."
           subtitleRight="Right"
           itemColor={chat.color}
-          selected={currentChatId === chat.id}
+          selected={currentChatId === chat._realChatId}
           onClick={() => {
-            dispatch(chatsThunks.openChat({id: chat.id}))
+            dispatch(chatsThunks.openChat({id: chat._realChatId}))
           }}
         />
       ))}

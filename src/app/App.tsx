@@ -3,10 +3,10 @@ import {BrowserRouter, Route, Routes} from 'react-router-dom'
 
 import {AppScreen} from '../shared/types/ui-types'
 import {Auth} from '../features/auth/Auth'
-import {Main} from '../features/main/Main'
-import {Chat} from '../features/chats/Chat'
 
 import {useAppSelector} from './store'
+import {Chat} from '../features/chats/Chat'
+import {Main} from '../features/main/Main'
 
 function App() {
   const session = useAppSelector((state) => state.auth.session)
@@ -29,9 +29,9 @@ function App() {
           <BrowserRouter>
             <Routes>
               <Route path="/" element={<Main />}>
-                <Route index element={<div>Select a chat from the list</div>} />
-
                 <Route path="/:chatId" element={<Chat />} />
+
+                <Route index element={<div>Select a chat from the list</div>} />
               </Route>
             </Routes>
           </BrowserRouter>

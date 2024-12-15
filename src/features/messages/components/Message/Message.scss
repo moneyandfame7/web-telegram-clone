@@ -2,6 +2,7 @@
   display: flex;
   margin-bottom: 5px;
   gap: 10px;
+  transition: background-color 0.3s ease;
 
   &.outgoing {
     justify-content: flex-end;
@@ -39,6 +40,9 @@
         transform: translateY(1px);
       }
     }
+  }
+  &.highlighted {
+    background-color: rgba(0, 0, 0, 0.1);
   }
 
   &-content {

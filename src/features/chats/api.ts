@@ -7,6 +7,9 @@ import {RootState} from '../../app/store'
 import {isUserId} from '../users/helpers'
 import {chatsSelectors} from './state/chats-selectors'
 import {chatsActions} from './state/chats-slice'
+import {usersSelectors} from '../users/users-slice'
+import {usersThunks} from '../users/api'
+import {User} from '../auth/types'
 
 const createChat = createAsyncThunk<Chat, CreateChatParams>(
   'chats/createChat',
@@ -44,7 +47,7 @@ const getChats = createAsyncThunk<Chat[]>(
   }
 )
 
-const getChat = createAsyncThunk<Chat, string>(
+const getChat = createAsyncThunk<Chat | undefined, string>(
   'chats/getChat',
   async (arg, thunkApi) => {
     try {
@@ -63,22 +66,42 @@ const getChat = createAsyncThunk<Chat, string>(
   }
 )
 
-const openChat = createAsyncThunk<void, IdPayload>(
+const openChat = createAsyncThunk<void, {id?: string; userId?: string}>(
   'chats/openChat',
   async (arg, thunkApi) => {
-    const state = thunkApi.getState() as RootState
+    const {id, userId} = arg
+    if (!id && !userId) {
+      return
+    }
+    if (userId) {
+      thunkApi.dispatch(usersThunks.getUser({id: userId}))
 
-    const chat: Chat | undefined = chatsSelectors.selectById(state, arg.id)
+      const storedChat = chatsSelectors.selectByUserId(
+        thunkApi.getState() as RootState,
+        userId
+      )
+      const chat: Chat | undefined =
+        storedChat ??
+        (await thunkApi.dispatch(chatsThunks.getChat(`u_${userId}`)).unwrap())
 
-    const isPrivateChat = isUserId(arg.id)
+      thunkApi.dispatch(
+        chatsActions.setCurrentChat(chat?._realChatId ?? `u_${userId}`)
+      )
+    } else if (id) {
+      thunkApi.dispatch(chatsActions.setCurrentChat(id))
 
-    if (!chat) {
-      if (!isPrivateChat) {
-        thunkApi.dispatch(getChat(arg.id))
+      const storedChat = chatsSelectors.selectById(
+        thunkApi.getState() as RootState,
+        id
+      )
+      const chat =
+        storedChat ??
+        (await thunkApi.dispatch(chatsThunks.getChat(id)).unwrap())
+
+      if (chat.userId) {
+        thunkApi.dispatch(usersThunks.getUser({id: chat.userId}))
       }
     }
-
-    thunkApi.dispatch(chatsActions.setCurrentChat(arg.id))
   }
 )
 

@@ -6,11 +6,26 @@ import {Icon} from '../../../../shared/ui/Icon/Icon'
 import './MessageInfo.scss'
 interface MessageInfoProps {
   message: Message
+  isUnread: boolean
 }
-export const MessageInfo: FC<MessageInfoProps> = ({message}) => {
+export const MessageInfo: FC<MessageInfoProps> = ({message, isUnread}) => {
   const sendingDate = formatMessageTime(new Date(message.createdAt), false)
   const isEdited = Boolean(message.editedAt)
 
+  function renderMessageStatus() {
+    if (isUnread) {
+      return (
+        <Icon
+          className="message-info__icon"
+          name="check1"
+          title="Unread icon"
+        />
+      )
+    }
+    return (
+      <Icon className="message-info__icon" name="checks2" title="Unread icon" />
+    )
+  }
   return (
     <span className="message-info">
       {isEdited && <i className="message-info__item">edited</i>}
@@ -32,11 +47,7 @@ export const MessageInfo: FC<MessageInfoProps> = ({message}) => {
         </span>
         {message.isOutgoing && (
           <span className="message-info__item message-info__views">
-            <Icon
-              className="message-info__icon"
-              name="checks2"
-              title="View icon"
-            />
+            {renderMessageStatus()}
           </span>
         )}
       </div>

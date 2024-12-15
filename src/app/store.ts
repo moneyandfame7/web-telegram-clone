@@ -2,6 +2,7 @@ import {
   combineReducers,
   configureStore,
   createAsyncThunk,
+  createListenerMiddleware,
   createSelector,
   type Action,
   type ThunkAction,
@@ -63,6 +64,7 @@ const reducerProxy = (state: any, action: Action) => {
 
 const persistedReducer = persistReducer(persistConfig, reducerProxy)
 
+const listenerMiddleware = createListenerMiddleware()
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
@@ -70,7 +72,9 @@ export const store = configureStore({
       serializableCheck: {
         ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
       },
-    }).concat(),
+    })
+      .prepend(listenerMiddleware.middleware)
+      .concat(),
 })
 
 export const persistor = persistStore(store)
