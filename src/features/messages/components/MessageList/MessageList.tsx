@@ -4,17 +4,22 @@ import {Virtualizer} from 'virtua'
 
 import './MessageList.scss'
 import {useAppDispatch, useAppSelector} from '../../../../app/store'
-import {
-  selectMessageListKey,
-  selectMessages,
-} from '../../state/messages-selectors'
+import {selectMessages} from '../../state/messages-selectors'
 import {messagesThunks} from '../../api'
-import {GetMessagesDirection, GetMessagesParams} from '../../types'
+import {
+  GetMessagesDirection,
+  GetMessagesParams,
+  ReadHistoryParams,
+  ReadMyHistoryResult,
+} from '../../types'
 import {Message} from '../Message/Message'
 import {Spinner} from '../../../../shared/ui/Spinner/Spinner'
-import {chatsSelectors} from '../../../chats/state'
+import {chatsActions, chatsSelectors} from '../../../chats/state'
 import {Button} from '../../../../shared/ui'
 import {useConnetedVirtuaRef} from '../../hooks/useConnectedVirtuosoRef'
+import {throttle} from '../../../../shared/helpers/throttle'
+import {emitEventWithHandling} from '../../../../app/socket'
+import {Chat} from '../../../chats/types'
 
 /**
  * @todo: прибрати localStorage? ( не впевнений )
@@ -29,15 +34,17 @@ import {useConnetedVirtuaRef} from '../../hooks/useConnectedVirtuosoRef'
  *
  */
 
-const SPINNER_HEIGHT = 34
+const SPINNER_HEIGHT = 40
 interface MessageListProps {
   chatId: string
 }
 
+const readHistoryThrottled = throttle((cb) => cb(), 250, false)
+
 export const MessageList: FC<MessageListProps> = ({chatId}) => {
   const chat = useAppSelector((state) =>
     chatsSelectors.selectById(state, chatId)
-  )
+  ) as Chat | undefined
   const messages = useAppSelector((state) => selectMessages(state, chatId))
 
   const dispatch = useAppDispatch()
@@ -67,18 +74,88 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
   const ready = useRef(false)
 
   useEffect(() => {
-    if (messages.length > 0) {
-      ready.current = true
-      handleScroll()
-      virtua.current?.scrollToIndex(messages.length - 1, {align: 'start'})
-
+    if (!virtua.current) {
       return
     }
+
+    if (virtua.current.scrollSize > virtua.current.viewportSize) {
+      return
+    }
+
+    void readHistoryThrottled(async () => {
+      if (!virtua.current) {
+        return
+      }
+      const startIndex = virtua.current.findStartIndex()
+      const endIndex = virtua.current.findEndIndex()
+
+      console.log({endIndex})
+
+      let newMyLastReadMessage
+
+      for (let i = endIndex; i >= startIndex; i--) {
+        const message = messages[i]
+
+        if (message && !message.isOutgoing) {
+          newMyLastReadMessage = message
+          break // Зупиняємо пошук, якщо знайдено крайнє повідомлення
+        }
+      }
+      if (!newMyLastReadMessage) {
+        return
+      }
+
+      if (
+        (chat?.myLastReadMessageSequenceId ?? 0) <
+        newMyLastReadMessage.sequenceId
+      ) {
+        console.log(
+          `SHOULD READ THIS MESSAGE`,
+          newMyLastReadMessage.sequenceId,
+          chat?.myLastReadMessageSequenceId
+        )
+
+        const result = await emitEventWithHandling<
+          ReadHistoryParams,
+          ReadMyHistoryResult
+        >('readHistory', {chatId, maxId: newMyLastReadMessage.sequenceId})
+
+        dispatch(
+          chatsActions.updateOne({
+            id: result.chatId,
+            changes: {
+              myLastReadMessageSequenceId: result.maxId,
+              unreadCount: result.unreadCount,
+            },
+          })
+        )
+      }
+    })
+  }, [messages])
+
+  useEffect(() => {
+    console.log(
+      `ОСТАННЄ ПРОЧИТАНЕ МОЄ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.theirLastReadMessageSequenceId}`
+    )
+
+    console.log(
+      `ОСТАННЄ ПРОЧИТАНЕ МНОЮ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.myLastReadMessageSequenceId}`
+    )
+    // if (messages.length > 0) {
+    //   ready.current = true
+    //   handleScroll()
+    //   virtua.current?.scrollToIndex(messages.length - 1, {align: 'start'})
+
+    //   return
+    // }
     ;(async () => {
+      if (!chat) {
+        return
+      }
       const messages = await dispatch(
         messagesThunks.getMessages({
           chatId,
-          sequenceId: 50,
+          sequenceId: chat.myLastReadMessageSequenceId ?? 0,
           direction: GetMessagesDirection.AROUND,
           limit: 40,
         })
@@ -86,7 +163,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
       // const indexToScroll = Math.round((messages.length - 1) / 2)
 
       const index = messages.length / 2 + 1
-      virtua.current?.scrollToIndex(index, {align: 'start'})
+      // virtua.current?.scrollToIndex(index, {align: 'start'})
       console.log({index})
 
       /**
@@ -121,13 +198,12 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
 
     const isStartReached = virtua.current.findStartIndex() - THRESHOLD < 0
     const hasMoreStart = startFetchedCountRef.current < count
-    console.log({isStartReached, hasMoreStart})
     if (isStartReached && hasMoreStart) {
       startFetchedCountRef.current = count
       const triggerMessage = messages[0]
       if (
         !triggerMessage ||
-        triggerMessage.sequenceId === chat.firstMessageSequenceId
+        triggerMessage.sequenceId === chat?.firstMessageSequenceId
       ) {
         return
       }
@@ -146,7 +222,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
       const triggerMessage = messages[messages.length - 1]
       if (
         !triggerMessage ||
-        triggerMessage.sequenceId === chat.lastMessageSequenceId
+        triggerMessage.sequenceId === chat?.lastMessageSequenceId
       ) {
         return
       }
@@ -160,6 +236,56 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
         direction: GetMessagesDirection.NEWER,
       })
     }
+
+    void readHistoryThrottled(async () => {
+      if (!virtua.current) {
+        return
+      }
+      const startIndex = virtua.current.findStartIndex()
+      const endIndex = virtua.current.findEndIndex()
+
+      console.log({endIndex})
+
+      let newMyLastReadMessage
+
+      for (let i = endIndex; i >= startIndex; i--) {
+        const message = messages[i]
+
+        if (message && !message.isOutgoing) {
+          newMyLastReadMessage = message
+          break // Зупиняємо пошук, якщо знайдено крайнє повідомлення
+        }
+      }
+      if (!newMyLastReadMessage) {
+        return
+      }
+
+      if (
+        (chat?.myLastReadMessageSequenceId ?? 0) <
+        newMyLastReadMessage.sequenceId
+      ) {
+        console.log(
+          `SHOULD READ THIS MESSAGE`,
+          newMyLastReadMessage.sequenceId,
+          chat?.myLastReadMessageSequenceId
+        )
+
+        const result = await emitEventWithHandling<
+          ReadHistoryParams,
+          ReadMyHistoryResult
+        >('readHistory', {chatId, maxId: newMyLastReadMessage.sequenceId})
+
+        dispatch(
+          chatsActions.updateOne({
+            id: result.chatId,
+            changes: {
+              myLastReadMessageSequenceId: result.maxId,
+              unreadCount: result.unreadCount,
+            },
+          })
+        )
+      }
+    })
   }
 
   /**
@@ -172,14 +298,15 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
         height: '100vh',
         overflowY: 'auto',
         overflowAnchor: 'none',
+        // padding: '20px',
       }}
     >
-      {startFetching && <Spinner />}
+      {/* {startFetching && <Spinner />} */}
       <Virtualizer
         key={chatId}
         ref={virtua}
         shift={shifting ? true : false}
-        startMargin={SPINNER_HEIGHT}
+        // startMargin={SPINNER_HEIGHT}
         onScroll={handleScroll}
         count={messages.length}
       >
@@ -188,7 +315,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
           return <Message key={message.sequenceId} message={message} />
         }}
       </Virtualizer>
-      {endFetching && <Spinner />}
+      {/* {endFetching && <Spinner />} */}
       <Button
         onClick={() => {
           const sequenceId = 14

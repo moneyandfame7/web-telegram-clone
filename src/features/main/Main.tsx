@@ -2,7 +2,7 @@ import {type FC, useEffect} from 'react'
 import {useNavigate, useParams} from 'react-router-dom'
 
 import {useGetCurrentUser} from '../users/hooks/useGetCurrentUser'
-import {useAppDispatch, useAppSelector} from '../../app/store'
+import {store, useAppDispatch, useAppSelector} from '../../app/store'
 import {uiActions} from '../../shared/store/ui-slice'
 import {LeftColumn} from './containers/left-column/LeftColumn'
 import {MiddleColumn} from './containers/middle-column/MiddleColumn'
@@ -18,6 +18,8 @@ import {chatsActions} from '../chats/state/chats-slice'
 import {messagesActions} from '../messages/state/messages-slice'
 import {RightColumn} from './containers/right-column/RightColumn'
 import './Main.scss'
+import {chatsSelectors} from '../chats/state'
+import {Chat} from '../chats/types'
 
 console.log('MAIN.tsx')
 export const Main: FC = () => {
@@ -80,13 +82,13 @@ export const Main: FC = () => {
         console.warn('[socket.io]: Disconnected!')
       })
 
-      chats.forEach((chat) => socket.emit('join', `chat-${chat.id}`))
+      chats.forEach((chat) => socket.emit('join', `chat-${chat._realChatId}`))
 
       const handleOnChatCreated: ListenEvents['chat:created'] = (chat) => {
-        console.log(`New chat added: [${chat.id}]`)
+        console.log(`New chat added: [${chat._realChatId}]`)
 
         dispatch(chatsActions.addOne(chat))
-        socket.emit('join', `chat-${chat.id}`)
+        socket.emit('join', `chat-${chat._realChatId}`)
       }
 
       socket.on('chat:created', handleOnChatCreated)
@@ -95,19 +97,72 @@ export const Main: FC = () => {
         message,
         chat
       ) => {
-        console.log(`New message ${message.id} in chat ${chat.id}`)
+        console.log(`New message ${message.id} in chat ${chat._realChatId}`)
 
-        dispatch(messagesActions.addMessage({chatId: chat.id, message}))
+        const existingChat: Chat | undefined = chatsSelectors.selectById(
+          store.getState(),
+          chat._realChatId
+        )
+        if (!existingChat) {
+          handleOnChatCreated(chat)
+        } else {
+          dispatch(
+            chatsActions.updateOne({
+              id: chat._realChatId,
+              changes: {
+                unreadCount: chat.unreadCount,
+                lastMessageSequenceId: chat.lastMessageSequenceId,
+              },
+            })
+          )
+        }
+        dispatch(
+          messagesActions.addMessage({chatId: chat._realChatId, message})
+        )
       }
 
       socket.on('onNewMessage', handleOnNewMessage)
 
+      const handleReadByMe: ListenEvents['message:read-my'] = (data) => {
+        console.log('Я ПРОЧИТАВ ЧИЇСЬ ПОВІДОМЛЕННЯ', data)
+
+        dispatch(
+          chatsActions.updateOne({
+            id: data.chatId,
+            changes: {
+              myLastReadMessageSequenceId: data.maxId,
+              unreadCount: data.unreadCount,
+            },
+          })
+        )
+      }
+      const handleReadByThem: ListenEvents['message:read-their'] = (data) => {
+        console.log(
+          `ХТОСЬ ПРОЧИТАВ ПОВІДОМЛЕННЯ В ЧАТІ! ${data.chatId}`,
+          data.maxId
+        )
+
+        dispatch(
+          chatsActions.updateOne({
+            id: data.chatId,
+            changes: {
+              theirLastReadMessageSequenceId: data.maxId,
+            },
+          })
+        )
+      }
+      socket.on('message:read-my', handleReadByMe)
+      socket.on('message:read-their', handleReadByThem)
+
       dispatch(uiActions.setIsUpdating(false))
 
       return () => {
+        socket.off('connect')
         socket.off('chat:created', handleOnChatCreated)
         socket.off('onNewMessage')
-        socket.off('connect')
+        socket.off('message:read-my')
+        socket.off('message:read-their')
+
         socket.disconnect()
       }
     })()

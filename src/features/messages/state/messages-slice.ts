@@ -98,8 +98,8 @@ const messagesSlice = createSlice({
     /** CHATS THUNKS HANDLING */
     builder.addCase(chatsThunks.getChats.fulfilled, (state, action) => {
       action.payload.forEach((chat) => {
-        if (!state.byChatId[chat.id]) {
-          state.byChatId[chat.id] = {
+        if (!state.byChatId[chat._realChatId]) {
+          state.byChatId[chat._realChatId] = {
             data: messagesAdapter.getInitialState(),
             dataSetKey: Date.now(),
             hasNewer: false,
@@ -110,7 +110,11 @@ const messagesSlice = createSlice({
       })
     })
     builder.addCase(chatsThunks.getChat.fulfilled, (state, action) => {
-      const chatId = action.payload.id
+      const chatId = action.payload?.id
+
+      if (!chatId) {
+        return
+      }
       if (!state.byChatId[chatId]) {
         state.byChatId[chatId] = {
           data: messagesAdapter.getInitialState(),

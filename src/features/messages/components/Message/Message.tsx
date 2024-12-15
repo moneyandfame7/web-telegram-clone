@@ -10,11 +10,16 @@ import {getUserTitle} from '../../../users/helpers'
 
 import './Message.scss'
 import {MessageInfo} from '../MessageInfo/MessageInfo'
+import {chatsSelectors} from '../../../chats/state'
+import {Chat} from '../../../chats/types'
 
 interface MessageProps {
   message: MessageType
 }
 export const Message: FC<MessageProps> = ({message}) => {
+  const chat = useAppSelector((state) =>
+    chatsSelectors.selectById(state, message._realChatId)
+  ) as Chat | undefined
   const sender = useAppSelector((state) =>
     usersSelectors.selectById(state, message.senderId)
   ) as User | undefined
@@ -24,6 +29,7 @@ export const Message: FC<MessageProps> = ({message}) => {
     incoming: !message.isOutgoing,
     highlighted: message.isHighlighted,
   })
+
   return (
     <div className={buildedClass}>
       {!message.isOutgoing && (
@@ -38,9 +44,14 @@ export const Message: FC<MessageProps> = ({message}) => {
         <div className="message-content__sender"></div>
         <div className="message-content__text">
           <b>[{message.sequenceId}] </b>
-
+          LAST READED: {chat?.theirLastReadMessageSequenceId}
           {message.text}
-          <MessageInfo message={message} />
+          <MessageInfo
+            message={message}
+            isUnread={
+              (chat?.theirLastReadMessageSequenceId ?? -1) < message.sequenceId
+            }
+          />
         </div>
         <svg
           viewBox="0 0 11 20"

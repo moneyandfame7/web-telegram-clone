@@ -15,6 +15,9 @@ export interface Chat {
   membersCount?: number
   firstMessageSequenceId?: number
   lastMessageSequenceId?: number
+  myLastReadMessageSequenceId?: number
+  theirLastReadMessageSequenceId?: number
+  unreadCount: number
   createdAt: Date
   isSavedMessages: boolean
   isPinned: boolean

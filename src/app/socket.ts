@@ -2,14 +2,23 @@ import {io, Socket} from 'socket.io-client'
 import {
   Chat,
   CreateChatParams,
-  Message,
   SendMessageParams,
 } from '../features/chats/types'
+import {
+  Message,
+  ReadHistoryParams,
+  ReadMyHistoryResult,
+} from '../features/messages/types'
 
 export interface ListenEvents {
   ['chat:created']: (chat: Chat) => void
   ['auth:unauthorized']: () => void
   ['onNewMessage']: (message: Message, chat: Chat) => void
+
+  ['message:read-my']: (data: ReadMyHistoryResult) => void
+  ['message:read-their']: (
+    data: Omit<ReadMyHistoryResult, 'unreadCount'>
+  ) => void
 
   exception: (data: any) => void
 }
@@ -30,6 +39,11 @@ interface EmitEvents {
    * MESSAGES
    */
   sendMessage: EventWithAck<SendMessageParams, Message>
+
+  readHistory: EventWithAck<
+    ReadHistoryParams,
+    {newUnreadCount: number; chatId: string; maxId: number}
+  >
 }
 
 export const socket: Socket<ListenEvents, EmitEvents> = io(

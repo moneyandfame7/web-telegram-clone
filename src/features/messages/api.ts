@@ -62,4 +62,6 @@ const highlightMessage = createAsyncThunk(
   async ({sequenceId}: {sequenceId: number}) => sequenceId
 )
 
+// const readHistory = createAsyncThunk('messages/readHistory', async () => {})
+
 export const messagesThunks = {getMessages, scrollToMessage, highlightMessage}

@@ -48,7 +48,7 @@ export const Contacts: FC = () => {
           key={contact.id}
           itemColor={'BLUE'}
           onClick={() => {
-            dispatch(chatsThunks.openChat({id: `u_${contact.id}`}))
+            dispatch(chatsThunks.openChat({userId: contact.id}))
           }}
         />
       ))}
