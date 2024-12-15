@@ -82,13 +82,13 @@ export const Main: FC = () => {
         console.warn('[socket.io]: Disconnected!')
       })
 
-      chats.forEach((chat) => socket.emit('join', `chat-${chat._realChatId}`))
+      chats.forEach((chat) => socket.emit('join', `chat-${chat.id}`))
 
       const handleOnChatCreated: ListenEvents['chat:created'] = (chat) => {
-        console.log(`New chat added: [${chat._realChatId}]`)
+        console.log(`New chat added: [${chat.id}]`)
 
         dispatch(chatsActions.addOne(chat))
-        socket.emit('join', `chat-${chat._realChatId}`)
+        socket.emit('join', `chat-${chat.id}`)
       }
 
       socket.on('chat:created', handleOnChatCreated)
@@ -97,18 +97,18 @@ export const Main: FC = () => {
         message,
         chat
       ) => {
-        console.log(`New message ${message.id} in chat ${chat._realChatId}`)
+        console.log(`New message ${message.id} in chat ${chat.id}`)
 
         const existingChat: Chat | undefined = chatsSelectors.selectById(
           store.getState(),
-          chat._realChatId
+          chat.id
         )
         if (!existingChat) {
           handleOnChatCreated(chat)
         } else {
           dispatch(
             chatsActions.updateOne({
-              id: chat._realChatId,
+              id: chat.id,
               changes: {
                 unreadCount: chat.unreadCount,
                 lastMessageSequenceId: chat.lastMessageSequenceId,
@@ -116,9 +116,7 @@ export const Main: FC = () => {
             })
           )
         }
-        dispatch(
-          messagesActions.addMessage({chatId: chat._realChatId, message})
-        )
+        dispatch(messagesActions.addMessage({chatId: chat.id, message}))
       }
 
       socket.on('onNewMessage', handleOnNewMessage)

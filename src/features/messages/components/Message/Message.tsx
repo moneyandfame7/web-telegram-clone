@@ -18,7 +18,7 @@ interface MessageProps {
 }
 export const Message: FC<MessageProps> = ({message}) => {
   const chat = useAppSelector((state) =>
-    chatsSelectors.selectById(state, message._realChatId)
+    chatsSelectors.selectById(state, message.chatId)
   ) as Chat | undefined
   const sender = useAppSelector((state) =>
     usersSelectors.selectById(state, message.senderId)

@@ -38,18 +38,18 @@ export const Chat: FC = () => {
       })
       dispatch(
         messagesActions.addMessage({
-          chatId: result.chat._realChatId,
+          chatId: result.chat.id,
           message: result.message,
         })
       )
       if (!chat) {
         dispatch(chatsActions.addOne(result.chat))
-        socket.emit('join', `chat-${result.chat._realChatId}`)
-        dispatch(chatsActions.setCurrentChat(result.chat._realChatId))
+        socket.emit('join', `chat-${result.chat.id}`)
+        dispatch(chatsActions.setCurrentChat(result.chat.id))
       } else {
         dispatch(
           chatsActions.updateOne({
-            id: result.chat._realChatId,
+            id: result.chat.id,
             changes: {lastMessageSequenceId: result.chat.lastMessageSequenceId},
           })
         )

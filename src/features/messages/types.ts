@@ -2,7 +2,6 @@ export interface Message {
   id: string
   sequenceId: number
   chatId: string
-  _realChatId: string
   senderId: string
   text?: string
   createdAt: Date
@@ -34,6 +33,5 @@ export interface ReadHistoryParams {
 export interface ReadMyHistoryResult {
   unreadCount: number
   chatId: string
-  _realChatId: string
   maxId: number
 }

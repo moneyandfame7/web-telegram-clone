@@ -7,7 +7,6 @@ export interface SendMessageParams {
 
 export interface Chat {
   id: string
-  _realChatId: string
   userId?: string
   color: ChatColor
   title: string

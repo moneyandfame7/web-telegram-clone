@@ -84,9 +84,7 @@ const openChat = createAsyncThunk<void, {id?: string; userId?: string}>(
         storedChat ??
         (await thunkApi.dispatch(chatsThunks.getChat(`u_${userId}`)).unwrap())
 
-      thunkApi.dispatch(
-        chatsActions.setCurrentChat(chat?._realChatId ?? `u_${userId}`)
-      )
+      thunkApi.dispatch(chatsActions.setCurrentChat(chat?.id ?? `u_${userId}`))
     } else if (id) {
       thunkApi.dispatch(chatsActions.setCurrentChat(id))
 
