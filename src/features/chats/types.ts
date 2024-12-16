@@ -1,4 +1,5 @@
 import type {ChatColor} from '../../app/types'
+import {Message} from '../messages/types'
 
 export interface SendMessageParams {
   text: string
@@ -13,7 +14,7 @@ export interface Chat {
   description?: string
   membersCount?: number
   firstMessageSequenceId?: number
-  lastMessageSequenceId?: number
+  lastMessage?: Message
   myLastReadMessageSequenceId?: number
   theirLastReadMessageSequenceId?: number
   unreadCount: number

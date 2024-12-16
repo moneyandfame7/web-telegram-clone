@@ -1,5 +1,5 @@
 import {useState, type FC} from 'react'
-import {useAppDispatch, useAppSelector} from '../../../../app/store'
+import {useAppSelector} from '../../../../app/store'
 
 import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 import {DropdownMenu} from '../../../../shared/ui/DropdownMenu/DropdownMenu'
@@ -9,38 +9,38 @@ import {Button} from '../../../../shared/ui'
 
 import {useNavigationStack} from '../../../../shared/ui/NavigationStack/useNavigationStack'
 
-import {chatsThunks} from '../../../chats/api'
 import {chatsSelectors} from '../../../chats/state'
 
 import {NewChatStep1} from './new-chat/NewChatStep1'
 import {Contacts} from './Contacts'
 
 import './ChatList.scss'
+import {useNavigate} from 'react-router-dom'
 
 export const ChatList: FC = () => {
   const {push} = useNavigationStack()
 
-  const dispatch = useAppDispatch()
-
   const currentChatId = useAppSelector((state) => state.chats.currentChatId)
   const chats = useAppSelector(chatsSelectors.selectAll)
-
+  const navigate = useNavigate()
   return (
     <div className="chat-list">
-      {chats.map((chat) => (
-        <ListItem
-          key={chat.id}
-          title={chat.title}
-          titleRight="Right"
-          subtitle="Subtitle..."
-          subtitleRight="Right"
-          itemColor={chat.color}
-          selected={currentChatId === chat.id}
-          onClick={() => {
-            dispatch(chatsThunks.openChat({id: chat.id}))
-          }}
-        />
-      ))}
+      {chats.map((chat) => {
+        return (
+          <ListItem
+            key={chat.id}
+            title={chat.title}
+            titleRight="Right"
+            subtitle={chat.lastMessage?.text}
+            subtitleRight={`${chat.unreadCount > 0 ? chat.unreadCount : ''}`}
+            itemColor={chat.color}
+            selected={currentChatId === chat.id}
+            onClick={() => {
+              navigate(chat.id)
+            }}
+          />
+        )
+      })}
 
       <div className="create-chat-button">
         <DropdownMenu

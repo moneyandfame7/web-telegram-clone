@@ -1,5 +1,4 @@
 import {FC} from 'react'
-import {isUserId} from '../../../users/helpers'
 
 import {PrivateChatInfo} from './PrivateChatInfo'
 import {GroupChatInfo} from './GroupChatInfo'
@@ -8,30 +7,34 @@ import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 import {DropdownMenu} from '../../../../shared/ui/DropdownMenu/DropdownMenu'
 import {MenuItem} from '../../../../shared/ui/Menu/MenuItem'
 
-import {useAppDispatch} from '../../../../app/store'
+import {useAppDispatch, useAppSelector} from '../../../../app/store'
 import {uiActions} from '../../../../shared/store/ui-slice'
 import {RightColumnScreen} from '../../../../shared/types/ui-types'
 
 import './ChatHeader.scss'
+import {chatsSelectors} from '../../state'
+import {Chat} from '../../types'
+import {isUserId} from '../../../users/helpers'
 
 export interface ChatHeaderProps {
   chatId: string
 }
 export const ChatHeader: FC<ChatHeaderProps> = ({chatId}) => {
   const dispatch = useAppDispatch()
-  const isPrivate = isUserId(chatId)
+  const chat = useAppSelector((state) =>
+    chatsSelectors.selectById(state, chatId)
+  ) as Chat | undefined
 
   return (
     <div className="chat-header">
       <div
         className="chat-info"
         onClick={() => {
-          console.log('LALALA')
           dispatch(uiActions.setRightColumn(RightColumnScreen.Info))
         }}
       >
-        {isPrivate ? (
-          <PrivateChatInfo userId={chatId.split('u_')[1]} />
+        {chat?.userId || isUserId(chatId) ? (
+          <PrivateChatInfo userId={chat?.userId || chatId.split('u_')[1]} />
         ) : (
           <GroupChatInfo chatId={chatId} />
         )}

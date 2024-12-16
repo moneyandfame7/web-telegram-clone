@@ -13,7 +13,6 @@ import {
   ReadMyHistoryResult,
 } from '../../types'
 import {Message} from '../Message/Message'
-import {Spinner} from '../../../../shared/ui/Spinner/Spinner'
 import {chatsActions, chatsSelectors} from '../../../chats/state'
 import {Button} from '../../../../shared/ui'
 import {useConnetedVirtuaRef} from '../../hooks/useConnectedVirtuosoRef'
@@ -222,7 +221,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
       const triggerMessage = messages[messages.length - 1]
       if (
         !triggerMessage ||
-        triggerMessage.sequenceId === chat?.lastMessageSequenceId
+        triggerMessage.sequenceId === chat?.lastMessage?.sequenceId
       ) {
         return
       }

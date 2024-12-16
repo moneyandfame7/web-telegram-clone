@@ -20,6 +20,9 @@ import {RightColumn} from './containers/right-column/RightColumn'
 import './Main.scss'
 import {chatsSelectors} from '../chats/state'
 import {Chat} from '../chats/types'
+import {usePrevious} from '../../shared/hooks/usePrevious'
+import {isUserId} from '../users/helpers'
+import {isUUID} from '../../shared/helpers/isUUID'
 
 console.log('MAIN.tsx')
 export const Main: FC = () => {
@@ -27,10 +30,8 @@ export const Main: FC = () => {
   const dispatch = useAppDispatch()
   const getCurrentUser = useGetCurrentUser()
   const {chatId} = useParams() as {chatId: string}
-
+  const previousChatId = usePrevious(chatId)
   const accessToken = useAppSelector((state) => state.auth.accessToken)
-  const currentChatId = useAppSelector((state) => state.chats.currentChatId)
-
   useEffect(() => {
     if (!accessToken) {
       return
@@ -111,7 +112,7 @@ export const Main: FC = () => {
               id: chat.id,
               changes: {
                 unreadCount: chat.unreadCount,
-                lastMessageSequenceId: chat.lastMessageSequenceId,
+                lastMessage: chat.lastMessage,
               },
             })
           )
@@ -165,19 +166,18 @@ export const Main: FC = () => {
       }
     })()
   }, [])
-
   useEffect(() => {
     if (chatId) {
-      console.log({chatId})
-      dispatch(chatsActions.setCurrentChat(chatId))
+      if (isUserId(chatId) || isUUID(chatId)) {
+        dispatch(chatsThunks.openChat({id: chatId}))
+      } else {
+        navigate({pathname: '/'}, {replace: true})
+      }
+      // значить що закрили чат ( крок назад зробили в браузері)
+    } else if (previousChatId) {
+      dispatch(chatsActions.setCurrentChat(undefined))
     }
-  }, [])
-
-  useEffect(() => {
-    if (currentChatId) {
-      navigate(`/${currentChatId}`)
-    }
-  }, [currentChatId])
+  }, [chatId])
 
   return (
     <div className="main">

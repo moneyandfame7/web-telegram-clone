@@ -7,9 +7,7 @@ import {RootState} from '../../app/store'
 import {isUserId} from '../users/helpers'
 import {chatsSelectors} from './state/chats-selectors'
 import {chatsActions} from './state/chats-slice'
-import {usersSelectors} from '../users/users-slice'
 import {usersThunks} from '../users/api'
-import {User} from '../auth/types'
 
 const createChat = createAsyncThunk<Chat, CreateChatParams>(
   'chats/createChat',
@@ -66,14 +64,13 @@ const getChat = createAsyncThunk<Chat | undefined, string>(
   }
 )
 
-const openChat = createAsyncThunk<void, {id?: string; userId?: string}>(
+const openChat = createAsyncThunk<void, IdPayload>(
   'chats/openChat',
   async (arg, thunkApi) => {
-    const {id, userId} = arg
-    if (!id && !userId) {
-      return
-    }
-    if (userId) {
+    const {id} = arg
+
+    if (isUserId(id)) {
+      const userId = id.split('u_')[1]
       thunkApi.dispatch(usersThunks.getUser({id: userId}))
 
       const storedChat = chatsSelectors.selectByUserId(

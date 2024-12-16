@@ -5,18 +5,18 @@ import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 import {useBoolean} from '../../../../shared/hooks/useBoolean'
 import {Modal} from '../../../../shared/ui/Modal/Modal'
 import {Button} from '../../../../shared/ui'
-import {useAppDispatch, useAppSelector} from '../../../../app/store'
+import {store, useAppDispatch, useAppSelector} from '../../../../app/store'
 import {usersSelectors} from '../../../users/users-slice'
 import {usersThunks} from '../../../users/api'
 import {ListItem} from '../../../../shared/ui/ListItem/ListItem'
-import {chatsActions} from '../../../chats/chats-slice'
-import {chatsThunks} from '../../../chats/api'
+import {useNavigate} from 'react-router-dom'
+import {chatsSelectors} from '../../../chats/state'
 
 export const Contacts: FC = () => {
   const {pop} = useNavigationStack()
   const contacts = useAppSelector(usersSelectors.selectContacts)
   const dispatch = useAppDispatch()
-
+  const navigate = useNavigate()
   const {value, setFalse, setTrue} = useBoolean()
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
@@ -46,9 +46,18 @@ export const Contacts: FC = () => {
           subtitle="Subtitle..."
           subtitleRight="Right"
           key={contact.id}
-          itemColor={'BLUE'}
+          itemColor={contact.color}
           onClick={() => {
-            dispatch(chatsThunks.openChat({userId: contact.id}))
+            const chat = chatsSelectors.selectByUserId(
+              store.getState(),
+              contact.id
+            )
+            if (chat) {
+              navigate(`/${chat.id}`)
+            } else {
+              navigate(`/u_${contact.id}`)
+            }
+            // dispatch(chatsThunks.openChat({userId: contact.id}))
           }}
         />
       ))}

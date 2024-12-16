@@ -1,5 +1,5 @@
 import {useState, type FC} from 'react'
-import {useParams} from 'react-router-dom'
+import {useNavigate, useParams} from 'react-router-dom'
 
 import {useAppDispatch, useAppSelector} from '../../app/store'
 import {emitEventWithHandling, socket} from '../../app/socket'
@@ -19,6 +19,7 @@ import {chatsActions, chatsSelectors} from './state'
 
 export const Chat: FC = () => {
   const dispatch = useAppDispatch()
+  const navigate = useNavigate()
   const {chatId} = useParams() as {chatId: string}
   const [isMessageSending, setIsMessageSending] = useState(false)
   const [text, setText] = useState('')
@@ -45,12 +46,19 @@ export const Chat: FC = () => {
       if (!chat) {
         dispatch(chatsActions.addOne(result.chat))
         socket.emit('join', `chat-${result.chat.id}`)
-        dispatch(chatsActions.setCurrentChat(result.chat.id))
+        navigate(`/${result.chat.id}`, {
+          // Коли ми відправляємо повідомлення в приватному чаті, спочатку в URL адресі використовується ID формата `u_userId`, а потім, коли на бекенді створююється чат, змінюємо адресу на ID вже реального, існуючого чату
+          // використовую replace, щоб не можна було повернутись до url адреси де id користувача використовується
+          replace: true,
+        })
+        // dispatch(chatsActions.setCurrentChat(result.chat.id))
       } else {
         dispatch(
           chatsActions.updateOne({
             id: result.chat.id,
-            changes: {lastMessageSequenceId: result.chat.lastMessageSequenceId},
+            changes: {
+              lastMessage: result.chat.lastMessage,
+            },
           })
         )
       }
