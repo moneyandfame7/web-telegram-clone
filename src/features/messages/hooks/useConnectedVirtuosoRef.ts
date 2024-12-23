@@ -1,18 +1,21 @@
-import {messagesActions} from './../state/messages-slice'
 import {useEffect, useRef} from 'react'
+import {addListener} from '@reduxjs/toolkit'
 import {VirtualizerHandle} from 'virtua'
 
 import {useAppDispatch, useAppSelector} from '../../../app/store'
-import {addListener} from '@reduxjs/toolkit'
-import {messagesThunks} from '../api'
-import {GetMessagesDirection, Message} from '../types'
-import {selectMessages} from '../state/messages-selectors'
 import {inRange} from '../../../shared/helpers/inRange'
+
+import {messagesActions} from '../state/messages-slice'
+import {messagesSelectors} from '../state/messages-selectors'
+import {messagesThunks} from '../api'
+import {GetMessagesDirection, type Message} from '../types'
 
 export const useConnetedVirtuaRef = ({chatId}: {chatId: string}) => {
   const dispatch = useAppDispatch()
   const messagesRef = useRef<Message[]>([])
-  const messages = useAppSelector((state) => selectMessages(state, chatId))
+  const messages = useAppSelector((state) =>
+    messagesSelectors.selectAll(state, chatId)
+  )
   const virtua = useRef<VirtualizerHandle>(null)
   const isMounted = useRef(false)
   const startFetchedCountRef = useRef(-1)

@@ -3,12 +3,10 @@ import {useNavigationStack} from '../../../../../shared/ui/NavigationStack/useNa
 import {Column} from '../../../../../shared/ui/Column/Column'
 import {IconButton} from '../../../../../shared/ui/IconButton/IconButton'
 import {useAppDispatch} from '../../../../../app/store'
-import {emitEventWithHandling} from '../../../../../app/socket'
-import {Chat, CreateChatParams} from '../../../../chats/types'
 import {Modal} from '../../../../../shared/ui/Modal/Modal'
 import {Button} from '../../../../../shared/ui'
-import {ApiError} from '../../../../../app/types'
-import {chatsActions} from '../../../../chats/state'
+import {chatsThunks} from '../../../../chats/api'
+import {isApiError} from '../../../../../shared/helpers/isApiError'
 
 interface NewChatStep2Props {
   isGroup: boolean
@@ -28,23 +26,20 @@ export const NewChatStep2: FC<NewChatStep2Props> = ({isGroup, selectedIds}) => {
     setIsLoading(true)
 
     try {
-      const result = await emitEventWithHandling<CreateChatParams, Chat>(
-        'createChat',
-        {
-          title,
+      await dispatch(
+        chatsThunks.createChat({
           description,
           users: selectedIds,
+          title,
           type: isGroup ? 'GROUP' : 'CHANNEL',
-        }
-      )
-      dispatch(chatsActions.addOne(result))
-
-      console.log({result})
+        })
+      ).unwrap()
       pop({toRoot: true})
     } catch (error) {
-      const castedError = error as ApiError
-      if (castedError?.code === 'VALIDATION_ERROR') {
-        setError(castedError.code)
+      if (isApiError(error)) {
+        setError(error.message)
+      } else {
+        setError('Unknown error')
       }
     } finally {
       setIsLoading(false)

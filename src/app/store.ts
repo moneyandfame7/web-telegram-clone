@@ -9,9 +9,6 @@ import {
   type UnknownAction,
 } from '@reduxjs/toolkit'
 import {type TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux'
-import storage from 'redux-persist/lib/storage'
-
-import {persistedAuthReducer} from '../features/auth/store/auth-slice'
 import {
   FLUSH,
   PAUSE,
@@ -22,11 +19,14 @@ import {
   REGISTER,
   REHYDRATE,
 } from 'redux-persist'
+import storage from 'redux-persist/lib/storage'
+
+import {persistedAuthReducer} from '../features/auth/store/auth-slice'
 import {persistedUsersReducer} from '../features/users/users-slice'
 import {persistedMessagesReducer} from '../features/messages/state/messages-slice'
+import {persistedChatsReducer} from '../features/chats/state/chats-slice'
 
 import {uiReducer} from '../shared/store/ui-slice'
-import {persistedChatsReducer} from '../features/chats/state/chats-slice'
 
 const persistConfig = {
   key: 'root',

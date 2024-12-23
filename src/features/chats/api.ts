@@ -8,22 +8,12 @@ import {isUserId} from '../users/helpers'
 import {chatsSelectors} from './state/chats-selectors'
 import {chatsActions} from './state/chats-slice'
 import {usersThunks} from '../users/api'
+import {emitEventWithHandling} from '../../app/socket'
 
 const createChat = createAsyncThunk<Chat, CreateChatParams>(
   'chats/createChat',
-  async (arg, thunkApi) => {
-    try {
-      const res = await api.post<Chat>(`/chats`, arg)
-      return res.data
-    } catch (error) {
-      if (error instanceof AxiosError) {
-        return thunkApi.rejectWithValue(
-          error.response?.data?.message || 'Unknown error'
-        )
-      }
-
-      return thunkApi.rejectWithValue('[chats/createChat] error')
-    }
+  async (arg) => {
+    return emitEventWithHandling<CreateChatParams, Chat>('createChat', arg)
   }
 )
 
@@ -39,7 +29,6 @@ const getChats = createAsyncThunk<Chat[]>(
           error.response?.data?.message || 'Unknown error'
         )
       }
-
       return thunkApi.rejectWithValue('[chats/getChats] error')
     }
   }

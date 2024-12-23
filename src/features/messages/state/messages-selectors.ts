@@ -4,17 +4,17 @@ import {messagesAdapter} from './messages-adapter'
 
 const baseMessagesSelectors = messagesAdapter.getSelectors()
 
-export const selectMessages = createSelector(
+const selectAll = createSelector(
   (state: RootState, chatId: string) => state.messages.byChatId[chatId]?.data,
   (messagesEntry) => {
     return messagesEntry ? baseMessagesSelectors.selectAll(messagesEntry) : []
   }
 )
 
-export const selectMessageById = createSelector(
+const selectById = createSelector(
   [
     (state: RootState, chatId: string) => state.messages.byChatId[chatId]?.data,
-    (state: RootState, chatId: string, messageId: string) => messageId,
+    (_, __, messageId: string) => messageId,
   ],
   (messagesEntry, messageId) => {
     return messagesEntry
@@ -22,10 +22,10 @@ export const selectMessageById = createSelector(
       : undefined
   }
 )
-export const selectMessageBySequenceId = createSelector(
+const selectBySequenceId = createSelector(
   [
     (state: RootState, chatId: string) => state.messages.byChatId[chatId]?.data,
-    (state: RootState, chatId: string, sequenceId: number) => sequenceId,
+    (_, __, sequenceId: number) => sequenceId,
   ],
   (messageEntry, sequenceId) => {
     if (!messageEntry) {
@@ -37,17 +37,10 @@ export const selectMessageBySequenceId = createSelector(
     return messages.find((message) => message.sequenceId === sequenceId)
   }
 )
-export const selectIsMessagesLoading = createSelector(
-  (state: RootState, chatId: string) => state.messages.byChatId[chatId],
-  (messagesList) => messagesList?.isLoading
-)
 
-export const selectMessageList = createSelector(
-  (state: RootState, chatId: string) => state.messages.byChatId[chatId],
-  (messageList) => messageList
-)
-
-export const selectMessageListKey = createSelector(
-  (state: RootState, chatId: string) => state.messages.byChatId[chatId],
-  (messageList) => messageList?.dataSetKey
-)
+export const messagesSelectors = {
+  ...baseMessagesSelectors,
+  selectAll,
+  selectById,
+  selectBySequenceId,
+}

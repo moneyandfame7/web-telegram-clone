@@ -2,37 +2,26 @@ import {FC, startTransition, useEffect, useRef, useState} from 'react'
 
 import {Virtualizer} from 'virtua'
 
-import './MessageList.scss'
 import {useAppDispatch, useAppSelector} from '../../../../app/store'
-import {selectMessages} from '../../state/messages-selectors'
-import {messagesThunks} from '../../api'
+import {emitEventWithHandling} from '../../../../app/socket'
+
+import {chatsActions, chatsSelectors} from '../../../chats/state'
+import {useConnetedVirtuaRef} from '../../hooks/useConnectedVirtuosoRef'
+import {throttle} from '../../../../shared/helpers/throttle'
+import {Chat} from '../../../chats/types'
+import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
+
 import {
   GetMessagesDirection,
   GetMessagesParams,
   ReadHistoryParams,
   ReadMyHistoryResult,
 } from '../../types'
+import {messagesSelectors} from '../../state/messages-selectors'
+import {messagesThunks} from '../../api'
 import {Message} from '../Message/Message'
-import {chatsActions, chatsSelectors} from '../../../chats/state'
-import {Button} from '../../../../shared/ui'
-import {useConnetedVirtuaRef} from '../../hooks/useConnectedVirtuosoRef'
-import {throttle} from '../../../../shared/helpers/throttle'
-import {emitEventWithHandling} from '../../../../app/socket'
-import {Chat} from '../../../chats/types'
-import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 
-/**
- * @todo: прибрати localStorage? ( не впевнений )
- * 1. зробити просто скролл інфініт з завантаженням, поки що без scrollToMessage і без focus і т.д
- * 2. потрібно додати firstMessage в таблицю?
- */
-
-/**
- * flow:
- * lastReadIncomingMessage: 123
- * 103-143 - завантажувати повідомлення (DIRECTION=AROUND)
- *
- */
+import './MessageList.scss'
 
 const SPINNER_HEIGHT = 40
 interface MessageListProps {
@@ -45,7 +34,9 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
   const chat = useAppSelector((state) =>
     chatsSelectors.selectById(state, chatId)
   ) as Chat | undefined
-  const messages = useAppSelector((state) => selectMessages(state, chatId))
+  const messages = useAppSelector((state) =>
+    messagesSelectors.selectAll(state, chatId)
+  )
 
   const dispatch = useAppDispatch()
 

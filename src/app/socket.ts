@@ -1,14 +1,16 @@
 import {io, Socket} from 'socket.io-client'
-import {
-  Chat,
-  CreateChatParams,
-  SendMessageParams,
-} from '../features/chats/types'
+
 import {
   Message,
   ReadHistoryParams,
   ReadMyHistoryResult,
 } from '../features/messages/types'
+
+import type {
+  Chat,
+  CreateChatParams,
+  SendMessageParams,
+} from '../features/chats/types'
 
 export interface ListenEvents {
   ['chat:created']: (chat: Chat) => void
@@ -20,7 +22,7 @@ export interface ListenEvents {
     data: Omit<ReadMyHistoryResult, 'unreadCount'>
   ) => void
 
-  exception: (data: any) => void
+  exception: (error: Error) => void
 }
 
 type EventWithAck<Params, Result> = (
@@ -60,14 +62,14 @@ export const emitEventWithHandling = async <Params, Result>(
   return new Promise((resolve, reject) => {
     const exceptionHandler = (error: Error) => {
       console.error(`[Socket Exception]:`, error)
-      reject(error as Error) // Передаємо помилку в `catch` блоку
+      reject(error as Error)
     }
 
     socket.once('exception', exceptionHandler)
 
     // @ts-expect-error idk how to fix this error
     socket.emit(event, params, (response) => {
-      resolve(response as any)
+      resolve(response as Result)
     })
   })
 }

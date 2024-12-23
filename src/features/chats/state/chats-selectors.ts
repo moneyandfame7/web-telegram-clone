@@ -7,7 +7,7 @@ const baseChatsSelectors = chatsAdapter.getSelectors<RootState>(
 )
 
 export const selectByUserId = createSelector(
-  [baseChatsSelectors.selectAll, (state: RootState, userId: string) => userId],
+  [baseChatsSelectors.selectAll, (_, userId: string) => userId],
   (chats, userId) => {
     return chats.find((chat) => chat.userId === userId)
   }

@@ -94,7 +94,7 @@ export const persistedAuthReducer = persistReducer(
   {
     key: 'auth',
     storage: storage,
-    blacklist: ['screen', 'isLoading'] as Array<keyof AuthState>,
+    blacklist: ['screen', 'isLoading'] as (keyof AuthState)[],
   },
   authSlice.reducer
 )

@@ -57,7 +57,6 @@ export const Contacts: FC = () => {
             } else {
               navigate(`/u_${contact.id}`)
             }
-            // dispatch(chatsThunks.openChat({userId: contact.id}))
           }}
         />
       ))}

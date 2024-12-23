@@ -1,4 +1,4 @@
-import {CHAT_COLORS} from './consants'
+import {CHAT_COLORS} from './constants'
 
 export interface IdPayload {
   id: string
