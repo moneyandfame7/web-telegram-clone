@@ -33,35 +33,28 @@ const getMessages = createAsyncThunk<Message[], GetMessagesParams>(
   }
 )
 
-const scrollToMessage = createAsyncThunk<
-  void,
-  {chatId: string; sequenceId: number}
->('messages/scrollToMessage', async (arg, thunkApi) => {
-  const state = thunkApi.getState() as RootState
-  const {chatId, sequenceId} = arg
-  const message = selectMessageBySequenceId(state, chatId, sequenceId)
+const scrollToMessage = createAsyncThunk(
+  'messages/scrollToMessage',
+  async (
+    arg: {chatId: string; sequenceId: number; highlight?: boolean},
+    thunkApi
+  ) => {
+    const state = thunkApi.getState() as RootState
+    const {chatId, sequenceId, highlight = true} = arg
+    const message = selectMessageBySequenceId(state, chatId, sequenceId)
 
-  if (message) {
-    console.log('SCROLL AND HIGHLIGHT')
-    await thunkApi.dispatch(highlightMessage({sequenceId}))
-  } else {
-    await thunkApi.dispatch(
-      getMessages({
-        chatId,
-        direction: GetMessagesDirection.AROUND,
-        sequenceId,
-        limit: 40,
-      })
-    )
-    await thunkApi.dispatch(highlightMessage({sequenceId}))
+    if (!message) {
+      await thunkApi.dispatch(
+        getMessages({
+          sequenceId,
+          chatId,
+          direction: GetMessagesDirection.AROUND,
+          limit: 40,
+        })
+      )
+    }
+    return {chatId, sequenceId, highlight, replaceList: !message}
   }
-})
-
-const highlightMessage = createAsyncThunk(
-  'messages/highlightMessage',
-  async ({sequenceId}: {sequenceId: number}) => sequenceId
 )
 
-// const readHistory = createAsyncThunk('messages/readHistory', async () => {})
-
-export const messagesThunks = {getMessages, scrollToMessage, highlightMessage}
+export const messagesThunks = {getMessages, scrollToMessage}

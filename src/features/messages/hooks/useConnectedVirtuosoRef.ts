@@ -7,6 +7,7 @@ import {addListener} from '@reduxjs/toolkit'
 import {messagesThunks} from '../api'
 import {GetMessagesDirection, Message} from '../types'
 import {selectMessages} from '../state/messages-selectors'
+import {inRange} from '../../../shared/helpers/inRange'
 
 export const useConnetedVirtuaRef = ({chatId}: {chatId: string}) => {
   const dispatch = useAppDispatch()
@@ -38,46 +39,69 @@ export const useConnetedVirtuaRef = ({chatId}: {chatId: string}) => {
         },
       })
     )
-    const unsubscribeHighlightMessage = dispatch(
+
+    const unsubscribeScrollToMessage = dispatch(
       addListener({
-        actionCreator: messagesThunks.highlightMessage.fulfilled,
+        actionCreator: messagesThunks.scrollToMessage.fulfilled,
         effect: (action, api) => {
+          if (!virtua.current) {
+            return
+          }
+          const {sequenceId, replaceList, highlight} = action.payload
+
           const index = messagesRef.current.findIndex(
-            (message) => message.sequenceId === action.payload
+            (message) => message.sequenceId === sequenceId
           )
           const message = messagesRef.current[index]
-          virtua.current?.scrollToIndex(index, {align: 'start'})
+          const firstVisibleMessage =
+            messagesRef.current[virtua.current.findStartIndex()]
+          const lastVisibleMessage =
+            messagesRef.current[virtua.current.findEndIndex()]
 
-          const offset = virtua.current?.getItemOffset(index)
-          const size = virtua.current?.getItemSize(index)
-          if (offset !== undefined && size !== undefined) {
+          if (replaceList) {
             /**
-             * @todo це буде працювати адекватно тільки якщо скролимо вверх, а не вниз
+             * @TODO animate scroll here
              */
-            console.log(virtua.current?.viewportSize)
-            // virtua.current?.scrollToIndex(index, {
-            //   align: 'start',
-            //   offset: virtua.current.viewportSize / 2,
-            // })
-            virtua.current?.scrollTo(offset + size)
-          }
-
-          setTimeout(() => {
             virtua.current?.scrollToIndex(index, {
               align: 'center',
-              smooth: true,
             })
-          }, 0)
-          // }
-          setTimeout(() => {
-            api.dispatch(
-              messagesActions.editMessage({
-                id: message.id,
-                chatId,
-                changes: {isHighlighted: true},
+          } else {
+            const size = virtua.current.getItemSize(index)
+            const averageId =
+              (firstVisibleMessage.sequenceId + lastVisibleMessage.sequenceId) /
+              2
+
+            if (
+              !inRange(sequenceId, [
+                firstVisibleMessage.sequenceId,
+                lastVisibleMessage.sequenceId,
+              ])
+            ) {
+              virtua.current.scrollToIndex(index, {
+                align: sequenceId > averageId ? 'end' : 'start',
+                offset: sequenceId > averageId ? -(size * 2) : size * 2,
               })
-            )
-          }, 0)
+            }
+
+            setTimeout(() => {
+              virtua.current?.scrollToIndex(index, {
+                align: 'center',
+                smooth: true,
+              })
+            }, 0)
+          }
+
+          if (!highlight) {
+            return
+          }
+
+          api.dispatch(
+            messagesActions.editMessage({
+              id: message.id,
+              chatId,
+              changes: {isHighlighted: true},
+            })
+          )
 
           setTimeout(() => {
             api.dispatch(
@@ -94,11 +118,11 @@ export const useConnetedVirtuaRef = ({chatId}: {chatId: string}) => {
 
     return () => {
       unsubscribeGetMessages()
-      unsubscribeHighlightMessage({
+      unsubscribeScrollToMessage({
         cancelActive: true,
       })
     }
-  }, [dispatch, chatId])
+  }, [/* dispatch,  */ chatId])
 
   return {virtua, endFetchedCountRef, startFetchedCountRef}
 }

@@ -19,6 +19,7 @@ import {useConnetedVirtuaRef} from '../../hooks/useConnectedVirtuosoRef'
 import {throttle} from '../../../../shared/helpers/throttle'
 import {emitEventWithHandling} from '../../../../app/socket'
 import {Chat} from '../../../chats/types'
+import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 
 /**
  * @todo: прибрати localStorage? ( не впевнений )
@@ -140,13 +141,6 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
     console.log(
       `ОСТАННЄ ПРОЧИТАНЕ МНОЮ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.myLastReadMessageSequenceId}`
     )
-    // if (messages.length > 0) {
-    //   ready.current = true
-    //   handleScroll()
-    //   virtua.current?.scrollToIndex(messages.length - 1, {align: 'start'})
-
-    //   return
-    // }
     ;(async () => {
       if (!chat) {
         return
@@ -176,7 +170,6 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
 
   const handleScroll = async () => {
     if (!ready.current) return
-
     startTransition(() => {
       if (!virtua.current) {
         return
@@ -315,15 +308,59 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
         }}
       </Virtualizer>
       {/* {endFetching && <Spinner />} */}
-      <Button
-        onClick={() => {
-          const sequenceId = 14
-
-          dispatch(messagesThunks.scrollToMessage({chatId, sequenceId}))
+      {!isAtBottom && (
+        <IconButton
+          name="chevronDown"
+          title="Scroll to bottom"
+          variant="primary"
+          color="white"
+          size="large"
+          style={{
+            position: 'absolute',
+            bottom: 100,
+            right: 15,
+          }}
+          onClick={() => {
+            // console.log(virtua.current?.findEndIndex())
+            // const sequenceId = !Math.round(Math.random())
+            //   ? chat?.lastMessage?.sequenceId
+            //   : 14
+            dispatch(
+              messagesThunks.scrollToMessage({
+                chatId,
+                sequenceId: chat?.lastMessage?.sequenceId!,
+                highlight: false,
+              })
+            )
+          }}
+        />
+      )}
+      <IconButton
+        name="eyeOpen"
+        title="Scroll to bottom"
+        variant="primary"
+        color="white"
+        size="large"
+        style={{
+          position: 'absolute',
+          bottom: 150,
+          right: 15,
         }}
-      >
-        Scroll to message 0
-      </Button>
+        onClick={() => {
+          // console.log(virtua.current?.findEndIndex())
+          // const sequenceId = !Math.round(Math.random())
+          //   ? chat?.lastMessage?.sequenceId
+          //   : 14
+          dispatch(
+            messagesThunks.scrollToMessage({
+              chatId,
+              sequenceId: 14,
+              highlight: true,
+            })
+          )
+        }}
+      />
+      {/* )} */}
     </div>
   )
 }
