@@ -3,7 +3,6 @@ import {FC} from 'react'
 import {Message as MessageType} from '../../types'
 import clsx from 'clsx'
 import {useAppSelector} from '../../../../app/store'
-import {usersSelectors} from '../../../users/users-slice'
 import {User} from '../../../auth/types'
 import {Avatar} from '../../../../shared/ui/Avatar/Avatar'
 import {getUserTitle} from '../../../users/helpers'
@@ -12,6 +11,7 @@ import './Message.scss'
 import {MessageInfo} from '../MessageInfo/MessageInfo'
 import {chatsSelectors} from '../../../chats/state'
 import {Chat} from '../../../chats/types'
+import {usersSelectors} from '../../../users/state/users-selectors'
 
 interface MessageProps {
   message: MessageType

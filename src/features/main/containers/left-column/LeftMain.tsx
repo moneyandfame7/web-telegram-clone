@@ -1,16 +1,17 @@
 import {useState, type FC} from 'react'
 
-import {LeftMainScreen} from '../../../../app/screens/left-column'
+import {LeftMainScreen} from '../../../../app/types'
 
-import {ChatList} from './ChatList'
-import {Search} from './Search'
 import {Transition} from '../../../../shared/ui/Transition/Transition'
 import {DropdownMenu} from '../../../../shared/ui/DropdownMenu/DropdownMenu'
 import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 import {MenuItem} from '../../../../shared/ui/Menu/MenuItem'
 import {useNavigationStack} from '../../../../shared/ui/NavigationStack/useNavigationStack'
+
 import {Contacts} from './Contacts'
 import {Settings} from './Settings'
+import {ChatList} from './ChatList'
+import {Search} from './Search'
 
 export const LeftMain: FC = () => {
   const {push} = useNavigationStack()

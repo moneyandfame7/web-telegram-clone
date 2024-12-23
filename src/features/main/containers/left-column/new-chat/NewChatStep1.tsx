@@ -1,12 +1,11 @@
 import {useCallback, useState, type FC} from 'react'
-import {Button} from '../../../../../shared/ui'
 import {NewChatStep2} from './NewChatStep2'
 import {useNavigationStack} from '../../../../../shared/ui/NavigationStack/useNavigationStack'
 import {Column} from '../../../../../shared/ui/Column/Column'
 import {IconButton} from '../../../../../shared/ui/IconButton/IconButton'
 import {useAppSelector} from '../../../../../app/store'
-import {usersSelectors} from '../../../../users/users-slice'
 import {ListItem} from '../../../../../shared/ui/ListItem/ListItem'
+import {usersSelectors} from '../../../../users/state/users-selectors'
 
 interface NewChatStep1Props {
   isGroup: boolean

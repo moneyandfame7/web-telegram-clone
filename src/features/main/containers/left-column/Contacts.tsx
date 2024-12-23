@@ -6,11 +6,11 @@ import {useBoolean} from '../../../../shared/hooks/useBoolean'
 import {Modal} from '../../../../shared/ui/Modal/Modal'
 import {Button} from '../../../../shared/ui'
 import {store, useAppDispatch, useAppSelector} from '../../../../app/store'
-import {usersSelectors} from '../../../users/users-slice'
 import {usersThunks} from '../../../users/api'
 import {ListItem} from '../../../../shared/ui/ListItem/ListItem'
 import {useNavigate} from 'react-router-dom'
 import {chatsSelectors} from '../../../chats/state'
+import {usersSelectors} from '../../../users/state/users-selectors'
 
 export const Contacts: FC = () => {
   const {pop} = useNavigationStack()

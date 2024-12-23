@@ -1,9 +1,9 @@
 import {FC} from 'react'
 import {useAppSelector} from '../../../../app/store'
-import {usersSelectors} from '../../../users/users-slice'
 import {User} from '../../../auth/types'
 import {Avatar} from '../../../../shared/ui/Avatar/Avatar'
 import {getUserTitle} from '../../../users/helpers'
+import {usersSelectors} from '../../../users/state/users-selectors'
 
 interface PrivateChatInfoProps {
   userId: string

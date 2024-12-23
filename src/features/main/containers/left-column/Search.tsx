@@ -1,7 +1,8 @@
 import type {FC} from 'react'
 
+import {LeftMainScreen} from '../../../../app/types'
+
 import {Button} from '../../../../shared/ui'
-import {LeftMainScreen} from '../../../../app/screens/left-column'
 
 import './Search.scss'
 

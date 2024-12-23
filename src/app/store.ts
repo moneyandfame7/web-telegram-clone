@@ -22,7 +22,7 @@ import {
 import storage from 'redux-persist/lib/storage'
 
 import {persistedAuthReducer} from '../features/auth/store/auth-slice'
-import {persistedUsersReducer} from '../features/users/users-slice'
+import {persistedUsersReducer} from '../features/users/state/users-slice'
 import {persistedMessagesReducer} from '../features/messages/state/messages-slice'
 import {persistedChatsReducer} from '../features/chats/state/chats-slice'
 

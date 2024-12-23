@@ -4,7 +4,7 @@ import {useNavigationStack} from '../../../../shared/ui/NavigationStack/useNavig
 import {useAppDispatch, useAppSelector} from '../../../../app/store'
 import {Button} from '../../../../shared/ui'
 import {authThunks} from '../../../auth/api'
-import {usersSelectors} from '../../../users/users-slice'
+import {usersSelectors} from '../../../users/state/users-selectors'
 
 export const Settings: FC = () => {
   const {pop} = useNavigationStack()

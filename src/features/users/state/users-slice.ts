@@ -1,15 +1,9 @@
-import {
-  createEntityAdapter,
-  createSelector,
-  createSlice,
-} from '@reduxjs/toolkit'
+import {createEntityAdapter, createSlice} from '@reduxjs/toolkit'
 import {persistReducer} from 'redux-persist'
 import storage from 'redux-persist/lib/storage'
 
-import {type RootState} from '../../app/store'
-
-import type {User} from '../auth/types'
-import {usersThunks} from './api'
+import type {User} from '../../auth/types'
+import {usersThunks} from '../api'
 
 export const usersAdapter = createEntityAdapter<User, string>({
   selectId: (model) => model.id,
@@ -53,38 +47,6 @@ const usersSlice = createSlice({
     })
   },
 })
-
-const usersAdapterSelectors = usersAdapter.getSelectors<RootState>(
-  (state) => state.users
-)
-const selectContacts = createSelector(
-  [
-    (state: RootState) => state.users.contactIds,
-    (state: RootState) => state.users.entities,
-  ],
-  (contactIds, users) => {
-    return contactIds.map((id) => users[id])
-  }
-)
-
-const selectCurrentUser = createSelector(
-  [
-    (state: RootState) => state.auth.session?.userId,
-    (state: RootState) => state,
-  ],
-  (currentUserId, state) => {
-    if (!currentUserId) {
-      return
-    }
-    return usersAdapterSelectors.selectById(state, currentUserId)
-  }
-)
-export const usersSelectors = {
-  ...usersAdapterSelectors,
-  ...usersSlice.selectors,
-  selectContacts,
-  selectCurrentUser,
-}
 
 export const usersActions = usersSlice.actions
 export const persistedUsersReducer = persistReducer(

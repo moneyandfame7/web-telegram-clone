@@ -14,3 +14,8 @@ export interface ApiError {
   message: string
   details?: object
 }
+
+export enum LeftMainScreen {
+  Chats,
+  Search,
+}
