@@ -26,6 +26,11 @@ $c-message-bg: #dcf8c5;
   --c-surface-2: #{lighten($c-surface, 2%)};
   --c-surface-3: #{lighten($c-surface, 5%)};
 
+  --c-placeholder: #707579;
+
+  --c-border: #dfe1e5;
+  --c-border-hover: darken(#dfe1e5, 10%);
+
   --c-warn: #fdd764;
   --c-danger: #df3f40;
   --c-danger-transparent: #{rgba(var(--c-danger), 0.1)};
@@ -87,6 +92,9 @@ $c-message-bg: #dcf8c5;
     $c-surface: #212121;
     $c-surface-3: ligthen($c-surface, 5%);
 
+    $c-border: #0f0f0f;
+    $c-border-input: #303030;
+
     $c-bg: #000;
     $c-bg-body: #181818;
 
@@ -101,6 +109,9 @@ $c-message-bg: #dcf8c5;
     --c-surface: #{$c-surface};
     --c-surface-2: #{lighten($c-surface, 2%)};
     --c-surface-3: #{$c-surface-3};
+
+    --c-border-input: #{$c-border-input};
+    --c-border-hover-input: #{lighten($c-border-input, 5%)};
 
     --c-message-bg: #{$c-primary};
     --c-message-info: #{$c-primary-dark};

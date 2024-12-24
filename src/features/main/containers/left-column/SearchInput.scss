@@ -1,0 +1,23 @@
+.search-input {
+  input {
+    border-radius: 40px;
+    height: 40px;
+
+    &:hover {
+      border-color: var(--c-border);
+      ~ label,
+      &::placeholder,
+      ~ .length-indicator {
+        color: var(--c-placeholder);
+      }
+
+      // ~ .icon path,
+      // .icon path {
+      //   fill: var(--c-primary);
+      // }
+    }
+  }
+  .input-border {
+    border-radius: 40px;
+  }
+}

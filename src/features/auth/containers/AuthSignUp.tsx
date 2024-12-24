@@ -3,6 +3,7 @@ import {Button} from '../../../shared/ui'
 import {useAppDispatch, useAppSelector} from '../../../app/store'
 import {authThunks} from '../api'
 import {USER_BROWSER, USER_PLATFORM} from '../../../app/environment'
+import {InputText} from '../../../shared/ui/Input/Input'
 
 interface AuthSignUpProps {
   username: string
@@ -45,25 +46,25 @@ export const AuthSignUp: FC<AuthSignUpProps> = ({username}) => {
     <div className="Auth-container AuthSignUp">
       <h4>Sign up</h4>
       <p className="text-secondary">
-        Enter your name and add a profile picture
+        Please enter your name and add a profile picture.
       </p>
 
       <div className="form-wrapper">
-        <input
+        <InputText
           value={firstName}
-          placeholder="Name"
+          label="Name"
           onChange={(e) => {
             setFirstName(e.currentTarget.value)
           }}
         />
-        <input
+
+        <InputText
           value={lastName}
-          placeholder="Last Name (optional)"
+          label="Last Name (optional)"
           onChange={(e) => {
             setLastName(e.currentTarget.value)
           }}
         />
-
         <input
           value={password}
           placeholder="Password"

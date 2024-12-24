@@ -1,10 +1,12 @@
-import {type FC} from 'react'
+import {useState, type FC} from 'react'
 import {Button} from '../../../shared/ui'
-import {useAppDispatch} from '../../../app/store'
+import {useAppDispatch, useAppSelector} from '../../../app/store'
 import {usersThunks} from '../../users/api'
 import {authActions} from '../store/auth-slice'
 import {AuthScreen} from '../types'
-
+import {InputText} from '../../../shared/ui/Input/Input'
+import TelegramLogo from '../../../assets/images/telegram-logo.svg?react'
+import {Checkbox} from '../../../shared/ui/Checkbox/Checkbox'
 interface AuthUsernameProps {
   username: string
   setUsername: (value: string) => void
@@ -14,6 +16,8 @@ export const AuthUsername: FC<AuthUsernameProps> = ({
   setUsername,
 }) => {
   const dispatch = useAppDispatch()
+
+  const keepSignedIn = useAppSelector((state) => state.auth.keepSignedIn)
 
   const handleGoNext = async () => {
     const isUsernameExist = await dispatch(
@@ -29,18 +33,26 @@ export const AuthUsername: FC<AuthUsernameProps> = ({
 
   return (
     <div className="Auth-container AuthUsername">
+      {<TelegramLogo className="logo" />}
       <h4>Sign in to Telegram clone</h4>
-      <p className="text-secondary">Please enter your username</p>
+      <p className="text-secondary">Please enter your username.</p>
 
       <div className="form-wrapper">
-        <input
+        <InputText
+          label="Username"
           value={username}
-          placeholder="Username"
           onChange={(e) => {
             setUsername(e.currentTarget.value)
           }}
         />
 
+        <Checkbox
+          checked={keepSignedIn}
+          onToggle={(val) => {
+            dispatch(authActions.setKeepSignedIn(val))
+          }}
+          label="Keep me signed in"
+        />
         {username && (
           <Button
             fullWidth

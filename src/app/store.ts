@@ -64,7 +64,7 @@ const reducerProxy = (state: any, action: Action) => {
 
 const persistedReducer = persistReducer(persistConfig, reducerProxy)
 
-const listenerMiddleware = createListenerMiddleware()
+export const listenerMiddleware = createListenerMiddleware()
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>

@@ -12,6 +12,7 @@ import {Contacts} from './Contacts'
 import {Settings} from './Settings'
 import {ChatList} from './ChatList'
 import {Search} from './Search'
+import {SearchInput} from './SearchInput'
 
 export const LeftMain: FC = () => {
   const {push} = useNavigationStack()
@@ -56,8 +57,8 @@ export const LeftMain: FC = () => {
             }}
           />
         </DropdownMenu>
-        <input
-          placeholder="Lox"
+
+        <SearchInput
           onFocus={() => {
             setActiveScreen(LeftMainScreen.Search)
           }}

@@ -18,12 +18,14 @@ export interface AuthState {
   session?: Session
   accessToken?: string
   isLoading: boolean
+  keepSignedIn: boolean
   deviceInfo: DeviceInfo
 }
 
 const initialState: AuthState = {
   screen: AuthScreen.Username,
   isLoading: false,
+  keepSignedIn: true,
   deviceInfo: {
     ip: 'Unknown',
     location: 'Unknown',
@@ -50,6 +52,9 @@ const authSlice = createSlice({
 
       state.session = session
       state.accessToken = accessToken
+    },
+    setKeepSignedIn: (state, action: PayloadAction<boolean>) => {
+      state.keepSignedIn = action.payload
     },
     setDeviceInfo: (state, action: PayloadAction<DeviceInfo>) => {
       state.deviceInfo = action.payload
