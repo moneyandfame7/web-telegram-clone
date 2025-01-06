@@ -4,8 +4,8 @@ export interface Message {
   chatId: string
   senderId: string
   text?: string
-  createdAt: Date
-  editedAt?: Date
+  createdAt: string
+  editedAt?: string
 
   isOutgoing: boolean
   isSilent: boolean

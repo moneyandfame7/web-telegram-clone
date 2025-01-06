@@ -5,7 +5,13 @@ import {createAsyncThunk} from '@reduxjs/toolkit'
 
 import {api} from '../../app/api'
 
-import {GetMessagesDirection, GetMessagesParams, Message} from './types'
+import {
+  GetMessagesDirection,
+  GetMessagesParams,
+  Message,
+  ReadHistoryParams,
+  ReadMyHistoryResult,
+} from './types'
 import {RootState} from '../../app/store'
 import {pause} from '../../shared/helpers/pause'
 import {Chat, SendMessageParams} from '../chats/types'
@@ -74,7 +80,7 @@ const sendMessage = createAsyncThunk(
     const result = await emitEventWithHandling<
       SendMessageParams,
       {chat: Chat; message: Message}
-    >('sendMessage', arg)
+    >('message:send', arg)
 
     thunkApi.dispatch(
       messagesActions.addMessage({
@@ -86,7 +92,7 @@ const sendMessage = createAsyncThunk(
     if (!chat) {
       thunkApi.dispatch(chatsActions.addOne(result.chat))
 
-      socket.emit('join', `chat-${result.chat.id}`)
+      socket.emit('room:join', `chat-${result.chat.id}`)
     } else {
       thunkApi.dispatch(
         chatsActions.updateOne({
@@ -102,4 +108,74 @@ const sendMessage = createAsyncThunk(
   }
 )
 
-export const messagesThunks = {getMessages, scrollToMessage, sendMessage}
+const readHistory = createAsyncThunk(
+  'messages/readHistory',
+  async (
+    {
+      chatId,
+      virtuaEndIndex,
+      virtuaStartIndex,
+    }: {chatId: string; virtuaStartIndex: number; virtuaEndIndex: number},
+    thunkApi
+  ) => {
+    const state = thunkApi.getState() as RootState
+    const messages = messagesSelectors.selectAll(state, chatId)
+    const chat = chatsSelectors.selectById(state, chatId)
+
+    let newMyLastReadMessage
+
+    for (let i = virtuaEndIndex; i >= virtuaStartIndex; i--) {
+      const message = messages[i]
+
+      if (message && !message.isOutgoing) {
+        newMyLastReadMessage = message
+        break // Зупиняємо пошук, якщо знайдено крайнє повідомлення
+      }
+    }
+    if (!newMyLastReadMessage) {
+      console.log('NO MESSAGE TO READ')
+      return
+    }
+
+    console.log(
+      chat.myLastReadMessageSequenceId,
+      newMyLastReadMessage.sequenceId
+    )
+
+    if (
+      (chat?.myLastReadMessageSequenceId ?? -1) <
+      newMyLastReadMessage.sequenceId
+    ) {
+      console.log(
+        `SHOULD READ THIS MESSAGE`,
+        newMyLastReadMessage.sequenceId,
+        chat?.myLastReadMessageSequenceId
+      )
+
+      const result = await emitEventWithHandling<
+        ReadHistoryParams,
+        ReadMyHistoryResult
+      >('message:read-history', {
+        chatId,
+        maxId: newMyLastReadMessage.sequenceId,
+      })
+
+      thunkApi.dispatch(
+        chatsActions.updateOne({
+          id: result.chatId,
+          changes: {
+            myLastReadMessageSequenceId: result.maxId,
+            unreadCount: result.unreadCount,
+          },
+        })
+      )
+    }
+  }
+)
+
+export const messagesThunks = {
+  getMessages,
+  scrollToMessage,
+  sendMessage,
+  readHistory,
+}

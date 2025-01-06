@@ -42,6 +42,7 @@ export const AuthSignUp: FC<AuthSignUpProps> = ({username}) => {
     firstName.length > 3 &&
     password.length > 4 &&
     password === passwordConfirm
+
   return (
     <div className="Auth-container AuthSignUp">
       <h4>Sign up</h4>
@@ -65,16 +66,18 @@ export const AuthSignUp: FC<AuthSignUpProps> = ({username}) => {
             setLastName(e.currentTarget.value)
           }}
         />
-        <input
+
+        <InputText
           value={password}
-          placeholder="Password"
+          label="Password"
           onChange={(e) => {
             setPassword(e.currentTarget.value)
           }}
         />
-        <input
+
+        <InputText
           value={passwordConfirm}
-          placeholder="Password confirm"
+          label="Password confirm"
           onChange={(e) => {
             setPasswordConfirm(e.currentTarget.value)
           }}

@@ -15,10 +15,10 @@ import type {
 export interface ListenEvents {
   ['chat:created']: (chat: Chat) => void
   ['auth:unauthorized']: () => void
-  ['onNewMessage']: (message: Message, chat: Chat) => void
 
-  ['message:read-my']: (data: ReadMyHistoryResult) => void
-  ['message:read-their']: (
+  ['message:new']: (message: Message, chat: Chat) => void
+  ['message:read-by-me']: (data: ReadMyHistoryResult) => void
+  ['message:read-by-them']: (
     data: Omit<ReadMyHistoryResult, 'unreadCount'>
   ) => void
 
@@ -30,19 +30,18 @@ type EventWithAck<Params, Result> = (
   callback: (result: Result) => void
 ) => void
 interface EmitEvents {
-  join: (room: string) => void
+  'room:join': (room: string) => void
 
   /**
    * CHAT
    */
-  createChat: EventWithAck<CreateChatParams, Chat>
+  'chat:create': EventWithAck<CreateChatParams, Chat>
 
   /**
    * MESSAGES
    */
-  sendMessage: EventWithAck<SendMessageParams, Message>
-
-  readHistory: EventWithAck<
+  'message:send': EventWithAck<SendMessageParams, Message>
+  'message:read-history': EventWithAck<
     ReadHistoryParams,
     {newUnreadCount: number; chatId: string; maxId: number}
   >

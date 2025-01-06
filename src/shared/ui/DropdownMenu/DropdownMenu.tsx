@@ -1,18 +1,27 @@
-import {type ReactElement, type FC, type PropsWithChildren} from 'react'
+import {
+  type ReactElement,
+  type FC,
+  type PropsWithChildren,
+  CSSProperties,
+} from 'react'
 import {useBoolean} from '../../hooks/useBoolean'
-import {Menu} from '../Menu/Menu'
+import {Menu, MenuPosition, MenuTransform} from '../Menu/Menu'
 
 import './DropdownMenu.scss'
 interface DropdownMenuProps extends PropsWithChildren {
   button: ReactElement
-  position?: 'bottom-right' | 'bottom-left' | 'top-right' | 'top-left'
+  position?: MenuPosition
+  transform?: MenuTransform
   autoClose?: boolean
+  style?: CSSProperties
 }
 export const DropdownMenu: FC<DropdownMenuProps> = ({
   button,
   position = 'bottom-left',
+  transform,
   autoClose = true,
   children,
+  style,
 }) => {
   const {value: isMenuOpen, setFalse: closeMenu, toggle} = useBoolean(false)
 
@@ -25,9 +34,11 @@ export const DropdownMenu: FC<DropdownMenuProps> = ({
       {button}
       <Menu
         position={position}
+        transform={transform}
         isOpen={isMenuOpen}
         onClose={handleClose}
         autoClose={autoClose}
+        style={style}
       >
         {children}
       </Menu>

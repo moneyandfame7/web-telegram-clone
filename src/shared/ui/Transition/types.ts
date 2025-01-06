@@ -1,9 +1,4 @@
-import React, {
-  CSSProperties,
-  MouseEventHandler,
-  RefObject,
-  type PropsWithChildren,
-} from 'react'
+import {CSSProperties, MouseEventHandler, type PropsWithChildren} from 'react'
 import {CSSTransitionClassNames} from 'react-transition-group/CSSTransition'
 
 export type TransitionName =

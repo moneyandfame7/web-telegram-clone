@@ -2,6 +2,7 @@ import {type FC, useState} from 'react'
 import {Button} from '../../../shared/ui'
 import {useAppDispatch, useAppSelector} from '../../../app/store'
 import {authThunks} from '../api'
+import {InputText} from '../../../shared/ui/Input/Input'
 
 interface AuthPasswordProps {
   username: string
@@ -31,14 +32,14 @@ export const AuthPassword: FC<AuthPasswordProps> = ({username}) => {
     <div className="Auth-container AuthPassword">
       <h4>Enter a Password ({username})</h4>
       <p className="text-secondary">
-        Your account is protected with an password
+        Your account is protected with a password
       </p>
 
       {error && <h3>ERROR: {error}</h3>}
       <div className="form-wrapper">
-        <input
+        <InputText
           value={password}
-          placeholder="Password"
+          label="Password"
           onChange={(e) => {
             setPassword(e.currentTarget.value)
           }}

@@ -7,7 +7,7 @@ export const createChatListeners = (dispatch: AppDispatch) => {
     console.log(`New chat added: [${chat.id}]`)
 
     dispatch(chatsActions.addOne(chat))
-    socket.emit('join', `chat-${chat.id}`)
+    socket.emit('room:join', `chat-${chat.id}`)
   }
 
   return {

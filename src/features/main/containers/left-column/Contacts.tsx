@@ -33,18 +33,10 @@ export const Contacts: FC = () => {
 
   return (
     <Column onGoBack={pop} header={<input placeholder="Search" />}>
-      <p>Contact 1</p>
-      <p>Contact 1</p>
-      <p>Contact 1</p>
-      <p>Contact 1</p>
-      <p>Contact 1</p>
-
       {contacts.map((contact) => (
         <ListItem
           title={contact.firstName + ' ' + (contact.lastName ?? '')}
-          titleRight="Right"
-          subtitle="Subtitle..."
-          subtitleRight="Right"
+          subtitle="last seen ..."
           key={contact.id}
           itemColor={contact.color}
           onClick={() => {

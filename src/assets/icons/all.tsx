@@ -97,8 +97,7 @@ import mediaSpoiler from './mediaspoiler.svg?react'
 import mediaSpoilerOff from './mediaspoileroff.svg?react'
 import groupMedia from './groupmedia.svg?react'
 import groupMediaOff from './groupmediaoff.svg?react'
-// const arrowLeft: FC = lazy(() => import('./arrow-left.svg').then((module) => module.ReactComponent))
-// const menu: FC = lazy(() => import('./menu.svg').then((module) => module.ReactComponent))
+import newTab from './newtab.svg?react'
 
 export {
   arrowLeft,
@@ -197,4 +196,5 @@ export {
   mediaSpoilerOff,
   groupMedia,
   groupMediaOff,
+  newTab,
 }

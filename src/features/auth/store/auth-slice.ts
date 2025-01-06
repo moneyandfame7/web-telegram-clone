@@ -44,9 +44,6 @@ const authSlice = createSlice({
     setScreen: (state, action: PayloadAction<AuthScreen>) => {
       state.screen = action.payload
     },
-    setSession: (state, action: PayloadAction<Session | undefined>) => {
-      state.session = action.payload
-    },
     setAuthorization: (state, action: PayloadAction<AuthorizationResult>) => {
       const {accessToken, session} = action.payload
 
@@ -55,9 +52,6 @@ const authSlice = createSlice({
     },
     setKeepSignedIn: (state, action: PayloadAction<boolean>) => {
       state.keepSignedIn = action.payload
-    },
-    setDeviceInfo: (state, action: PayloadAction<DeviceInfo>) => {
-      state.deviceInfo = action.payload
     },
   },
   extraReducers: (builder) => {
@@ -70,10 +64,8 @@ const authSlice = createSlice({
     builder.addCase(authThunks.signIn.pending, (state) => {
       state.isLoading = true
     })
-    builder.addCase(authThunks.signIn.fulfilled, (state, action) => {
+    builder.addCase(authThunks.signIn.fulfilled, (state) => {
       state.isLoading = false
-      state.accessToken = action.payload.accessToken
-      state.session = action.payload.session
     })
     builder.addCase(authThunks.signIn.rejected, (state) => {
       state.isLoading = false
@@ -82,10 +74,8 @@ const authSlice = createSlice({
     builder.addCase(authThunks.signUp.pending, (state) => {
       state.isLoading = true
     })
-    builder.addCase(authThunks.signUp.fulfilled, (state, action) => {
+    builder.addCase(authThunks.signUp.fulfilled, (state) => {
       state.isLoading = false
-      state.accessToken = action.payload.accessToken
-      state.session = action.payload.session
     })
     builder.addCase(authThunks.signUp.rejected, (state) => {
       state.isLoading = false

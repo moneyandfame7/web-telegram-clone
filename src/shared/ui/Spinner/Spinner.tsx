@@ -16,15 +16,15 @@ export const Spinner: FC<SpinnerProps> = ({
   color = 'primary',
 }) => {
   const buildedClassname = clsx(
-    'Spinner',
-    `Spinner-${size}`,
-    `Spinner-${color}`,
+    'spinner',
+    `spinner-${size}`,
+    `spinner-${color}`,
     {}
   )
 
   return (
     <div className={buildedClassname}>
-      <span className="Spinner-inner" />
+      <span className="spinner-inner" />
     </div>
   )
 }

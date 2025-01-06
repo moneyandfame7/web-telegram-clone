@@ -13,7 +13,7 @@ import {emitEventWithHandling} from '../../app/socket'
 const createChat = createAsyncThunk<Chat, CreateChatParams>(
   'chats/createChat',
   async (arg) => {
-    return emitEventWithHandling<CreateChatParams, Chat>('createChat', arg)
+    return emitEventWithHandling<CreateChatParams, Chat>('chat:create', arg)
   }
 )
 

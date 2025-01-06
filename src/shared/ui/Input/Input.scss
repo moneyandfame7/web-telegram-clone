@@ -93,6 +93,9 @@
     width: 24px;
     height: 24px;
     position: absolute;
+    // top: 50%;
+    // transform: translateY(-50%);
+    transform-origin: center;
     top: 25%;
     left: 20px;
     pointer-events: none;
@@ -103,8 +106,12 @@
       background-color: unset;
       height: 24px;
 
-      > .icon {
+      > .icon,
+      > .spinner {
         position: unset;
+        left: auto;
+        top: auto;
+        transform: none;
       }
     }
   }
@@ -152,7 +159,7 @@
     & .icon {
       animation: show-icon 0.4s ease-out;
     }
-    & .input-spinner {
+    & .spinner {
       animation: hide-icon 0.4s ease-out;
     }
   }
@@ -160,7 +167,7 @@
     & .icon {
       animation: hide-icon 0.4s forwards ease-out;
     }
-    & .input-spinner {
+    & .spinner {
       animation: show-icon 0.4s forwards ease-out;
     }
   }
@@ -252,12 +259,16 @@
   &.end-icon,
   &.start-icon {
     .icon,
-    .input-spinner {
+    .spinner {
       position: absolute;
       left: auto;
       width: 24px;
       height: 24px;
-      top: 25%;
+      top: 21%;
+      // transform-origin: center;
+
+      // top: 50%;
+      // transform: translateY(-50%);
       position: absolute;
       font-size: 16px;
       pointer-events: none;
@@ -269,13 +280,13 @@
       padding: 0 50px 0 20px;
     }
     .icon,
-    .input-spinner {
+    .spinner {
       right: 20px;
     }
   }
   .icon {
     path {
-      fill: var(--c-placeholder);
+      fill: var(--c-neutral-secondary);
     }
   }
 
@@ -283,7 +294,8 @@
     input {
       padding: 0 40px 0 50px;
     }
-    .icon {
+    .icon,
+    .spinner {
       left: 20px;
     }
   }

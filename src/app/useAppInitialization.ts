@@ -11,6 +11,7 @@ import {refreshToken} from './api'
 import {ServerError} from './error-code.enum'
 import {socket} from './socket'
 import {useAppDispatch, useAppSelector} from './store'
+import {pause} from '../shared/helpers/pause'
 
 /**
  * * Fetch chats, contacts, user data.
@@ -79,7 +80,7 @@ export const useAppInitialization = () => {
         console.warn('[socket.io]: Disconnected!')
       })
 
-      chats.forEach((chat) => socket.emit('join', `chat-${chat.id}`))
+      chats.forEach((chat) => socket.emit('room:join', `chat-${chat.id}`))
 
       const chatListeners = createChatListeners(dispatch)
       const messageListeners = createMessageListeners(

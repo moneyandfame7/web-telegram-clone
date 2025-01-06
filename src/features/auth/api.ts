@@ -9,7 +9,8 @@ import type {
   SignInPayload,
   SignUpPayload,
 } from './types'
-import {ACTION_TYPES, RootState, store} from '../../app/store'
+import {ACTION_TYPES, persistor, RootState, store} from '../../app/store'
+import {authActions} from './store/auth-slice'
 
 const getGeolocation = createAsyncThunk<Geolocation, void>(
   'auth/getGeolocation',
@@ -32,10 +33,18 @@ const signIn = createAsyncThunk<
   {rejectValue: string}
 >('auth/signIn', async (arg, thunkApi) => {
   try {
+    const state = thunkApi.getState() as RootState
+
     const response = await api.post<AuthorizationResult>(
       '/authorization/sign-in',
       arg
     )
+    if (!state.auth.keepSignedIn) {
+      persistor.pause()
+      persistor.purge()
+    }
+    thunkApi.dispatch(authActions.setAuthorization({...response.data}))
+
     return response.data
   } catch (e) {
     if (e instanceof AxiosError) {
@@ -54,10 +63,17 @@ const signUp = createAsyncThunk<
   {rejectValue: string}
 >('auth/signUp', async (arg, thunkApi) => {
   try {
+    const state = thunkApi.getState() as RootState
+
     const response = await api.post<AuthorizationResult>(
       '/authorization/sign-up',
       arg
     )
+    if (!state.auth.keepSignedIn) {
+      persistor.pause()
+      persistor.purge()
+    }
+    thunkApi.dispatch(authActions.setAuthorization({...response.data}))
     return response.data
   } catch (e) {
     if (e instanceof AxiosError) {
@@ -97,7 +113,7 @@ const logOut = createAsyncThunk<boolean, void, {rejectValue: string}>(
 
       return thunkApi.rejectWithValue('[auth/logOut]')
     } finally {
-      store.dispatch({type: ACTION_TYPES.RESET})
+      thunkApi.dispatch({type: ACTION_TYPES.RESET})
     }
   }
 )

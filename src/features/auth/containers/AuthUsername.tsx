@@ -1,4 +1,4 @@
-import {useState, type FC} from 'react'
+import {useEffect, type FC} from 'react'
 import {Button} from '../../../shared/ui'
 import {useAppDispatch, useAppSelector} from '../../../app/store'
 import {usersThunks} from '../../users/api'

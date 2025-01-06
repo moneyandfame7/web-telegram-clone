@@ -1,13 +1,13 @@
 .menu {
   position: absolute;
-  z-index: 10;
+  z-index: 11;
   backdrop-filter: blur(12px);
 
   max-height: calc(100 * 1dvh - 4.75rem);
 
   height: max-content !important;
   width: max-content !important;
-  min-width: 250px;
+  min-width: 200px;
 
   padding: 5px;
   border-radius: 0.75rem;
@@ -20,23 +20,27 @@
     top: calc(100% + 8px);
 
     right: 0;
+    left: auto;
   }
 
   &.bottom-left {
     top: calc(100% + 8px);
     left: 0;
+    right: auto;
   }
 
   &.top-right {
     bottom: calc(100% + 8px);
 
     right: 0;
+    left: auto;
   }
 
   &.top-left {
     bottom: calc(100% + 8px);
 
     left: 0;
+    right: auto;
   }
 
   &__item {
@@ -73,4 +77,13 @@
   &__title {
     flex: 1;
   }
+}
+
+.backdrop {
+  position: fixed;
+  top: -100dvh;
+  right: -100dvw;
+  left: -100dvw;
+  bottom: -100dvh;
+  z-index: 10;
 }

@@ -15,10 +15,11 @@ interface MenuItemProps extends PropsWithChildren {
   onClick?: (
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void | Promise<void>
+  danger?: boolean
 }
 
 export const MenuItem: FC<MenuItemProps> = memo(
-  ({title, icon, badge, onClick}) => {
+  ({title, icon, badge, danger, onClick}) => {
     const {onClose, autoClose} = useMenuContext()
 
     const handleClick = useCallback(

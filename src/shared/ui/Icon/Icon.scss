@@ -4,6 +4,11 @@
   &-small {
     width: 18px;
     height: 18px;
+
+    &.icon-check {
+      width: 15px;
+      height: 15px;
+    }
   }
   &-medium {
     height: 24px;

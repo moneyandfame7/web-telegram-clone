@@ -44,6 +44,7 @@ export const ChatHeader: FC<ChatHeaderProps> = ({chatId}) => {
         <DropdownMenu
           button={<IconButton name="more" title="Menu" color="secondary" />}
           position="bottom-right"
+          transform="top right"
         >
           <MenuItem
             icon="info2"

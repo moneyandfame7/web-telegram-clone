@@ -57,7 +57,7 @@ export const InputText: FC<InputProps> = ({
   error,
   label,
   isDisabled,
-  isLoading = false,
+  isLoading,
   placeholder,
   maxLength,
   pattern,
@@ -134,11 +134,7 @@ export const InputText: FC<InputProps> = ({
   const renderEndIcon = useCallback(() => {
     return (
       <>
-        {isLoading && (
-          <span className="input-spinner">
-            <Spinner size="small" color="neutral" />
-          </span>
-        )}
+        {isLoading && <Spinner size="small" color="neutral" />}
         {endIcon}
       </>
     )

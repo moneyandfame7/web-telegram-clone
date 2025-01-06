@@ -1,11 +1,12 @@
-import {useState, type FC} from 'react'
+import {type FC} from 'react'
+import {useNavigate} from 'react-router-dom'
+
 import {useAppSelector} from '../../../../app/store'
 
 import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 import {DropdownMenu} from '../../../../shared/ui/DropdownMenu/DropdownMenu'
 import {MenuItem} from '../../../../shared/ui/Menu/MenuItem'
 import {ListItem} from '../../../../shared/ui/ListItem/ListItem'
-import {Button} from '../../../../shared/ui'
 
 import {useNavigationStack} from '../../../../shared/ui/NavigationStack/useNavigationStack'
 
@@ -14,8 +15,13 @@ import {chatsSelectors} from '../../../chats/state'
 import {NewChatStep1} from './new-chat/NewChatStep1'
 import {Contacts} from './Contacts'
 
+import {Chat} from '../../../chats/types'
+import {Icon} from '../../../../shared/ui/Icon/Icon'
+
+import {formatMessageTime} from '../../../messages/helpers'
+
 import './ChatList.scss'
-import {useNavigate} from 'react-router-dom'
+import {Badge} from '../../../../shared/ui/Badge/Badge'
 
 export const ChatList: FC = () => {
   const {push} = useNavigationStack()
@@ -23,6 +29,40 @@ export const ChatList: FC = () => {
   const currentChatId = useAppSelector((state) => state.chats.currentChatId)
   const chats = useAppSelector(chatsSelectors.selectAll)
   const navigate = useNavigate()
+
+  const renderTitleRight = (chat: Chat) => {
+    if (!chat?.lastMessage) {
+      return (
+        <span>
+          {formatMessageTime({
+            date: new Date(chat.createdAt),
+            onlyTime: false,
+          })}
+        </span>
+      )
+    }
+
+    const isRead =
+      chat.theirLastReadMessageSequenceId ?? -1 >= chat.lastMessage.sequenceId
+    return (
+      <>
+        {chat.lastMessage.isOutgoing && (
+          <Icon
+            title="Read message icon"
+            name={isRead ? 'checks2' : 'check'}
+            size="small"
+          />
+        )}
+        <span>
+          {formatMessageTime({
+            date: new Date(chat.lastMessage.createdAt),
+            onlyTime: false,
+          })}
+        </span>
+      </>
+    )
+  }
+
   return (
     <div className="chat-list">
       {chats.map((chat) => {
@@ -30,14 +70,25 @@ export const ChatList: FC = () => {
           <ListItem
             key={chat.id}
             title={chat.title}
-            titleRight="Right"
+            titleRight={renderTitleRight(chat)}
             subtitle={chat.lastMessage?.text}
-            subtitleRight={`${chat.unreadCount > 0 ? chat.unreadCount : ''}`}
+            subtitleRight={
+              chat.unreadCount > 0 ? (
+                <Badge number={chat.unreadCount} />
+              ) : undefined
+            }
             itemColor={chat.color}
             selected={currentChatId === chat.id}
             onClick={() => {
               navigate(chat.id)
             }}
+            contextActions={[
+              {
+                title: 'Open in new tab',
+                handler: () => {},
+                icon: 'newTab',
+              },
+            ]}
           />
         )
       })}
@@ -54,6 +105,7 @@ export const ChatList: FC = () => {
             />
           }
           position="top-right"
+          transform="bottom right"
         >
           <MenuItem
             icon="channel"
@@ -70,13 +122,6 @@ export const ChatList: FC = () => {
             }}
           />
           <MenuItem
-            icon="animals"
-            title="Circular component"
-            onClick={() => {
-              push(<CircularComponent screenNumber={1} />)
-            }}
-          />
-          <MenuItem
             icon="user"
             title="New Private Chat"
             onClick={() => {
@@ -85,36 +130,6 @@ export const ChatList: FC = () => {
           />
         </DropdownMenu>
       </div>
-    </div>
-  )
-}
-
-interface CircularComponentProps {
-  screenNumber: number
-}
-const CircularComponent: FC<CircularComponentProps> = ({screenNumber}) => {
-  const {push, pop} = useNavigationStack()
-  const [count, setCount] = useState(0)
-  return (
-    <div>
-      <h1>CircularComponent N. {screenNumber}</h1>
-      <Button onClick={() => setCount((prev) => prev + 1)}>
-        Counter {count}
-      </Button>
-      <Button
-        onClick={() => {
-          pop()
-        }}
-      >
-        Go to Component {screenNumber - 1}
-      </Button>
-      <Button
-        onClick={() => {
-          push(<CircularComponent screenNumber={screenNumber + 1} />)
-        }}
-      >
-        Go to Component {screenNumber + 1}
-      </Button>
     </div>
   )
 }

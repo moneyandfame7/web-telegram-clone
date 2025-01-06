@@ -7,6 +7,7 @@
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  user-select: none;
 
   &--selected {
     background-color: var(--c-primary) !important;
@@ -17,7 +18,17 @@
     .list-item__subtitle-right {
       color: #fff;
     }
+    .icon path {
+      fill: #fff !important;
+    }
+
+    .badge {
+      background-color: #fff;
+      color: var(--c-primary);
+    }
   }
+
+  &--menu-open,
   &:hover {
     background-color: var(--c-ripple);
   }
@@ -38,6 +49,13 @@
   &__title-right {
     color: var(--c-font-secondary);
     font-size: 12px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    .icon path {
+      fill: var(--c-primary);
+    }
   }
 
   &__subtitle {
@@ -47,9 +65,7 @@
     width: 90%;
     color: var(--c-font-secondary);
     font-size: 14px;
-  }
-  &__subtitle-right {
-    color: red;
+    line-height: 1.3215;
   }
 
   &__row {

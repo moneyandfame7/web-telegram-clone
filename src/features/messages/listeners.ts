@@ -9,7 +9,7 @@ export const createMessageListeners = (
   dispatch: AppDispatch,
   chatListeners: ReturnType<typeof createChatListeners>['listeners']
 ) => {
-  const newMessage: ListenEvents['onNewMessage'] = (message, chat) => {
+  const newMessage: ListenEvents['message:new'] = (message, chat) => {
     console.log(`New message ${message.id} in chat ${chat.id}`)
 
     const existingChat: Chat | undefined = chatsSelectors.selectById(
@@ -32,7 +32,7 @@ export const createMessageListeners = (
     dispatch(messagesActions.addMessage({chatId: chat.id, message}))
   }
 
-  const readByMe: ListenEvents['message:read-my'] = (data) => {
+  const readByMe: ListenEvents['message:read-by-me'] = (data) => {
     console.log('Я ПРОЧИТАВ ЧИЇСЬ ПОВІДОМЛЕННЯ', data)
 
     dispatch(
@@ -46,7 +46,7 @@ export const createMessageListeners = (
     )
   }
 
-  const readByThem: ListenEvents['message:read-their'] = (data) => {
+  const readByThem: ListenEvents['message:read-by-them'] = (data) => {
     console.log(
       `ХТОСЬ ПРОЧИТАВ ПОВІДОМЛЕННЯ В ЧАТІ! ${data.chatId}`,
       data.maxId
@@ -64,14 +64,14 @@ export const createMessageListeners = (
 
   return {
     subscribe() {
-      socket.on('onNewMessage', newMessage)
-      socket.on('message:read-my', readByMe)
-      socket.on('message:read-their', readByThem)
+      socket.on('message:new', newMessage)
+      socket.on('message:read-by-me', readByMe)
+      socket.on('message:read-by-them', readByThem)
     },
     unsubscribe() {
-      socket.off('onNewMessage', newMessage)
-      socket.off('message:read-my', readByMe)
-      socket.off('message:read-their', readByThem)
+      socket.off('message:new', newMessage)
+      socket.off('message:read-by-me', readByMe)
+      socket.off('message:read-by-them', readByThem)
     },
     listeners: {
       newMessage,

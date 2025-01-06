@@ -9,7 +9,10 @@ interface MessageInfoProps {
   isUnread: boolean
 }
 export const MessageInfo: FC<MessageInfoProps> = ({message, isUnread}) => {
-  const sendingDate = formatMessageTime(new Date(message.createdAt), false)
+  const sendingDate = formatMessageTime({
+    date: new Date(message.createdAt),
+    onlyTime: true,
+  })
   const isEdited = Boolean(message.editedAt)
 
   function renderMessageStatus() {
@@ -17,13 +20,19 @@ export const MessageInfo: FC<MessageInfoProps> = ({message, isUnread}) => {
       return (
         <Icon
           className="message-info__icon"
-          name="check1"
+          name="check"
           title="Unread icon"
+          size="small"
         />
       )
     }
     return (
-      <Icon className="message-info__icon" name="checks2" title="Unread icon" />
+      <Icon
+        className="message-info__icon"
+        name="checks2"
+        title="Unread icon"
+        size="small"
+      />
     )
   }
   return (

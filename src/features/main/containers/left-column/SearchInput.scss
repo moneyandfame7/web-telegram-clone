@@ -10,13 +10,36 @@
       ~ .length-indicator {
         color: var(--c-placeholder);
       }
+    }
 
-      // ~ .icon path,
-      // .icon path {
-      //   fill: var(--c-primary);
-      // }
+    &:focus {
+      &::placeholder {
+        color: var(--c-placeholder) !important;
+      }
+      ~ .spinner > .spinner-inner {
+        border-color: var(--c-primary);
+      }
+
+      // border: 5px solid var(--c-primary) !important;
     }
   }
+  &:not(.is-updating) {
+    & .icon {
+      animation: show-icon 0.4s ease-out;
+    }
+    & .spinner {
+      animation: hide-icon forwards 0.4s ease-out;
+    }
+  }
+  &.is-updating {
+    & .icon {
+      animation: hide-icon 0.4s forwards ease-out;
+    }
+    & .spinner {
+      animation: show-icon 0.4s forwards ease-out;
+    }
+  }
+
   .input-border {
     border-radius: 40px;
   }

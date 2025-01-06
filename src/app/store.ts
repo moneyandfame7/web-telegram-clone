@@ -65,6 +65,7 @@ const reducerProxy = (state: any, action: Action) => {
 const persistedReducer = persistReducer(persistConfig, reducerProxy)
 
 export const listenerMiddleware = createListenerMiddleware()
+
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
@@ -77,7 +78,9 @@ export const store = configureStore({
       .concat(),
 })
 
-export const persistor = persistStore(store)
+export const persistor = persistStore(
+  store /* , {manualPersist: true} as any */
+)
 
 export type AppDispatch = typeof store.dispatch
 export type RootState = ReturnType<typeof store.getState>
@@ -98,3 +101,8 @@ export const createAppAsyncThunk = createAsyncThunk.withTypes<{
   dispatch: AppDispatch
   extra: unknown
 }>()
+
+export const startAppListening = listenerMiddleware.startListening.withTypes<
+  RootState,
+  AppDispatch
+>()

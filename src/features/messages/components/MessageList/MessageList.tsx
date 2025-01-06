@@ -1,4 +1,11 @@
-import {FC, startTransition, useEffect, useRef, useState} from 'react'
+import {
+  FC,
+  startTransition,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import {Virtualizer} from 'virtua'
 
@@ -43,7 +50,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
   const [shifting, setShifting] = useState(false)
   const [startFetching, setStartFetching] = useState(false)
   const [endFetching, setEndFetching] = useState(false)
-  const [isAtBottom, setIsAtBottom] = useState(false)
+  const [isAtBottom, setIsAtBottom] = useState(true)
   const fetchMoreMessages = async (params: GetMessagesParams) => {
     setShifting(params.direction === GetMessagesDirection.OLDER)
 
@@ -64,100 +71,19 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
 
   const ready = useRef(false)
 
-  useEffect(() => {
-    if (!virtua.current) {
-      return
-    }
-
-    if (virtua.current.scrollSize > virtua.current.viewportSize) {
-      return
-    }
-
+  const handleReadHistory = useCallback(() => {
     void readHistoryThrottled(async () => {
-      if (!virtua.current) {
-        return
-      }
-      const startIndex = virtua.current.findStartIndex()
-      const endIndex = virtua.current.findEndIndex()
+      if (!virtua.current) return
 
-      console.log({endIndex})
-
-      let newMyLastReadMessage
-
-      for (let i = endIndex; i >= startIndex; i--) {
-        const message = messages[i]
-
-        if (message && !message.isOutgoing) {
-          newMyLastReadMessage = message
-          break // Зупиняємо пошук, якщо знайдено крайнє повідомлення
-        }
-      }
-      if (!newMyLastReadMessage) {
-        return
-      }
-
-      if (
-        (chat?.myLastReadMessageSequenceId ?? 0) <
-        newMyLastReadMessage.sequenceId
-      ) {
-        console.log(
-          `SHOULD READ THIS MESSAGE`,
-          newMyLastReadMessage.sequenceId,
-          chat?.myLastReadMessageSequenceId
-        )
-
-        const result = await emitEventWithHandling<
-          ReadHistoryParams,
-          ReadMyHistoryResult
-        >('readHistory', {chatId, maxId: newMyLastReadMessage.sequenceId})
-
-        dispatch(
-          chatsActions.updateOne({
-            id: result.chatId,
-            changes: {
-              myLastReadMessageSequenceId: result.maxId,
-              unreadCount: result.unreadCount,
-            },
-          })
-        )
-      }
-    })
-  }, [messages])
-
-  useEffect(() => {
-    console.log(
-      `ОСТАННЄ ПРОЧИТАНЕ МОЄ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.theirLastReadMessageSequenceId}`
-    )
-
-    console.log(
-      `ОСТАННЄ ПРОЧИТАНЕ МНОЮ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.myLastReadMessageSequenceId}`
-    )
-    ;(async () => {
-      if (!chat) {
-        return
-      }
-      const messages = await dispatch(
-        messagesThunks.getMessages({
+      await dispatch(
+        messagesThunks.readHistory({
           chatId,
-          sequenceId: chat.myLastReadMessageSequenceId ?? 0,
-          direction: GetMessagesDirection.AROUND,
-          limit: 40,
+          virtuaStartIndex: virtua.current.findStartIndex(),
+          virtuaEndIndex: virtua.current.findEndIndex(),
         })
       ).unwrap()
-      // const indexToScroll = Math.round((messages.length - 1) / 2)
-
-      const index = messages.length / 2 + 1
-      // virtua.current?.scrollToIndex(index, {align: 'start'})
-      console.log({index})
-
-      /**
-       * ця штука допомагає не трігерити onScroll евент після того як я початково проскролив
-       */
-      setTimeout(() => {
-        ready.current = true
-      }, 0)
-    })()
-  }, [])
+    })
+  }, [chatId])
 
   const handleScroll = async () => {
     if (!ready.current) return
@@ -221,56 +147,64 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
     }
 
     void readHistoryThrottled(async () => {
-      if (!virtua.current) {
-        return
-      }
-      const startIndex = virtua.current.findStartIndex()
-      const endIndex = virtua.current.findEndIndex()
+      if (!virtua.current) return
 
-      console.log({endIndex})
-
-      let newMyLastReadMessage
-
-      for (let i = endIndex; i >= startIndex; i--) {
-        const message = messages[i]
-
-        if (message && !message.isOutgoing) {
-          newMyLastReadMessage = message
-          break // Зупиняємо пошук, якщо знайдено крайнє повідомлення
-        }
-      }
-      if (!newMyLastReadMessage) {
-        return
-      }
-
-      if (
-        (chat?.myLastReadMessageSequenceId ?? 0) <
-        newMyLastReadMessage.sequenceId
-      ) {
-        console.log(
-          `SHOULD READ THIS MESSAGE`,
-          newMyLastReadMessage.sequenceId,
-          chat?.myLastReadMessageSequenceId
-        )
-
-        const result = await emitEventWithHandling<
-          ReadHistoryParams,
-          ReadMyHistoryResult
-        >('readHistory', {chatId, maxId: newMyLastReadMessage.sequenceId})
-
-        dispatch(
-          chatsActions.updateOne({
-            id: result.chatId,
-            changes: {
-              myLastReadMessageSequenceId: result.maxId,
-              unreadCount: result.unreadCount,
-            },
-          })
-        )
-      }
+      await dispatch(
+        messagesThunks.readHistory({
+          chatId,
+          virtuaStartIndex: virtua.current.findStartIndex(),
+          virtuaEndIndex: virtua.current.findEndIndex(),
+        })
+      ).unwrap()
     })
   }
 
+  useEffect(() => {
+    console.log(
+      `ОСТАННЄ ПРОЧИТАНЕ МОЄ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.theirLastReadMessageSequenceId}`
+    )
+
+    console.log(
+      `ОСТАННЄ ПРОЧИТАНЕ МНОЮ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.myLastReadMessageSequenceId}`
+    )
+    ;(async () => {
+      if (!chat) {
+        return
+      }
+      const messages = await dispatch(
+        messagesThunks.getMessages({
+          chatId,
+          sequenceId: chat.myLastReadMessageSequenceId ?? 0,
+          direction: GetMessagesDirection.AROUND,
+          limit: 40,
+        })
+      ).unwrap()
+      // const indexToScroll = Math.round((messages.length - 1) / 2)
+
+      const index = messages.length / 2 + 1
+      // virtua.current?.scrollToIndex(index, {align: 'start'})
+      console.log({index})
+
+      /**
+       * ця штука допомагає не трігерити onScroll евент після того як я початково проскролив
+       */
+      setTimeout(() => {
+        ready.current = true
+      }, 0)
+    })()
+  }, [])
+
+  useEffect(() => {
+    if (!virtua.current) {
+      return
+    }
+
+    if (virtua.current.scrollSize > virtua.current.viewportSize) {
+      return
+    }
+    console.log('СКРОЛЛА НЕМАЄ. ЧИТАННЯ ІСТОРІЇ.')
+    handleReadHistory()
+  }, [messages])
   /**
    * @todo spinner height + лоадер на початку треба робити hidden можливо, я точно не шарю треба розібратись.
    * якщо прибирати startMargin - немає ніяких проблем з мерехтінням

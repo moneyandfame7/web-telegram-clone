@@ -53,9 +53,9 @@ export const Icon: FC<IconProps> = ({
   return (
     <IconComponent
       className={buildedClassname}
+      {...props}
       height={heightAndWidth}
       width={heightAndWidth}
-      {...props}
     />
   )
 }

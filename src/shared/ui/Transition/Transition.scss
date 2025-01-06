@@ -60,27 +60,16 @@ https://github.com/morethanwords/tweb/blob/a86ac835c45ad0255caf12fa4af36657e4fe2
     }
   }
 
-  &-zoomFade {
-    > .transition-item_from {
-      animation: fade-out 0.15s ease;
-    }
-
-    > .transition-item_to {
-      animation: fade-in 0.15s ease, zoom-fade-in-move 0.15s ease;
-    }
-  }
+  &-zoomFade,
   &-zoomFadeBackwards {
-    > .transition-item_from {
-      transform: scale(1);
-      animation: fade-in-backwards 0.1s ease,
-        zoom-fade-in-backwards-move 0.15s ease;
+    > .transition-item_from,
+    &_from {
+      animation: zoom-fade-out 250ms ease;
     }
 
-    > .transition-item_to {
-      transform: scale(0.95);
-
-      animation: fade-out-backwards 0.15s ease,
-        zoom-fade-out-backwards-move 0.15s ease;
+    > .transition-item_to,
+    &_to {
+      animation: zoom-fade-in 250ms ease;
     }
   }
 
@@ -119,6 +108,19 @@ https://github.com/morethanwords/tweb/blob/a86ac835c45ad0255caf12fa4af36657e4fe2
     &_to {
       transform: translateX(-100%);
       animation: slide-out-backwards 300ms cubic-bezier(0.25, 1, 0.5, 1);
+    }
+  }
+
+  &-zoomIcon,
+  &-zoomIconBackwards {
+    > .transition-item_from,
+    &_from {
+      animation: zoom-icon-out 300ms ease-out;
+    }
+
+    > .transition-item_to,
+    &_to {
+      animation: zoom-icon-in 250ms cubic-bezier(0.34, 1.56, 0.64, 1);
     }
   }
 }
@@ -266,5 +268,30 @@ https://github.com/morethanwords/tweb/blob/a86ac835c45ad0255caf12fa4af36657e4fe2
   }
   100% {
     transform: scale(1);
+  }
+}
+
+@keyframes zoom-icon-in {
+  0% {
+    transform: scale(0.5);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes zoom-icon-out {
+  0% {
+    transform: scale(1);
+    opacity: 0.4;
+  }
+  100% {
+    transform: scale(0.5);
+    opacity: 0;
   }
 }

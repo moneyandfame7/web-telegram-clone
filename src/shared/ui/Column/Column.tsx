@@ -5,7 +5,7 @@ import './Column.scss'
 export interface ColumnProps extends PropsWithChildren {
   title?: string
   header?: ReactNode
-  onGoBack: VoidFunction
+  onGoBack?: VoidFunction
 }
 export const Column: FC<ColumnProps> = ({
   title,
@@ -16,12 +16,14 @@ export const Column: FC<ColumnProps> = ({
   return (
     <div className="column">
       <div className="column-header">
-        <IconButton
-          title="Go Back"
-          name="arrowLeft"
-          onClick={onGoBack}
-          color="secondary"
-        />
+        {onGoBack && (
+          <IconButton
+            title="Go Back"
+            name="arrowLeft"
+            onClick={onGoBack}
+            color="secondary"
+          />
+        )}
         {title && <p>{title}</p>}
         {header}
       </div>
