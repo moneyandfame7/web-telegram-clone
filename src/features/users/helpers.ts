@@ -6,5 +6,5 @@ export const isUserId = (id: string) => {
 }
 
 export const getUserTitle = (user: User) => {
-  return user.firstName + ' ' + (user.lastName ?? '')
+  return user.firstName + (user.lastName ? ` ${user.lastName}` : '')
 }

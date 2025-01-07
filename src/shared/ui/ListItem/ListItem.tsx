@@ -23,7 +23,7 @@ export type MenuContextActions =
 interface ListItemProps {
   title: string
   titleRight?: ReactNode
-  subtitle?: string
+  subtitle?: ReactNode
   subtitleRight?: ReactNode
   onClick: (e: MouseEvent<HTMLDivElement>) => void
   contextActions?: MenuContextActions[]
@@ -81,7 +81,7 @@ export const ListItem: FC<ListItemProps> = ({
             <div className="list-item__title-right">{titleRight}</div>
           </div>
           <div className="list-item__row">
-            <p className="list-item__subtitle">{subtitle}</p>
+            <div className="list-item__subtitle">{subtitle}</div>
             <div className="list-item__subtitle-right">{subtitleRight}</div>
           </div>
         </div>

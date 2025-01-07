@@ -1,7 +1,7 @@
 import {type FC} from 'react'
 import {useNavigate} from 'react-router-dom'
 
-import {useAppSelector} from '../../../../app/store'
+import {store, useAppSelector} from '../../../../app/store'
 
 import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 import {DropdownMenu} from '../../../../shared/ui/DropdownMenu/DropdownMenu'
@@ -22,6 +22,9 @@ import {formatMessageTime} from '../../../messages/helpers'
 
 import './ChatList.scss'
 import {Badge} from '../../../../shared/ui/Badge/Badge'
+import {usersSelectors} from '../../../users/state/users-selectors'
+import {User} from '../../../auth/types'
+import {ChatItem} from '../../../chats/components/ChatItem'
 
 export const ChatList: FC = () => {
   const {push} = useNavigationStack()
@@ -30,67 +33,10 @@ export const ChatList: FC = () => {
   const chats = useAppSelector(chatsSelectors.selectAll)
   const navigate = useNavigate()
 
-  const renderTitleRight = (chat: Chat) => {
-    if (!chat?.lastMessage) {
-      return (
-        <span>
-          {formatMessageTime({
-            date: new Date(chat.createdAt),
-            onlyTime: false,
-          })}
-        </span>
-      )
-    }
-
-    const isRead =
-      chat.theirLastReadMessageSequenceId ?? -1 >= chat.lastMessage.sequenceId
-    return (
-      <>
-        {chat.lastMessage.isOutgoing && (
-          <Icon
-            title="Read message icon"
-            name={isRead ? 'checks2' : 'check'}
-            size="small"
-          />
-        )}
-        <span>
-          {formatMessageTime({
-            date: new Date(chat.lastMessage.createdAt),
-            onlyTime: false,
-          })}
-        </span>
-      </>
-    )
-  }
-
   return (
     <div className="chat-list">
       {chats.map((chat) => {
-        return (
-          <ListItem
-            key={chat.id}
-            title={chat.title}
-            titleRight={renderTitleRight(chat)}
-            subtitle={chat.lastMessage?.text}
-            subtitleRight={
-              chat.unreadCount > 0 ? (
-                <Badge number={chat.unreadCount} />
-              ) : undefined
-            }
-            itemColor={chat.color}
-            selected={currentChatId === chat.id}
-            onClick={() => {
-              navigate(chat.id)
-            }}
-            contextActions={[
-              {
-                title: 'Open in new tab',
-                handler: () => {},
-                icon: 'newTab',
-              },
-            ]}
-          />
-        )
+        return <ChatItem key={chat.id} chat={chat} />
       })}
 
       <div className="create-chat-button">
