@@ -4,6 +4,10 @@ import {authActions} from '../features/auth/store/auth-slice'
 
 import {ACTION_TYPES, store} from './store'
 
+export const PENDING_REQUESTS = {
+  USERS: new Set<string>(),
+}
+
 const api = axios.create({
   baseURL: 'http://localhost:3000',
 })

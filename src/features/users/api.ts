@@ -1,7 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit'
 import {AxiosError} from 'axios'
 
-import {api} from '../../app/api'
+import {api, PENDING_REQUESTS} from '../../app/api'
 
 import type {IdPayload} from '../../app/types'
 import type {User} from '../auth/types'
@@ -11,6 +11,8 @@ const getUser = createAsyncThunk<User | null, IdPayload>(
   'users/getUser',
   async (arg, thunkApi) => {
     try {
+      PENDING_REQUESTS.USERS.add(arg.id)
+
       const res = await api.get<User | null>(`/users/${arg.id}`)
 
       return res.data
@@ -22,7 +24,14 @@ const getUser = createAsyncThunk<User | null, IdPayload>(
       }
 
       return thunkApi.rejectWithValue('Get user error')
+    } finally {
+      PENDING_REQUESTS.USERS.delete(arg.id)
     }
+  },
+  {
+    condition: (arg) => {
+      return !PENDING_REQUESTS.USERS.has(arg.id)
+    },
   }
 )
 
