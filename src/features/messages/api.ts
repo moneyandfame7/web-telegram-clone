@@ -3,7 +3,7 @@ import {AxiosError} from 'axios'
 
 import {createAsyncThunk} from '@reduxjs/toolkit'
 
-import {api} from '../../app/api'
+import {api, PENDING_REQUESTS} from '../../app/api'
 
 import {
   GetMessagesDirection,
@@ -18,17 +18,28 @@ import {Chat, SendMessageParams} from '../chats/types'
 import {emitEventWithHandling, socket} from '../../app/socket'
 import {messagesActions} from './state/messages-slice'
 import {chatsActions, chatsSelectors} from '../chats/state'
+import {usersSelectors} from '../users/state/users-selectors'
+import {usersThunks} from '../users/api'
 
 const getMessages = createAsyncThunk<Message[], GetMessagesParams>(
   'messages/getMessages',
   async (arg, thunkApi) => {
     try {
+      const state = thunkApi.getState() as RootState
       await pause(1000)
       const result = await api.get<Message[]>('/messages', {
         params: {
           ...arg,
         } satisfies GetMessagesParams,
         signal: thunkApi.signal,
+      })
+
+      result.data.forEach((m) => {
+        const user = usersSelectors.selectById(state, m.senderId)
+
+        if (!user && !PENDING_REQUESTS.USERS.has(m.senderId)) {
+          thunkApi.dispatch(usersThunks.getUser({id: m.senderId}))
+        }
       })
 
       return result.data
