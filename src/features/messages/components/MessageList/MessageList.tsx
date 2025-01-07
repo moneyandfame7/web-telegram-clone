@@ -1,8 +1,8 @@
 import {
   FC,
   startTransition,
-  useCallback,
   useEffect,
+  useLayoutEffect,
   useRef,
   useState,
 } from 'react'
@@ -10,9 +10,8 @@ import {
 import {Virtualizer} from 'virtua'
 
 import {useAppDispatch, useAppSelector} from '../../../../app/store'
-import {emitEventWithHandling} from '../../../../app/socket'
 
-import {chatsActions, chatsSelectors} from '../../../chats/state'
+import {chatsSelectors} from '../../../chats/state'
 import {useConnetedVirtuaRef} from '../../hooks/useConnectedVirtuosoRef'
 import {throttle} from '../../../../shared/helpers/throttle'
 import {Chat} from '../../../chats/types'
@@ -21,8 +20,7 @@ import {IconButton} from '../../../../shared/ui/IconButton/IconButton'
 import {
   GetMessagesDirection,
   GetMessagesParams,
-  ReadHistoryParams,
-  ReadMyHistoryResult,
+  Message as MessageType,
 } from '../../types'
 import {messagesSelectors} from '../../state/messages-selectors'
 import {messagesThunks} from '../../api'
@@ -71,7 +69,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
 
   const ready = useRef(false)
 
-  const handleReadHistory = useCallback(() => {
+  const handleReadHistory = () => {
     void readHistoryThrottled(async () => {
       if (!virtua.current) return
 
@@ -83,7 +81,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
         })
       ).unwrap()
     })
-  }, [chatId])
+  }
 
   const handleScroll = async () => {
     if (!ready.current) return
@@ -159,6 +157,24 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
     })
   }
 
+  const initialScroll = (messages: MessageType[]) => {
+    if (chat?.myLastReadMessageSequenceId === undefined) {
+      return
+    }
+
+    const indexToScroll = messages.findIndex(
+      (m) => m.sequenceId === chat.myLastReadMessageSequenceId
+    )
+
+    if (indexToScroll !== -1) {
+      virtua.current?.scrollToIndex(indexToScroll)
+    }
+  }
+
+  useLayoutEffect(() => {
+    initialScroll(messages)
+  }, [])
+
   useEffect(() => {
     console.log(
       `ОСТАННЄ ПРОЧИТАНЕ МОЄ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.theirLastReadMessageSequenceId}`
@@ -167,35 +183,33 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
     console.log(
       `ОСТАННЄ ПРОЧИТАНЕ МНОЮ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.myLastReadMessageSequenceId}`
     )
-    ;(async () => {
-      if (!chat) {
-        return
-      }
-      const messages = await dispatch(
-        messagesThunks.getMessages({
-          chatId,
-          sequenceId: chat.myLastReadMessageSequenceId ?? 0,
-          direction: GetMessagesDirection.AROUND,
-          limit: 40,
-        })
-      ).unwrap()
-      // const indexToScroll = Math.round((messages.length - 1) / 2)
+    if (!chat) {
+      return
+    }
+    const promise = dispatch(
+      messagesThunks.getMessages({
+        chatId,
+        sequenceId: chat.myLastReadMessageSequenceId ?? 0,
+        direction: GetMessagesDirection.AROUND,
+        limit: 40,
+      })
+    )
 
-      const index = messages.length / 2 + 1
-      // virtua.current?.scrollToIndex(index, {align: 'start'})
-      console.log({index})
+    promise.unwrap().then((messages) => {
+      initialScroll(messages)
 
-      /**
-       * ця штука допомагає не трігерити onScroll евент після того як я початково проскролив
-       */
       setTimeout(() => {
         ready.current = true
       }, 0)
-    })()
+    })
+
+    return () => {
+      promise.abort('chat closed')
+    }
   }, [])
 
   useEffect(() => {
-    if (!virtua.current) {
+    if (!virtua.current || !ready.current) {
       return
     }
 
@@ -222,7 +236,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
       <Virtualizer
         key={chatId}
         ref={virtua}
-        shift={shifting ? true : false}
+        shift={shifting}
         // startMargin={SPINNER_HEIGHT}
         onScroll={handleScroll}
         count={messages.length}

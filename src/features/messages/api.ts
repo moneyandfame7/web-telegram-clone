@@ -28,6 +28,7 @@ const getMessages = createAsyncThunk<Message[], GetMessagesParams>(
         params: {
           ...arg,
         } satisfies GetMessagesParams,
+        signal: thunkApi.signal,
       })
 
       return result.data

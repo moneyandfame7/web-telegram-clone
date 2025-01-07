@@ -64,24 +64,26 @@ export const ListItem: FC<ListItemProps> = ({
     'list-item--menu-open': isContextMenuOpen,
   })
   return (
-    <div
-      ref={ref}
-      className={className}
-      onClick={onClick}
-      onContextMenu={handleContextMenu}
-    >
-      {typeof checked === 'boolean' && (
-        <input type="checkbox" checked={checked} />
-      )}
-      <Avatar url={avatarUrl} color={itemColor} title={title} />
-      <div className="list-item__info">
-        <div className="list-item__row">
-          <p className="list-item__title">{title}</p>
-          <div className="list-item__title-right">{titleRight}</div>
-        </div>
-        <div className="list-item__row">
-          <p className="list-item__subtitle">{subtitle}</p>
-          <div className="list-item__subtitle-right">{subtitleRight}</div>
+    <div className="list-item-container">
+      <div
+        ref={ref}
+        className={className}
+        onClick={onClick}
+        onContextMenu={handleContextMenu}
+      >
+        {typeof checked === 'boolean' && (
+          <input type="checkbox" checked={checked} />
+        )}
+        <Avatar url={avatarUrl} color={itemColor} title={title} />
+        <div className="list-item__info">
+          <div className="list-item__row">
+            <p className="list-item__title">{title}</p>
+            <div className="list-item__title-right">{titleRight}</div>
+          </div>
+          <div className="list-item__row">
+            <p className="list-item__subtitle">{subtitle}</p>
+            <div className="list-item__subtitle-right">{subtitleRight}</div>
+          </div>
         </div>
       </div>
       {contextActions && (

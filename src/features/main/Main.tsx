@@ -17,6 +17,7 @@ import {usePrevious} from '../../shared/hooks/usePrevious'
 import {isUUID} from '../../shared/helpers/isUUID'
 
 import './Main.scss'
+import {useEventListener} from '../../shared/hooks/useEventListener'
 
 console.log('MAIN.tsx')
 export const Main: FC = () => {
@@ -34,11 +35,17 @@ export const Main: FC = () => {
       } else {
         navigate({pathname: '/'}, {replace: true})
       }
-      // значить що закрили чат ( крок назад зробили в браузері)
+      // значить що закрили чат
     } else if (previousChatId) {
       dispatch(chatsActions.setCurrentChat(undefined))
     }
   }, [chatId])
+
+  useEventListener('keydown', (event) => {
+    if (event.key === 'Escape') {
+      navigate({pathname: '/'})
+    }
+  })
 
   return (
     <div className="main">
