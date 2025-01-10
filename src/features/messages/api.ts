@@ -13,7 +13,6 @@ import {
   ReadMyHistoryResult,
 } from './types'
 import {RootState} from '../../app/store'
-import {pause} from '../../shared/helpers/pause'
 import {Chat, SendMessageParams} from '../chats/types'
 import {emitEventWithHandling, socket} from '../../app/socket'
 import {messagesActions} from './state/messages-slice'
@@ -25,32 +24,34 @@ const getMessages = createAsyncThunk<Message[], GetMessagesParams>(
   'messages/getMessages',
   async (arg, thunkApi) => {
     try {
+      const {signal, ...params} = arg
       const state = thunkApi.getState() as RootState
-      await pause(1000)
       const result = await api.get<Message[]>('/messages', {
-        params: {
-          ...arg,
-        } satisfies GetMessagesParams,
-        signal: thunkApi.signal,
+        params,
+        signal,
       })
 
       result.data.forEach((m) => {
         const user = usersSelectors.selectById(state, m.senderId)
 
-        if (!user && !PENDING_REQUESTS.USERS.has(m.senderId)) {
+        if (!m.isOutgoing && !user && !PENDING_REQUESTS.USERS.has(m.senderId)) {
           thunkApi.dispatch(usersThunks.getUser({id: m.senderId}))
         }
       })
 
       return result.data
     } catch (e) {
-      if (e instanceof AxiosError) {
+      if (arg.signal?.aborted) {
+        return thunkApi.rejectWithValue(
+          `[SIGNAL_ABORTED]: ${arg.signal.reason}`
+        )
+      } else if (e instanceof AxiosError) {
         return thunkApi.rejectWithValue(
           e.response?.data?.message || 'Unknown error'
         )
       }
 
-      return thunkApi.rejectWithValue('[auth/signUp]')
+      return thunkApi.rejectWithValue('[messages/getMessages]')
     }
   }
 )

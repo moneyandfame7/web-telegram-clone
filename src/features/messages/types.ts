@@ -24,6 +24,9 @@ export interface GetMessagesParams {
   skipCursor?: boolean
   limit?: number
   direction?: GetMessagesDirection
+
+  /** client only field */
+  signal?: AbortSignal
 }
 
 export interface ReadHistoryParams {

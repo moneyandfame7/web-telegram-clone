@@ -27,6 +27,7 @@ import {messagesThunks} from '../../api'
 import {Message} from '../Message/Message'
 
 import './MessageList.scss'
+import {pause} from '../../../../shared/helpers/pause'
 
 const SPINNER_HEIGHT = 40
 interface MessageListProps {
@@ -157,25 +158,25 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
     })
   }
 
-  const initialScroll = (messages: MessageType[]) => {
+  const initialScroll = async (messages: MessageType[]): Promise<boolean> => {
     if (chat?.myLastReadMessageSequenceId === undefined) {
-      return
+      return false
     }
 
     const indexToScroll = messages.findIndex(
       (m) => m.sequenceId === chat.myLastReadMessageSequenceId
     )
-
+    console.log({indexToScroll})
     if (indexToScroll !== -1) {
       virtua.current?.scrollToIndex(indexToScroll)
+
+      return pause(1).then(() => true)
     }
+
+    return false
   }
 
   useLayoutEffect(() => {
-    initialScroll(messages)
-  }, [])
-
-  useEffect(() => {
     console.log(
       `ОСТАННЄ ПРОЧИТАНЕ МОЄ ПОВІДОМЛЕННЯ В ЧАТІ: ${chat?.theirLastReadMessageSequenceId}`
     )
@@ -186,25 +187,33 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
     if (!chat) {
       return
     }
-    const promise = dispatch(
-      messagesThunks.getMessages({
-        chatId,
-        sequenceId: chat.myLastReadMessageSequenceId ?? 0,
-        direction: GetMessagesDirection.AROUND,
-        limit: 40,
+
+    const controller = new AbortController()
+
+    ;(async () => {
+      await initialScroll(messages)
+
+      const promise = dispatch(
+        messagesThunks.getMessages({
+          chatId,
+          sequenceId: chat.myLastReadMessageSequenceId ?? 0,
+          direction: GetMessagesDirection.AROUND,
+          limit: 40,
+          signal: controller.signal,
+        })
+      )
+
+      promise.unwrap().then((messages) => {
+        initialScroll(messages)
+
+        setTimeout(() => {
+          ready.current = true
+        }, 0)
       })
-    )
-
-    promise.unwrap().then((messages) => {
-      initialScroll(messages)
-
-      setTimeout(() => {
-        ready.current = true
-      }, 0)
-    })
+    })()
 
     return () => {
-      promise.abort('chat closed')
+      controller.abort('chat closed')
     }
   }, [])
 
@@ -243,7 +252,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
       >
         {(index) => {
           const message = messages[index]
-          return <Message key={message.sequenceId} message={message} />
+          return <Message message={message} />
         }}
       </Virtualizer>
       {/* {endFetching && <Spinner />} */}
@@ -260,46 +269,18 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
             right: 15,
           }}
           onClick={() => {
-            // console.log(virtua.current?.findEndIndex())
-            // const sequenceId = !Math.round(Math.random())
-            //   ? chat?.lastMessage?.sequenceId
-            //   : 14
-            dispatch(
-              messagesThunks.scrollToMessage({
-                chatId,
-                sequenceId: chat?.lastMessage?.sequenceId!,
-                highlight: false,
-              })
-            )
+            if (chat?.lastMessage?.sequenceId) {
+              dispatch(
+                messagesThunks.scrollToMessage({
+                  chatId,
+                  sequenceId: chat.lastMessage.sequenceId,
+                  highlight: false,
+                })
+              )
+            }
           }}
         />
       )}
-      <IconButton
-        name="eyeOpen"
-        title="Scroll to bottom"
-        variant="primary"
-        color="white"
-        size="large"
-        style={{
-          position: 'absolute',
-          bottom: 150,
-          right: 15,
-        }}
-        onClick={() => {
-          // console.log(virtua.current?.findEndIndex())
-          // const sequenceId = !Math.round(Math.random())
-          //   ? chat?.lastMessage?.sequenceId
-          //   : 14
-          dispatch(
-            messagesThunks.scrollToMessage({
-              chatId,
-              sequenceId: 14,
-              highlight: true,
-            })
-          )
-        }}
-      />
-      {/* )} */}
     </div>
   )
 }

@@ -38,9 +38,18 @@ const selectBySequenceId = createSelector(
   }
 )
 
+const selectIsLoading = createSelector(
+  (state: RootState, chatId: string) =>
+    state.messages.byChatId[chatId]?.isLoading,
+  (isLoading) => {
+    return isLoading
+  }
+)
+
 export const messagesSelectors = {
   ...baseMessagesSelectors,
   selectAll,
   selectById,
   selectBySequenceId,
+  selectIsLoading,
 }
