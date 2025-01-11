@@ -1,16 +1,29 @@
 .message {
+  --message-gap: 3px;
+  --message-margin-x: 15px;
+  --message-avatar-size: 30px;
+
   display: flex;
   margin-bottom: 5px;
-  gap: 10px;
+
+  margin-inline: var(--message-margin-x);
+  gap: var(--message-gap);
+  align-items: flex-end;
   transition: background-color 0.3s ease;
 
   &.outgoing {
     justify-content: flex-end;
     transform-origin: right;
+
+    &.last-in-group {
+      > .message-content {
+        border-bottom-right-radius: 0;
+      }
+    }
     > .message-content {
       border-top-left-radius: 0.975rem;
       border-bottom-left-radius: 0.975rem;
-      border-bottom-right-radius: 0;
+      // border-bottom-right-radius: 0;
       // border-bottom-left-radius: 0;
 
       > .message-arrow {
@@ -28,10 +41,22 @@
     justify-content: flex-start;
     transform-origin: left;
 
+    &.last-in-group {
+      > .message-content {
+        border-bottom-left-radius: 0;
+      }
+    }
+
+    &.first-in-group {
+      > .message-content {
+        border-top-left-radius: 0.975rem;
+      }
+    }
+
     > .message-content {
       border-top-right-radius: 0.975rem;
       border-bottom-right-radius: 0.975rem;
-      border-bottom-left-radius: 0;
+      // border-bottom-left-radius: 0;
 
       > .message-arrow {
         display: block;
@@ -43,6 +68,12 @@
   }
   &.highlighted {
     background-color: rgba(0, 0, 0, 0.1);
+  }
+
+  &:not(.last-in-group) {
+    margin-left: calc(
+      var(--message-gap) + var(--message-margin-x) + var(--message-avatar-size)
+    );
   }
 
   &-content {

@@ -252,7 +252,25 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
       >
         {(index) => {
           const message = messages[index]
-          return <Message message={message} />
+          const prevMessage = messages[index - 1] as MessageType | undefined
+          const nextMessage = messages[index + 1] as MessageType | undefined
+
+          const isLastInGroup =
+            // prevMessage?.senderId !== message.senderId &&
+            nextMessage?.senderId !== message.senderId
+
+          const isFirstInGroup =
+            prevMessage?.senderId !== message.senderId &&
+            nextMessage?.senderId === message.senderId
+
+          // const isLastInGroup
+          return (
+            <Message
+              message={message}
+              isLastInGroup={isLastInGroup}
+              isFirstInGroup={isFirstInGroup}
+            />
+          )
         }}
       </Virtualizer>
       {/* {endFetching && <Spinner />} */}
