@@ -2,15 +2,34 @@
   --message-gap: 3px;
   --message-margin-x: 15px;
   --message-avatar-size: 30px;
-
+  position: relative;
   display: flex;
   margin-bottom: 5px;
-
-  margin-inline: var(--message-margin-x);
+  // padding-block: 3px;
+  padding-inline: var(--message-margin-x);
   gap: var(--message-gap);
   align-items: flex-end;
-  transition: background-color 0.3s ease;
+  transition: background-color 0.3s ease, opacity 0.3s ease;
 
+  &::before {
+    width: 100%;
+    height: 110%;
+    content: '';
+    display: block;
+    background-color: var(--c-ripple);
+    opacity: 0;
+    position: absolute;
+    left: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: opacity 0.3s ease;
+  }
+
+  &.menu-open {
+    &::before {
+      opacity: 1;
+    }
+  }
   &.outgoing {
     justify-content: flex-end;
     transform-origin: right;
@@ -71,7 +90,7 @@
   }
 
   &:not(.last-in-group) {
-    margin-left: calc(
+    padding-left: calc(
       var(--message-gap) + var(--message-margin-x) + var(--message-avatar-size)
     );
   }

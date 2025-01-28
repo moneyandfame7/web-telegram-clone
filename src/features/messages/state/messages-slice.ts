@@ -6,6 +6,7 @@ import {GetMessagesDirection, Message} from '../types'
 import {messagesAdapter} from './messages-adapter'
 import {messagesThunks} from '../api'
 import {chatsThunks} from '../../chats/api'
+import {IdPayload} from '../../../app/types'
 
 interface MessagesList {
   data: EntityState<Message, string>
@@ -13,9 +14,13 @@ interface MessagesList {
 }
 interface MessagesState {
   byChatId: Partial<Record<string, MessagesList>>
+  messageEditing: {
+    id?: string
+  }
 }
 const initialState: MessagesState = {
   byChatId: {},
+  messageEditing: {},
 }
 const messagesSlice = createSlice({
   name: 'messages',
@@ -59,7 +64,7 @@ const messagesSlice = createSlice({
         messages
       )
     },
-    editMessage: (
+    updateMessage: (
       state,
       action: PayloadAction<{
         chatId: string
@@ -82,6 +87,14 @@ const messagesSlice = createSlice({
       if (state.byChatId[chatId]) {
         messagesAdapter.removeOne(state.byChatId[chatId].data, id)
       }
+    },
+    toggleMessageEditing: (
+      state,
+      action: PayloadAction<Partial<IdPayload>>
+    ) => {
+      const {id} = action.payload
+
+      state.messageEditing.id = id
     },
   },
   extraReducers: (builder) => {
@@ -143,6 +156,7 @@ export const persistedMessagesReducer = persistReducer(
   {
     key: 'messages',
     storage: storage,
+    blacklist: ['messageEditing'] as (keyof MessagesState)[],
   },
   messagesSlice.reducer
 )

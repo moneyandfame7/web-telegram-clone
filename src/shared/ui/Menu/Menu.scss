@@ -63,6 +63,15 @@
       transform: scale(0.97);
       transition: transform 0.15s ease-in-out;
     }
+    &.danger {
+      color: var(--c-danger);
+
+      > .icon {
+        path {
+          fill: var(--c-danger) !important;
+        }
+      }
+    }
 
     > .icon {
       // width: 20px;

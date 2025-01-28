@@ -1,8 +1,10 @@
-import {createSlice, type PayloadAction} from '@reduxjs/toolkit'
+import {createSlice, Update, type PayloadAction} from '@reduxjs/toolkit'
 import persistReducer from 'redux-persist/es/persistReducer'
 import storage from 'redux-persist/lib/storage'
 import {chatsThunks} from '../api'
 import {chatsAdapter} from './chats-adapter'
+import {Message} from '../../messages/types'
+import {chatsSelectors} from './chats-selectors'
 
 interface ChatsState {
   currentChatId?: string
@@ -17,6 +19,28 @@ const chatsSlice = createSlice({
     },
     addOne: chatsAdapter.addOne,
     updateOne: chatsAdapter.updateOne,
+    updateLastMessage: (
+      state,
+      action: PayloadAction<Update<Message, string>>
+    ) => {
+      const {id, changes} = action.payload
+
+      const chat = state.entities[id]
+
+      if (!chat.lastMessage) {
+        return
+      }
+
+      chatsAdapter.updateOne(state, {
+        id: action.payload.id,
+        changes: {
+          lastMessage: {
+            ...chat.lastMessage,
+            ...changes,
+          },
+        },
+      })
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(chatsThunks.createChat.fulfilled, (state, action) => {

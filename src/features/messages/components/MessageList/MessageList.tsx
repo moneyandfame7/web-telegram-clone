@@ -235,6 +235,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
   return (
     <div
       style={{
+        // height: '100%',
         height: '100vh',
         overflowY: 'auto',
         overflowAnchor: 'none',

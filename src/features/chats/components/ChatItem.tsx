@@ -34,7 +34,7 @@ export const ChatItem: FC<ChatItemProps> = ({chat}) => {
     }
 
     const isRead =
-      chat.theirLastReadMessageSequenceId ?? -1 >= chat.lastMessage.sequenceId
+      (chat.theirLastReadMessageSequenceId ?? -1) >= chat.lastMessage.sequenceId
     return (
       <>
         {chat.lastMessage.isOutgoing && (

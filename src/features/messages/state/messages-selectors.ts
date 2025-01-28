@@ -14,7 +14,7 @@ const selectAll = createSelector(
 const selectById = createSelector(
   [
     (state: RootState, chatId: string) => state.messages.byChatId[chatId]?.data,
-    (_, __, messageId: string) => messageId,
+    (state: RootState, chatId: string, messageId: string) => messageId,
   ],
   (messagesEntry, messageId) => {
     return messagesEntry
@@ -38,11 +38,18 @@ const selectBySequenceId = createSelector(
   }
 )
 
-const selectIsLoading = createSelector(
-  (state: RootState, chatId: string) =>
-    state.messages.byChatId[chatId]?.isLoading,
-  (isLoading) => {
-    return isLoading
+const selectIsLoading = (state: RootState, chatId: string) =>
+  state.messages.byChatId[chatId]?.isLoading
+
+const selectMessageEditing = (state: RootState) => state.messages.messageEditing
+
+const selectMessageToEdit = createSelector(
+  (state: RootState, chatId: string) => state.messages.byChatId[chatId]?.data,
+  (state: RootState) => state.messages.messageEditing,
+  (messageEntry, editing) => {
+    return editing.id && messageEntry
+      ? baseMessagesSelectors.selectById(messageEntry, editing.id)
+      : undefined
   }
 )
 
@@ -52,4 +59,6 @@ export const messagesSelectors = {
   selectById,
   selectBySequenceId,
   selectIsLoading,
+  selectMessageEditing,
+  selectMessageToEdit,
 }

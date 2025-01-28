@@ -111,6 +111,59 @@ https://github.com/morethanwords/tweb/blob/a86ac835c45ad0255caf12fa4af36657e4fe2
     }
   }
 
+  &-slideY {
+    > .transition-item_from,
+    &_from {
+      animation: slide-y-out cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    > .transition-item_to,
+    &_to {
+      transform: translateY(100%);
+      animation: slide-y-in cubic-bezier(0.25, 1, 0.5, 1);
+    }
+  }
+
+  &-slideYBackwards {
+    > .transition-item_from,
+    &_from {
+      animation: slide-y-in-backwards cubic-bezier(0.25, 1, 0.5, 1);
+    }
+
+    > .transition-item_to,
+    &_to {
+      transform: translateY(-100%);
+      animation: slide-y-out-backwards cubic-bezier(0.25, 1, 0.5, 1);
+    }
+  }
+
+  &-slideFadeY {
+    > .transition-item_from,
+    &_from {
+      animation: slide-y-move-out cubic-bezier(0.25, 1, 0.5, 1),
+        fade-out 150ms ease;
+    }
+    > .transition-item_to,
+    &_to {
+      transform: translate3d(1.5rem, 0, 0);
+      animation: slide-y-move-in cubic-bezier(0.25, 1, 0.5, 1),
+        fade-in 150ms ease;
+    }
+  }
+  &-slideFadeYBackwards {
+    > .transition-item_from,
+    &_from {
+      animation: slide-y-move-in-backwards cubic-bezier(0.25, 1, 0.5, 1),
+        fade-in-backwards 150ms ease;
+    }
+    > .transition-item_to,
+    &_to {
+      transform: translate3d(-1.5rem, 0, 0);
+      animation: slide-y-move-out-backwards cubic-bezier(0.25, 1, 0.5, 1),
+        fade-out-backwards 150ms ease;
+    }
+  }
+
   &-zoomIcon,
   &-zoomIconBackwards {
     > .transition-item_from,
@@ -207,6 +260,71 @@ https://github.com/morethanwords/tweb/blob/a86ac835c45ad0255caf12fa4af36657e4fe2
   }
   100% {
     transform: translateX(0);
+  }
+}
+@keyframes slide-y-out {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(-100%);
+  }
+}
+@keyframes slide-y-in {
+  0% {
+    transform: translateY(100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+@keyframes slide-y-in-backwards {
+  0% {
+    transform: translateY(0);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+@keyframes slide-y-out-backwards {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(0);
+  }
+}
+
+@keyframes slide-y-move-in {
+  0% {
+    transform: translate3d(0, 1.5rem, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+  }
+}
+@keyframes slide-y-move-out {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, -1.5rem, 0);
+  }
+}
+@keyframes slide-y-move-in-backwards {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(0, 1.5rem, 0);
+  }
+}
+@keyframes slide-y-move-out-backwards {
+  0% {
+    transform: translate3d(0, -1.5rem, 0);
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
   }
 }
 

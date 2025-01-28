@@ -13,6 +13,11 @@ export interface Message {
   /** client only props */
   isHighlighted?: boolean
 }
+export interface SendMessageParams {
+  text: string
+  chatId: string
+}
+
 export enum GetMessagesDirection {
   OLDER = 'OLDER',
   NEWER = 'NEWER',
@@ -38,3 +43,10 @@ export interface ReadMyHistoryResult {
   chatId: string
   maxId: number
 }
+export interface EditMessageParams {
+  id: string
+  chatId: string
+  text?: string
+  editedAt?: string
+}
+export type EditMessageResult = EditMessageParams & {editedAt: string}

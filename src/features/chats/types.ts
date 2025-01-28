@@ -1,11 +1,6 @@
 import type {ChatColor} from '../../app/types'
 import {Message} from '../messages/types'
 
-export interface SendMessageParams {
-  text: string
-  chatId: string
-}
-
 export interface Chat {
   id: string
   userId?: string

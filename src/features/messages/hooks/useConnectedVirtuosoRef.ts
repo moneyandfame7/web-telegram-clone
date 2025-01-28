@@ -99,7 +99,7 @@ export const useConnetedVirtuaRef = ({chatId}: {chatId: string}) => {
           }
 
           api.dispatch(
-            messagesActions.editMessage({
+            messagesActions.updateMessage({
               id: message.id,
               chatId,
               changes: {isHighlighted: true},
@@ -108,7 +108,7 @@ export const useConnetedVirtuaRef = ({chatId}: {chatId: string}) => {
 
           setTimeout(() => {
             api.dispatch(
-              messagesActions.editMessage({
+              messagesActions.updateMessage({
                 id: message.id,
                 chatId,
                 changes: {isHighlighted: false},

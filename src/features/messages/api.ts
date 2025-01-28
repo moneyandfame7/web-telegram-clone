@@ -6,14 +6,17 @@ import {createAsyncThunk} from '@reduxjs/toolkit'
 import {api, PENDING_REQUESTS} from '../../app/api'
 
 import {
+  EditMessageParams,
+  EditMessageResult,
   GetMessagesDirection,
   GetMessagesParams,
   Message,
   ReadHistoryParams,
   ReadMyHistoryResult,
+  SendMessageParams,
 } from './types'
 import {RootState} from '../../app/store'
-import {Chat, SendMessageParams} from '../chats/types'
+import {Chat} from '../chats/types'
 import {emitEventWithHandling, socket} from '../../app/socket'
 import {messagesActions} from './state/messages-slice'
 import {chatsActions, chatsSelectors} from '../chats/state'
@@ -84,6 +87,44 @@ const scrollToMessage = createAsyncThunk(
   }
 )
 
+const updateMessageLocal = createAsyncThunk(
+  'messages/updateMessageLocal',
+  (arg: EditMessageParams, thunkApi) => {
+    const state = thunkApi.getState() as RootState
+    const chat = chatsSelectors.selectById(state, arg.chatId)
+    const message = messagesSelectors.selectById(state, arg.chatId, arg.id)
+
+    if (!message || !chat) {
+      return
+    }
+
+    const isLastMessage = message.id === chat.lastMessage?.id
+
+    thunkApi.dispatch(
+      messagesActions.updateMessage({
+        id: arg.id,
+        chatId: arg.chatId,
+        changes: {
+          text: arg.text,
+          editedAt: arg.editedAt,
+        },
+      })
+    )
+
+    if (isLastMessage) {
+      thunkApi.dispatch(
+        chatsActions.updateLastMessage({
+          id: arg.chatId,
+          changes: {
+            text: arg.text,
+            editedAt: arg.editedAt,
+          },
+        })
+      )
+    }
+  }
+)
+
 const sendMessage = createAsyncThunk(
   'messages/sendMessage',
   async (arg: SendMessageParams, thunkApi) => {
@@ -115,9 +156,55 @@ const sendMessage = createAsyncThunk(
           },
         })
       )
+
+      thunkApi.dispatch(
+        scrollToMessage({
+          chatId: result.chat.id,
+          sequenceId: result.message.sequenceId,
+          highlight: false,
+        })
+      )
     }
 
     return {chatJustCreated: !chat, chatId: result.chat.id}
+  }
+)
+
+const editMessage = createAsyncThunk(
+  'messages/editMessage',
+  async (arg: EditMessageParams, thunkApi) => {
+    const state = thunkApi.getState() as RootState
+    const oldMessage = messagesSelectors.selectById(state, arg.chatId, arg.id)
+
+    if (!oldMessage) {
+      return
+    }
+
+    thunkApi.dispatch(
+      updateMessageLocal({
+        ...arg,
+        editedAt: new Date().toISOString(),
+      })
+    )
+
+    try {
+      await emitEventWithHandling<EditMessageParams, boolean>(
+        'message:edit',
+        arg
+      )
+    } catch (error) {
+      if (!oldMessage) {
+        return
+      }
+      thunkApi.dispatch(
+        updateMessageLocal({
+          id: oldMessage.id,
+          chatId: oldMessage.chatId,
+          text: oldMessage.text,
+          editedAt: oldMessage.editedAt,
+        })
+      )
+    }
   }
 )
 
@@ -190,5 +277,7 @@ export const messagesThunks = {
   getMessages,
   scrollToMessage,
   sendMessage,
+  editMessage,
   readHistory,
+  updateMessageLocal,
 }

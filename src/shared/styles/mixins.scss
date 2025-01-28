@@ -1,0 +1,91 @@
+@mixin responsive($breakpoint) {
+  @if $breakpoint == mobile {
+    @media only screen and (max-width: 480px) {
+      @content;
+    }
+  }
+  @if $breakpoint == tablet {
+    @media only screen and /* (min-width: 480.1px) and */(max-width: 768px) {
+      @content;
+    }
+  }
+  @if $breakpoint == onlyTablet {
+    @media only screen and (min-width: 480.1px) and (max-width: 768px) {
+      @content;
+    }
+  }
+  @if $breakpoint == laptop {
+    @media only screen and (min-width: 768.1px) and (max-width: 1280px) {
+      @content;
+    }
+  }
+  @if $breakpoint == desktop {
+    @media only screen and (min-width: 1280px) {
+      @content;
+    }
+  }
+}
+
+@mixin withSmallScreen() {
+  @media only screen and (max-width: 768px) {
+    @content;
+  }
+}
+@mixin withLargeScreen() {
+  @media only screen and (min-width: 768.1px) {
+    @content;
+  }
+}
+@mixin bgAndColorTransition($properties...) {
+  @include withAnimations {
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+
+    transition-property: background-color, $properties;
+  }
+}
+
+@mixin defaultTransition($properties...) {
+  @include withAnimations {
+    // transition: $propertie 0.2s ease;
+    transition-duration: 0.2s;
+    transition-timing-function: ease;
+    transition-property: $properties;
+  }
+}
+
+@mixin withBubbles() {
+  body.bubble-mode & {
+    @content;
+  }
+}
+
+@mixin withAnimations() {
+  html:not(.animation-none) & {
+    @content;
+  }
+}
+@mixin withoutAnimations() {
+  html.animation-none & {
+    @content;
+  }
+}
+@mixin withBlur($amount) {
+  @supports (backdrop-filter: blur($amount)) {
+    html:not(.no-menu-blur) & {
+      backdrop-filter: blur($amount);
+    }
+  }
+}
+
+@mixin whenNight() {
+  html.night & {
+    @content;
+  }
+}
+
+@mixin whenDay() {
+  html:not(.night) & {
+    @content;
+  }
+}

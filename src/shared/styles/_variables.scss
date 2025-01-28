@@ -4,6 +4,7 @@ $c-primary: #3390ec;
 $c-primary-hover: darken($c-primary, 2%);
 $c-primary-light: #3a8cdd;
 $c-primary-transparent: rgba(darken($c-primary, 10%), 0.1);
+$c-primary-transparent-hover: rgba(darken($c-primary, 5%), 0.2);
 
 $c-font-secondary: #707579;
 
@@ -21,12 +22,17 @@ $c-message-bg: #dcf8c5;
   --c-primary: #{$c-primary};
   --c-primary-hover: #{$c-primary-hover};
   --c-primary-light: #{$c-primary-light};
+  --c-primary-transparent: #{$c-primary-transparent};
+  --c-primary-transparent-hover: #{$c-primary-transparent-hover};
 
+  --chat-input-height: 54px;
+  --message-text-size: 16px;
   --c-surface: #{$c-surface};
   --c-surface-2: #{lighten($c-surface, 2%)};
   --c-surface-3: #{lighten($c-surface, 5%)};
 
   --c-placeholder: #707579;
+  --c-scrollbar: rgba(90, 90, 90, 0.3);
 
   --c-border: #dfe1e5;
   --c-border-hover: darken(#dfe1e5, 10%);
