@@ -48,7 +48,7 @@ const chatsSlice = createSlice({
     })
 
     builder.addCase(chatsThunks.getChats.fulfilled, (state, action) => {
-      chatsAdapter.setMany(state, action.payload)
+      chatsAdapter.setMany(state, action.payload.chats)
     })
 
     builder.addCase(chatsThunks.getChat.fulfilled, (state, action) => {

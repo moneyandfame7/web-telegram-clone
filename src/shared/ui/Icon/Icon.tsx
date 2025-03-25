@@ -8,7 +8,7 @@ import * as icons from '../../../assets/icons/all'
 import './Icon.scss'
 
 export type IconName = keyof typeof icons
-export type IconColor = 'default' | 'secondary' | 'primary' | 'white'
+export type IconColor = 'default' | 'secondary' | 'primary' | 'white' | 'red'
 
 export interface IconProps {
   name: IconName

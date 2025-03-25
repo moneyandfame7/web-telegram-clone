@@ -48,9 +48,32 @@ export const createMessageListeners = (
 
     if (chat.lastMessage?.id === data.id) {
       dispatch(
-        chatsActions.updateOne({
+        chatsActions.updateLastMessage({
           id: chat.id,
-          changes: {},
+          changes: {
+            text: data.text,
+            editedAt: data.editedAt,
+          },
+        })
+      )
+    }
+  }
+
+  const deletedMessages: ListenEvents['message:deleted'] = (data) => {
+    const state = store.getState()
+    const chat = chatsSelectors.selectById(state, data.chat.id)
+    dispatch(
+      messagesActions.removeManyMessages({chatId: data.chat.id, ids: data.ids})
+    )
+
+    if (
+      data.chat.lastMessage?.id !== chat.lastMessage?.id &&
+      chat.lastMessage
+    ) {
+      dispatch(
+        chatsActions.updateLastMessage({
+          id: chat.id,
+          changes: chat.lastMessage,
         })
       )
     }
@@ -90,12 +113,14 @@ export const createMessageListeners = (
     subscribe() {
       socket.on('message:new', newMessage)
       socket.on('message:edited', editedMessage)
+      socket.on('message:deleted', deletedMessages)
       socket.on('message:read-by-me', readByMe)
       socket.on('message:read-by-them', readByThem)
     },
     unsubscribe() {
       socket.off('message:new', newMessage)
       socket.off('message:edited', editedMessage)
+      socket.off('message:deleted', deletedMessages)
       socket.off('message:read-by-me', readByMe)
       socket.off('message:read-by-them', readByThem)
     },

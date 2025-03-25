@@ -1,12 +1,4 @@
-import {
-  ChangeEvent,
-  FC,
-  RefObject,
-  useEffect,
-  useLayoutEffect,
-  useRef,
-  useState,
-} from 'react'
+import {FC, useLayoutEffect, useRef, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
 import {useAppDispatch, useAppSelector} from '../../../app/store'
 import {messagesThunks} from '../../messages/api'
@@ -21,6 +13,12 @@ import {MessageInput} from '../../messages/components/MessageInput/MessageInput'
 
 import './MessageComposer.scss'
 import {insertCursorAtEnd} from '../../../shared/helpers/selection'
+import {SingleTransition} from '../../../shared/ui/Transition/Transition'
+import {Button} from '../../../shared/ui'
+import {chatsSelectors} from '../state'
+import {DeleteMessagesModal} from '../../messages/components/DeleteMessagesModal/DeleteMessagesModal'
+import {useBoolean} from '../../../shared/hooks/useBoolean'
+import {MentionedMessage} from '../../messages/components/MentionedMessage/MentionedMessage'
 
 interface MessageComposerProps {
   chatId: string
@@ -28,8 +26,13 @@ interface MessageComposerProps {
 export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
   const dispatch = useAppDispatch()
   const navigate = useNavigate()
-  const messageEditing = useAppSelector((state) =>
-    messagesSelectors.selectMessageEditing(state)
+
+  const chat = useAppSelector((state) =>
+    chatsSelectors.selectById(state, chatId)
+  )
+  const messageEditing = useAppSelector(messagesSelectors.selectMessageEditing)
+  const messageSelection = useAppSelector(
+    (state) => state.messages.messageSelection.chat
   )
 
   const messageToEdit = useAppSelector(
@@ -37,7 +40,17 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
     (oldValue, newValue) => oldValue?.text === newValue?.text // важливо, щоб не трігерити кожен раз
   )
 
+  const messageToReply = useAppSelector((state) =>
+    messagesSelectors.selectMessageToReply(state, chatId)
+  )
+
   const inputRef = useRef<HTMLDivElement>(null)
+
+  const {
+    value: isDeleteModalOpen,
+    setTrue: openDeleteModal,
+    setFalse: closeDeleteModal,
+  } = useBoolean()
 
   const [isMessageSending, setIsMessageSending] = useState(false)
   const [text, setText] = useState('')
@@ -68,7 +81,11 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
 
     try {
       const result = await dispatch(
-        messagesThunks.sendMessage({chatId, text})
+        messagesThunks.sendMessage({
+          chatId,
+          text,
+          replyToMsgId: messageToReply?.id,
+        })
       ).unwrap()
 
       if (result.chatJustCreated) {
@@ -87,48 +104,70 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
 
   return (
     <div className="message-composer">
-      <div
-        className={`mentioned-message-container${
-          messageToEdit ? ' active' : ''
+      {/* <div
+        className={`message-selection${
+          messageSelection.active ? ' active' : ''
         }`}
       >
-        <Icon
-          className="mentioned-message-icon"
-          name="edit"
-          color="primary"
-          title="Edit icon"
-        />
-        <div
-          className="mentioned-message"
-          onClick={() => {
-            console.log('CLICK')
-            if (messageToEdit) {
-              dispatch(
-                messagesThunks.scrollToMessage({
-                  chatId,
-                  sequenceId: messageToEdit.sequenceId,
-                  highlight: true,
-                })
-              )
-            }
-          }}
-        >
-          <div className="mentioned-message-content">
-            <p className="mentioned-message-title">Editing</p>
-            <p className="mentioned-message-text">{messageToEdit?.text}</p>
-          </div>
-        </div>
-
+        <h1>{messageSelection.ids.length}</h1>
+      </div> */}
+      <SingleTransition
+        className="message-selection"
+        in={messageSelection.active}
+        transitionName="fade"
+        animationToggle
+      >
         <IconButton
-          className="mentioned-message-icon"
-          name="close"
-          title="Close toolbar"
-          color="primary"
           onClick={() => {
-            dispatch(messagesActions.toggleMessageEditing({id: undefined}))
+            dispatch(
+              messagesActions.toggleChatMessageSelection({active: false})
+            )
           }}
+          name="close"
+          title="Cancel selection"
+          color="secondary"
         />
-      </div>
+        <p className="text-bold">
+          {messageSelection.ids.length} messages selected
+        </p>
+        <Button
+          variant="transparent"
+          color="red"
+          size="small"
+          onClick={openDeleteModal}
+        >
+          <Icon name="deleteIcon" title="Delete" size="small" color="red" />
+          Delete
+        </Button>
+        <Button variant="transparent" color="gray" size="small">
+          Forward
+          <Icon name="forward" title="Forward" color="secondary" size="small" />
+        </Button>
+      </SingleTransition>
+      <MentionedMessage
+        size="large"
+        messageToEdit={messageToEdit}
+        replyInfo={messageToReply}
+        onClick={() => {
+          const message = messageToEdit || messageToReply
+
+          if (!message) {
+            return
+          }
+
+          dispatch(
+            messagesThunks.scrollToMessage({
+              chatId: message.chatId,
+              sequenceId: message.sequenceId,
+              highlight: true,
+            })
+          )
+        }}
+        onClose={() => {
+          dispatch(messagesActions.toggleMessageEditing({}))
+          dispatch(messagesActions.toggleMessageReplying({}))
+        }}
+      />
       <div className="flex-row">
         <MessageInput
           inputRef={inputRef}
@@ -144,6 +183,14 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
           color="primary"
         />
       </div>
+
+      {chat && (
+        <DeleteMessagesModal
+          chat={chat}
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+        />
+      )}
     </div>
   )
 }

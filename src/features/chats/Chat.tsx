@@ -1,4 +1,4 @@
-import {useLayoutEffect, useRef, type FC} from 'react'
+import {type FC} from 'react'
 import {useParams} from 'react-router-dom'
 
 import {MessageList} from '../messages/components/MessageList/MessageList'
@@ -16,7 +16,6 @@ export const Chat: FC = () => {
       <ChatHeader chatId={chatId} />
       <MessageList key={chatId} chatId={chatId} />
       <MessageComposer chatId={chatId} />
-      {/* <ChatInputTest /> */}
     </div>
   )
 }

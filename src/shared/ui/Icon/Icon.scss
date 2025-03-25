@@ -31,6 +31,15 @@
       fill: var(--c-primary) !important;
     }
   }
+  &-red {
+    path {
+      fill: var(--c-danger) !important;
+    }
+    &.icon-arrowRight,
+    &.icon-plus {
+      stroke: var(--c-danger) !important;
+    }
+  }
   &-white {
     path {
       fill: #fff !important;

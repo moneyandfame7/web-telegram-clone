@@ -16,7 +16,15 @@ import {Menu} from '../../../../shared/ui/Menu/Menu'
 import {MenuItem} from '../../../../shared/ui/Menu/MenuItem'
 import {messagesActions} from '../../state/messages-slice'
 
+import {messagesSelectors} from '../../state/messages-selectors'
+
 import './Message.scss'
+import {Icon} from '../../../../shared/ui/Icon/Icon'
+import {DeleteMessagesModal} from '../DeleteMessagesModal/DeleteMessagesModal'
+import {useBoolean} from '../../../../shared/hooks/useBoolean'
+import {MessageReplyInfo} from '../MessageReplyInfo/MessageReplyInfo'
+import {MentionedMessage} from '../MentionedMessage/MentionedMessage'
+import {messagesThunks} from '../../api'
 
 interface MessageProps {
   message: MessageType
@@ -36,9 +44,24 @@ export const Message: FC<MessageProps> = ({
   const sender = useAppSelector((state) =>
     usersSelectors.selectById(state, message.senderId)
   ) as User | undefined
+  const isSelectionActive = useAppSelector(
+    messagesSelectors.selectIsSelectingActive
+  )
+  const isMessageSelected = useAppSelector((state) =>
+    messagesSelectors.selectIsSelected(state, message.id)
+  )
+  const isPrivateChat = Boolean(chat?.userId)
+
+  const shouldShowSenderName = !isPrivateChat && !message.isOutgoing
 
   const ref = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
+
+  const {
+    value: isDeleteModalOpen,
+    setTrue: openDeleteModal,
+    setFalse: closeDeleteModal,
+  } = useBoolean()
 
   const {isContextMenuOpen, handleContextMenu, handleContextMenuClose, styles} =
     useContextMenu({
@@ -51,6 +74,17 @@ export const Message: FC<MessageProps> = ({
       },
     })
 
+  const handleClick = () => {
+    if (isSelectionActive) {
+      dispatch(
+        messagesActions.toggleChatMessageSelection({
+          id: message.id,
+          active: true,
+        })
+      )
+    }
+  }
+
   const buildedClass = clsx('message', {
     outgoing: message.isOutgoing,
     incoming: !message.isOutgoing,
@@ -58,10 +92,21 @@ export const Message: FC<MessageProps> = ({
     'last-in-group': isLastInGroup,
     'first-in-group': isFirstInGroup,
     'menu-open': isContextMenuOpen,
+    'is-selected': isMessageSelected,
   })
 
   return (
-    <div className={buildedClass} ref={ref} onContextMenu={handleContextMenu}>
+    <div
+      className={buildedClass}
+      ref={ref}
+      onContextMenu={handleContextMenu}
+      onClick={handleClick}
+    >
+      {/* {isSelectionActive && ( */}
+      <div className="message-checkbox">
+        <Icon name="check" title="Select message" size="small" color="white" />
+      </div>
+      {/* )} */}
       {!message.isOutgoing && isLastInGroup && (
         <Avatar
           color={sender?.color}
@@ -71,7 +116,29 @@ export const Message: FC<MessageProps> = ({
       )}
 
       <div className="message-content">
-        <div className="message-content__sender"></div>
+        {shouldShowSenderName && (
+          <div className="message-content__sender">SENDER</div>
+        )}
+        {message.replyInfo && (
+          <MentionedMessage
+            size="compact"
+            replyInfo={message.replyInfo}
+            onClick={() => {
+              const replyInfo = message.replyInfo!
+              dispatch(
+                messagesThunks.scrollToMessage({
+                  chatId: message.chatId,
+                  sequenceId: replyInfo.sequenceId,
+                  highlight: true,
+                })
+              )
+            }}
+            onClose={() => {
+              dispatch(messagesActions.toggleMessageEditing({}))
+              dispatch(messagesActions.toggleMessageReplying({}))
+            }}
+          />
+        )}
         <div className="message-content__text">
           <b>[{message.sequenceId}] </b>
           LAST READ: {`${chat?.theirLastReadMessageSequenceId}   `}
@@ -113,7 +180,14 @@ export const Message: FC<MessageProps> = ({
         portal
         backdrop
       >
-        <MenuItem title="Reply" icon="reply" />
+        <MenuItem
+          title="Reply"
+          icon="reply"
+          onClick={() => {
+            console.log(`REPLY: ${message.id}`)
+            dispatch(messagesActions.toggleMessageReplying({id: message.id}))
+          }}
+        />
         <MenuItem
           title="Edit"
           icon="edit"
@@ -122,8 +196,34 @@ export const Message: FC<MessageProps> = ({
           }}
         />
         <MenuItem title="Copy" icon="copy" />
-        <MenuItem title="Delete" icon="deleteIcon" danger />
+        <MenuItem
+          title="Select"
+          icon="select"
+          onClick={() => {
+            dispatch(
+              messagesActions.toggleChatMessageSelection({
+                active: true,
+                id: message.id,
+              })
+            )
+          }}
+        />
+        <MenuItem
+          title="Delete"
+          icon="deleteIcon"
+          danger
+          onClick={openDeleteModal}
+        />
       </Menu>
+
+      {chat && (
+        <DeleteMessagesModal
+          chat={chat}
+          isOpen={isDeleteModalOpen}
+          onClose={closeDeleteModal}
+          message={message}
+        />
+      )}
     </div>
   )
 }

@@ -6,14 +6,16 @@ import {createAsyncThunk} from '@reduxjs/toolkit'
 import {api, PENDING_REQUESTS} from '../../app/api'
 
 import {
+  DeleteMessagesParams,
+  DeleteMessagesResult,
   EditMessageParams,
-  EditMessageResult,
   GetMessagesDirection,
   GetMessagesParams,
   Message,
   ReadHistoryParams,
   ReadMyHistoryResult,
   SendMessageParams,
+  UpdateMessageLocalParams,
 } from './types'
 import {RootState} from '../../app/store'
 import {Chat} from '../chats/types'
@@ -89,7 +91,7 @@ const scrollToMessage = createAsyncThunk(
 
 const updateMessageLocal = createAsyncThunk(
   'messages/updateMessageLocal',
-  (arg: EditMessageParams, thunkApi) => {
+  (arg: UpdateMessageLocalParams, thunkApi) => {
     const state = thunkApi.getState() as RootState
     const chat = chatsSelectors.selectById(state, arg.chatId)
     const message = messagesSelectors.selectById(state, arg.chatId, arg.id)
@@ -105,8 +107,9 @@ const updateMessageLocal = createAsyncThunk(
         id: arg.id,
         chatId: arg.chatId,
         changes: {
-          text: arg.text,
-          editedAt: arg.editedAt,
+          ...(arg.text && {text: arg.text}),
+          ...(arg.editedAt && {editedAt: arg.editedAt}),
+          deleteLocal: arg.deleteLocal,
         },
       })
     )
@@ -116,8 +119,9 @@ const updateMessageLocal = createAsyncThunk(
         chatsActions.updateLastMessage({
           id: arg.chatId,
           changes: {
-            text: arg.text,
-            editedAt: arg.editedAt,
+            ...(arg.text && {text: arg.text}),
+            ...(arg.editedAt && {editedAt: arg.editedAt}),
+            deleteLocal: arg.deleteLocal,
           },
         })
       )
@@ -208,6 +212,78 @@ const editMessage = createAsyncThunk(
   }
 )
 
+/**
+ * @todo локальне видалення + оновлення lastMessage
+ * + пофіксити лист бо там не нормально оновлюється все чомусь.. можливо тут повʼязане щось з shift.
+ */
+const deleteMessages = createAsyncThunk(
+  'messages/deleteMessages',
+  async (arg: DeleteMessagesParams, thunkApi) => {
+    const state = thunkApi.getState() as RootState
+    const chat = chatsSelectors.selectById(state, arg.chatId)
+    console.log('delete')
+    arg.ids.forEach((id) => {
+      thunkApi.dispatch(
+        updateMessageLocal({id, chatId: arg.chatId, deleteLocal: true})
+      )
+      const isLastMessage = chat.lastMessage?.id === id
+      console.log({isLastMessage})
+
+      if (isLastMessage) {
+        const newLastMessage = messagesSelectors.selectLastMessageLocal(
+          thunkApi.getState() as RootState,
+          arg.chatId
+        )
+
+        if (!newLastMessage) {
+          return
+        }
+
+        thunkApi.dispatch(
+          chatsActions.updateLastMessage({
+            id: arg.chatId,
+            changes: newLastMessage,
+          })
+        )
+      }
+    })
+
+    try {
+      const result = await emitEventWithHandling<
+        DeleteMessagesParams,
+        DeleteMessagesResult
+      >('message:delete', arg)
+
+      thunkApi.dispatch(
+        messagesActions.removeManyMessages({chatId: arg.chatId, ids: arg.ids})
+      )
+
+      thunkApi.dispatch(
+        chatsActions.updateLastMessage({
+          id: arg.chatId,
+          changes: result.chat.lastMessage,
+        })
+      )
+    } catch (error) {
+      arg.ids.forEach((id) => {
+        thunkApi.dispatch(
+          updateMessageLocal({id, chatId: arg.chatId, deleteLocal: false})
+        )
+      })
+      if (!chat.lastMessage) {
+        return
+      }
+
+      thunkApi.dispatch(
+        chatsActions.updateLastMessage({
+          id: arg.chatId,
+          changes: chat.lastMessage,
+        })
+      )
+    }
+  }
+)
+
 const readHistory = createAsyncThunk(
   'messages/readHistory',
   async (
@@ -280,4 +356,5 @@ export const messagesThunks = {
   editMessage,
   readHistory,
   updateMessageLocal,
+  deleteMessages,
 }

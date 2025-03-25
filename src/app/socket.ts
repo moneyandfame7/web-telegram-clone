@@ -1,6 +1,8 @@
 import {io, Socket} from 'socket.io-client'
 
 import {
+  DeleteMessagesParams,
+  DeleteMessagesResult,
   EditMessageParams,
   EditMessageResult,
   Message,
@@ -17,6 +19,7 @@ export interface ListenEvents {
 
   ['message:new']: (message: Message, chat: Chat) => void
   ['message:edited']: (data: EditMessageResult) => void
+  ['message:deleted']: (data: DeleteMessagesResult) => void
   ['message:read-by-me']: (data: ReadMyHistoryResult) => void
   ['message:read-by-them']: (
     data: Omit<ReadMyHistoryResult, 'unreadCount'>
@@ -42,6 +45,7 @@ interface EmitEvents {
    */
   'message:send': EventWithAck<SendMessageParams, Message>
   'message:edit': EventWithAck<EditMessageParams, boolean>
+  'message:delete': EventWithAck<DeleteMessagesParams, boolean>
   'message:read-history': EventWithAck<
     ReadHistoryParams,
     {newUnreadCount: number; chatId: string; maxId: number}

@@ -4,6 +4,9 @@
 .text-primary {
   color: var(--c-font-primary);
 }
+.text-bold {
+  font-weight: 500;
+}
 .flex-row {
   display: flex;
   flex-direction: row;

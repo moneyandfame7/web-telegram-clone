@@ -17,10 +17,30 @@ interface MessagesState {
   messageEditing: {
     id?: string
   }
+  messageSelection: {
+    chat: {
+      active: boolean
+      ids: string[]
+    }
+    media: {
+      ids: string[]
+    }
+  }
+  messageReplying: {
+    id?: string
+  }
 }
 const initialState: MessagesState = {
   byChatId: {},
   messageEditing: {},
+  messageSelection: {
+    chat: {
+      active: false,
+      ids: [],
+    },
+    media: {ids: []},
+  },
+  messageReplying: {},
 }
 const messagesSlice = createSlice({
   name: 'messages',
@@ -73,7 +93,7 @@ const messagesSlice = createSlice({
       }>
     ) => {
       const {chatId, id, changes} = action.payload
-
+      console.log({changes})
       if (state.byChatId[chatId]) {
         messagesAdapter.updateOne(state.byChatId[chatId].data, {id, changes})
       }
@@ -88,6 +108,16 @@ const messagesSlice = createSlice({
         messagesAdapter.removeOne(state.byChatId[chatId].data, id)
       }
     },
+    removeManyMessages: (
+      state,
+      action: PayloadAction<{chatId: string; ids: string[]}>
+    ) => {
+      const {chatId, ids} = action.payload
+
+      if (state.byChatId[chatId]) {
+        messagesAdapter.removeMany(state.byChatId[chatId].data, ids)
+      }
+    },
     toggleMessageEditing: (
       state,
       action: PayloadAction<Partial<IdPayload>>
@@ -96,11 +126,55 @@ const messagesSlice = createSlice({
 
       state.messageEditing.id = id
     },
+    toggleChatMessageSelection: (
+      state,
+      action: PayloadAction<{active: boolean; id?: string}>
+    ) => {
+      const {active, id: idToAdd} = action.payload
+
+      const alreadySelectedIds = state.messageSelection.chat.ids
+      /**
+       * @todo доробити, протестити
+       */
+      if (!active) {
+        state.messageSelection.chat = {
+          active: false,
+          ids: [],
+        }
+      } else if (!idToAdd) {
+        state.messageSelection.chat = {
+          active: true,
+          ids: [],
+        }
+      } else if (alreadySelectedIds.includes(idToAdd)) {
+        if (alreadySelectedIds.length === 1) {
+          state.messageSelection.chat = {
+            active: false,
+            ids: [],
+          }
+        } else {
+          state.messageSelection.chat.ids = alreadySelectedIds.filter(
+            (id) => id !== idToAdd
+          )
+        }
+      } else {
+        state.messageSelection.chat.ids.push(idToAdd)
+        state.messageSelection.chat.active = true
+      }
+    },
+    toggleMessageReplying: (
+      state,
+      action: PayloadAction<Partial<IdPayload>>
+    ) => {
+      const {id} = action.payload
+
+      state.messageReplying.id = id
+    },
   },
   extraReducers: (builder) => {
     /** CHATS THUNKS HANDLING */
     builder.addCase(chatsThunks.getChats.fulfilled, (state, action) => {
-      action.payload.forEach((chat) => {
+      action.payload.chats.forEach((chat) => {
         if (!state.byChatId[chat.id]) {
           state.byChatId[chat.id] = {
             data: messagesAdapter.getInitialState(),
@@ -156,7 +230,10 @@ export const persistedMessagesReducer = persistReducer(
   {
     key: 'messages',
     storage: storage,
-    blacklist: ['messageEditing'] as (keyof MessagesState)[],
+    blacklist: [
+      'messageEditing',
+      'messageSelection',
+    ] as (keyof MessagesState)[],
   },
   messagesSlice.reducer
 )
