@@ -34,7 +34,7 @@ export const ChatItem: FC<ChatItemProps> = ({chat}) => {
     }
 
     const isRead =
-      chat.theirLastReadMessageSequenceId ?? -1 >= chat.lastMessage.sequenceId
+      (chat.theirLastReadMessageSequenceId ?? -1) >= chat.lastMessage.sequenceId
     return (
       <>
         {chat.lastMessage.isOutgoing && (
@@ -54,13 +54,21 @@ export const ChatItem: FC<ChatItemProps> = ({chat}) => {
     )
   }
   const renderSubtitle = () => {
+    // console.log('NO LAST MESSAGE XDD', chat, chat.lastMessage)
+
     if (!chat.lastMessage) {
       return
     }
+
+    console.log('MESSAGE EXIST')
     const message = chat.lastMessage
     if (message.isOutgoing) {
+      console.log('MESSAGE OUTGOING')
+
       return message.text
     } else if (lastMessageSender) {
+      console.log('lastMessageSender')
+
       return (
         <p>
           <span className="text-primary">

@@ -33,8 +33,10 @@ export const MenuItem: FC<MenuItemProps> = memo(
       },
       [onClick, autoClose, onClose]
     )
+
+    const className = `menu__item${danger ? ' danger' : ''}`
     return (
-      <div className="menu__item" onClick={handleClick}>
+      <div className={className} onClick={handleClick}>
         {icon && (
           <Icon size="small" title={title} color="default" name={icon} />
         )}

@@ -36,6 +36,10 @@ export const ChatList: FC = () => {
   return (
     <div className="chat-list">
       {chats.map((chat) => {
+        if (!chat.lastMessage) {
+          console.log('NO MESSAGE', chat.title)
+        }
+        // console.log(chat.lastMessage)
         return <ChatItem key={chat.id} chat={chat} />
       })}
 

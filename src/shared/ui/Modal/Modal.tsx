@@ -22,7 +22,7 @@ interface ModalProps {
   onExitTransition?: VoidFunction
   className?: string
 
-  title?: string
+  title?: ReactNode
   header?: ReactNode
   content?: ReactNode
   actions?: ReactNode
@@ -59,13 +59,11 @@ export const Modal: FC<ModalProps> = ({
     [closeOnBackdrop]
   )
 
-  const buildedClass = ['modal-container', className].filter(Boolean).join(' ')
-
   return (
     <ModalProvider value={{isOpen, hasCloseButton, onClose}}>
       <Portal>
         <SingleTransition
-          className="modal"
+          className={className ? `${className} modal` : 'modal'}
           appear
           transitionName="fade"
           in={isOpen}
@@ -74,7 +72,7 @@ export const Modal: FC<ModalProps> = ({
           onExited={onExitTransition}
           onClick={handleBackdropClick}
         >
-          <div className={buildedClass} ref={modalRef}>
+          <div className="modal-container" ref={modalRef}>
             <div className="modal-header">
               {hasCloseButton && (
                 <IconButton

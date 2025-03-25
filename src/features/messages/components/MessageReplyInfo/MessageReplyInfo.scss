@@ -1,0 +1,7 @@
+.message-reply-info {
+  background-color: var(--c-primary-transparent);
+
+  &:hover {
+    background-color: var(--c-primary-transparent-hover);
+  }
+}

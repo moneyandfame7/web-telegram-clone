@@ -1,5 +1,5 @@
 import {createAsyncThunk} from '@reduxjs/toolkit'
-import type {Chat, CreateChatParams} from './types'
+import type {Chat, CreateChatParams, GetChatsResult} from './types'
 import {api} from '../../app/api'
 import {AxiosError} from 'axios'
 import {IdPayload} from '../../app/types'
@@ -17,11 +17,11 @@ const createChat = createAsyncThunk<Chat, CreateChatParams>(
   }
 )
 
-const getChats = createAsyncThunk<Chat[]>(
+const getChats = createAsyncThunk<GetChatsResult>(
   'chats/getChats',
   async (_, thunkApi) => {
     try {
-      const res = await api.get<Chat[]>(`/chats`)
+      const res = await api.get<GetChatsResult>(`/chats`)
       return res.data
     } catch (error) {
       if (error instanceof AxiosError) {

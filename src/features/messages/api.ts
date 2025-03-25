@@ -6,14 +6,19 @@ import {createAsyncThunk} from '@reduxjs/toolkit'
 import {api, PENDING_REQUESTS} from '../../app/api'
 
 import {
+  DeleteMessagesParams,
+  DeleteMessagesResult,
+  EditMessageParams,
   GetMessagesDirection,
   GetMessagesParams,
   Message,
   ReadHistoryParams,
   ReadMyHistoryResult,
+  SendMessageParams,
+  UpdateMessageLocalParams,
 } from './types'
 import {RootState} from '../../app/store'
-import {Chat, SendMessageParams} from '../chats/types'
+import {Chat} from '../chats/types'
 import {emitEventWithHandling, socket} from '../../app/socket'
 import {messagesActions} from './state/messages-slice'
 import {chatsActions, chatsSelectors} from '../chats/state'
@@ -84,6 +89,46 @@ const scrollToMessage = createAsyncThunk(
   }
 )
 
+const updateMessageLocal = createAsyncThunk(
+  'messages/updateMessageLocal',
+  (arg: UpdateMessageLocalParams, thunkApi) => {
+    const state = thunkApi.getState() as RootState
+    const chat = chatsSelectors.selectById(state, arg.chatId)
+    const message = messagesSelectors.selectById(state, arg.chatId, arg.id)
+
+    if (!message || !chat) {
+      return
+    }
+
+    const isLastMessage = message.id === chat.lastMessage?.id
+
+    thunkApi.dispatch(
+      messagesActions.updateMessage({
+        id: arg.id,
+        chatId: arg.chatId,
+        changes: {
+          ...(arg.text && {text: arg.text}),
+          ...(arg.editedAt && {editedAt: arg.editedAt}),
+          deleteLocal: arg.deleteLocal,
+        },
+      })
+    )
+
+    if (isLastMessage) {
+      thunkApi.dispatch(
+        chatsActions.updateLastMessage({
+          id: arg.chatId,
+          changes: {
+            ...(arg.text && {text: arg.text}),
+            ...(arg.editedAt && {editedAt: arg.editedAt}),
+            deleteLocal: arg.deleteLocal,
+          },
+        })
+      )
+    }
+  }
+)
+
 const sendMessage = createAsyncThunk(
   'messages/sendMessage',
   async (arg: SendMessageParams, thunkApi) => {
@@ -115,9 +160,127 @@ const sendMessage = createAsyncThunk(
           },
         })
       )
+
+      thunkApi.dispatch(
+        scrollToMessage({
+          chatId: result.chat.id,
+          sequenceId: result.message.sequenceId,
+          highlight: false,
+        })
+      )
     }
 
     return {chatJustCreated: !chat, chatId: result.chat.id}
+  }
+)
+
+const editMessage = createAsyncThunk(
+  'messages/editMessage',
+  async (arg: EditMessageParams, thunkApi) => {
+    const state = thunkApi.getState() as RootState
+    const oldMessage = messagesSelectors.selectById(state, arg.chatId, arg.id)
+
+    if (!oldMessage) {
+      return
+    }
+
+    thunkApi.dispatch(
+      updateMessageLocal({
+        ...arg,
+        editedAt: new Date().toISOString(),
+      })
+    )
+
+    try {
+      await emitEventWithHandling<EditMessageParams, boolean>(
+        'message:edit',
+        arg
+      )
+    } catch (error) {
+      if (!oldMessage) {
+        return
+      }
+      thunkApi.dispatch(
+        updateMessageLocal({
+          id: oldMessage.id,
+          chatId: oldMessage.chatId,
+          text: oldMessage.text,
+          editedAt: oldMessage.editedAt,
+        })
+      )
+    }
+  }
+)
+
+/**
+ * @todo локальне видалення + оновлення lastMessage
+ * + пофіксити лист бо там не нормально оновлюється все чомусь.. можливо тут повʼязане щось з shift.
+ */
+const deleteMessages = createAsyncThunk(
+  'messages/deleteMessages',
+  async (arg: DeleteMessagesParams, thunkApi) => {
+    const state = thunkApi.getState() as RootState
+    const chat = chatsSelectors.selectById(state, arg.chatId)
+    console.log('delete')
+    arg.ids.forEach((id) => {
+      thunkApi.dispatch(
+        updateMessageLocal({id, chatId: arg.chatId, deleteLocal: true})
+      )
+      const isLastMessage = chat.lastMessage?.id === id
+      console.log({isLastMessage})
+
+      if (isLastMessage) {
+        const newLastMessage = messagesSelectors.selectLastMessageLocal(
+          thunkApi.getState() as RootState,
+          arg.chatId
+        )
+
+        if (!newLastMessage) {
+          return
+        }
+
+        thunkApi.dispatch(
+          chatsActions.updateLastMessage({
+            id: arg.chatId,
+            changes: newLastMessage,
+          })
+        )
+      }
+    })
+
+    try {
+      const result = await emitEventWithHandling<
+        DeleteMessagesParams,
+        DeleteMessagesResult
+      >('message:delete', arg)
+
+      thunkApi.dispatch(
+        messagesActions.removeManyMessages({chatId: arg.chatId, ids: arg.ids})
+      )
+
+      thunkApi.dispatch(
+        chatsActions.updateLastMessage({
+          id: arg.chatId,
+          changes: result.chat.lastMessage,
+        })
+      )
+    } catch (error) {
+      arg.ids.forEach((id) => {
+        thunkApi.dispatch(
+          updateMessageLocal({id, chatId: arg.chatId, deleteLocal: false})
+        )
+      })
+      if (!chat.lastMessage) {
+        return
+      }
+
+      thunkApi.dispatch(
+        chatsActions.updateLastMessage({
+          id: arg.chatId,
+          changes: chat.lastMessage,
+        })
+      )
+    }
   }
 )
 
@@ -190,5 +353,8 @@ export const messagesThunks = {
   getMessages,
   scrollToMessage,
   sendMessage,
+  editMessage,
   readHistory,
+  updateMessageLocal,
+  deleteMessages,
 }

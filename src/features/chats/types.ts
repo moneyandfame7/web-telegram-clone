@@ -1,10 +1,6 @@
 import type {ChatColor} from '../../app/types'
+import {User} from '../auth/types'
 import {Message} from '../messages/types'
-
-export interface SendMessageParams {
-  text: string
-  chatId: string
-}
 
 export interface Chat {
   id: string
@@ -24,6 +20,11 @@ export interface Chat {
   isMuted: boolean
   isArchived: boolean
   isOwner: boolean
+}
+
+export interface GetChatsResult {
+  chats: Chat[]
+  users: User[]
 }
 export interface CreateChatParams {
   users: string[]

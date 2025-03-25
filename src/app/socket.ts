@@ -1,22 +1,25 @@
 import {io, Socket} from 'socket.io-client'
 
 import {
+  DeleteMessagesParams,
+  DeleteMessagesResult,
+  EditMessageParams,
+  EditMessageResult,
   Message,
   ReadHistoryParams,
   ReadMyHistoryResult,
+  SendMessageParams,
 } from '../features/messages/types'
 
-import type {
-  Chat,
-  CreateChatParams,
-  SendMessageParams,
-} from '../features/chats/types'
+import type {Chat, CreateChatParams} from '../features/chats/types'
 
 export interface ListenEvents {
   ['chat:created']: (chat: Chat) => void
   ['auth:unauthorized']: () => void
 
   ['message:new']: (message: Message, chat: Chat) => void
+  ['message:edited']: (data: EditMessageResult) => void
+  ['message:deleted']: (data: DeleteMessagesResult) => void
   ['message:read-by-me']: (data: ReadMyHistoryResult) => void
   ['message:read-by-them']: (
     data: Omit<ReadMyHistoryResult, 'unreadCount'>
@@ -41,6 +44,8 @@ interface EmitEvents {
    * MESSAGES
    */
   'message:send': EventWithAck<SendMessageParams, Message>
+  'message:edit': EventWithAck<EditMessageParams, boolean>
+  'message:delete': EventWithAck<DeleteMessagesParams, boolean>
   'message:read-history': EventWithAck<
     ReadHistoryParams,
     {newUnreadCount: number; chatId: string; maxId: number}

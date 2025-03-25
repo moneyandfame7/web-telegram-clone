@@ -1,3 +1,5 @@
+import {Chat} from '../chats/types'
+
 export interface Message {
   id: string
   sequenceId: number
@@ -7,12 +9,27 @@ export interface Message {
   createdAt: string
   editedAt?: string
 
+  replyInfo?: MessageReplyInfo
+
   isOutgoing: boolean
   isSilent: boolean
 
   /** client only props */
   isHighlighted?: boolean
+  deleteLocal?: boolean
 }
+export interface MessageReplyInfo {
+  id: string
+  sequenceId: number
+  text?: string
+  senderId: string
+}
+export interface SendMessageParams {
+  text: string
+  chatId: string
+  replyToMsgId?: string
+}
+
 export enum GetMessagesDirection {
   OLDER = 'OLDER',
   NEWER = 'NEWER',
@@ -38,3 +55,27 @@ export interface ReadMyHistoryResult {
   chatId: string
   maxId: number
 }
+export interface EditMessageParams {
+  id: string
+  chatId: string
+  text?: string
+  editedAt?: string
+}
+
+export type UpdateMessageLocalParams = EditMessageParams & {
+  deleteLocal?: boolean
+}
+
+export interface DeleteMessagesParams {
+  chatId: string
+  ids: string[]
+  deleteForAll: boolean
+}
+export interface DeleteMessagesResult {
+  requesterId: string
+  chat: Chat
+  ids: string[]
+  deleteForAll: boolean
+}
+
+export type EditMessageResult = EditMessageParams & {editedAt: string}

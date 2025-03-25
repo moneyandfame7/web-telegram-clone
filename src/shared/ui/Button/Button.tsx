@@ -18,6 +18,7 @@ export interface ButtonProps extends PropsWithChildren {
 
   variant?: 'contained' | 'transparent'
   color?: 'primary' | 'red' | 'green' | 'gray'
+  uppercase?: boolean
 
   onClick?: MouseEventHandler
 }
@@ -25,18 +26,26 @@ export interface ButtonProps extends PropsWithChildren {
 export const Button: FC<ButtonProps> = ({
   children,
   variant = 'contained',
-  color,
+  color = 'primary',
   size = 'medium',
+  uppercase = size !== 'small',
   loadingText,
   isLoading,
   isDisabled,
   fullWidth,
   onClick,
 }) => {
-  const buildClass = clsx('button', `button--${size}`, {
-    'button--loading': isLoading,
-    'button--fullWidth': fullWidth,
-  })
+  const buildClass = clsx(
+    'button',
+    `button--${size}`,
+    `button--${color}`,
+    `button--${variant}`,
+    {
+      'button--loading': isLoading,
+      'button--fullWidth': fullWidth,
+      'button--uppercase': uppercase,
+    }
+  )
   return (
     <button
       className={buildClass}

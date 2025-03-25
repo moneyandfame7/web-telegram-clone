@@ -4,6 +4,9 @@ $c-primary: #3390ec;
 $c-primary-hover: darken($c-primary, 2%);
 $c-primary-light: #3a8cdd;
 $c-primary-transparent: rgba(darken($c-primary, 10%), 0.1);
+$c-primary-transparent-hover: rgba(darken($c-primary, 5%), 0.2);
+
+$c-danger: #df3f40;
 
 $c-font-secondary: #707579;
 
@@ -13,6 +16,8 @@ $c-surface: #fff;
 $c-bg: #f4f4f5;
 $c-bg-body: #fff;
 $c-message-bg: #dcf8c5;
+$c-message-info: darken($c-message-bg, 50%);
+$c-message-info-transparent-hover: rgba(darken($c-message-bg, 50%), 0.2);
 
 :root {
   --z-modal: 4;
@@ -21,19 +26,24 @@ $c-message-bg: #dcf8c5;
   --c-primary: #{$c-primary};
   --c-primary-hover: #{$c-primary-hover};
   --c-primary-light: #{$c-primary-light};
+  --c-primary-transparent: #{$c-primary-transparent};
+  --c-primary-transparent-hover: #{$c-primary-transparent-hover};
 
+  --chat-input-height: 54px;
+  --message-text-size: 16px;
   --c-surface: #{$c-surface};
   --c-surface-2: #{lighten($c-surface, 2%)};
   --c-surface-3: #{lighten($c-surface, 5%)};
 
   --c-placeholder: #707579;
+  --c-scrollbar: rgba(90, 90, 90, 0.3);
 
   --c-border: #dfe1e5;
   --c-border-hover: darken(#dfe1e5, 10%);
 
   --c-warn: #fdd764;
-  --c-danger: #df3f40;
-  --c-danger-transparent: #{rgba(var(--c-danger), 0.1)};
+  --c-danger: #{$c-danger};
+  --c-danger-transparent: #{rgba($c-danger, 0.1)};
 
   --c-neutral-secondary: #94989b;
 
@@ -45,7 +55,9 @@ $c-message-bg: #dcf8c5;
   --c-shadow-default: rgb(114, 114, 114, 0.251);
 
   --c-message-bg: #{$c-message-bg};
-  --c-message-info: #{darken($c-message-bg, 50%)};
+  --c-message-info: #{$c-message-info};
+  --c-message-info-transparent: #{rgba($c-message-info, 0.15)};
+  --c-message-info-transparent-hover: #{rgba($c-message-info, 0.23)};
 
   --menu-bg: rgb(255 255 255 / 80%);
   --menu-hover: #{rgba(0, 0, 0, 0.06)};

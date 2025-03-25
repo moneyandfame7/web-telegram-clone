@@ -28,6 +28,10 @@ import {Message} from '../Message/Message'
 
 import './MessageList.scss'
 import {pause} from '../../../../shared/helpers/pause'
+import clsx from 'clsx'
+import {messagesActions} from '../../state/messages-slice'
+import {findLte} from '../../../../shared/helpers/findLte'
+import {useShift} from '../../hooks/useShift'
 
 const SPINNER_HEIGHT = 40
 interface MessageListProps {
@@ -43,15 +47,19 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
   const messages = useAppSelector((state) =>
     messagesSelectors.selectAll(state, chatId)
   )
+  const isSelectingActive = useAppSelector(
+    messagesSelectors.selectIsSelectingActive
+  )
 
   const dispatch = useAppDispatch()
 
-  const [shifting, setShifting] = useState(false)
+  const shouldShift = useShift(messages)
+  // const [shifting, setShifting] = useState(false)
   const [startFetching, setStartFetching] = useState(false)
   const [endFetching, setEndFetching] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
   const fetchMoreMessages = async (params: GetMessagesParams) => {
-    setShifting(params.direction === GetMessagesDirection.OLDER)
+    // setShifting(params.direction === GetMessagesDirection.OLDER)
 
     const setFetching =
       params.direction === GetMessagesDirection.OLDER
@@ -163,15 +171,33 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
       return false
     }
 
-    const indexToScroll = messages.findIndex(
-      (m) => m.sequenceId === chat.myLastReadMessageSequenceId
-    )
-    console.log({indexToScroll})
-    if (indexToScroll !== -1) {
-      virtua.current?.scrollToIndex(indexToScroll)
+    const messageToScroll = messages.filter(
+      (m) => m.isOutgoing || m.sequenceId <= chat.myLastReadMessageSequenceId!
+    )[messages.length - 1]
 
-      return pause(1).then(() => true)
+    console.log({messages, messageToScroll})
+
+    if (messageToScroll !== undefined) {
+      const indexToScroll = messages.findIndex(
+        (m) => m.sequenceId === messageToScroll.sequenceId
+      )
+
+      if (indexToScroll !== -1) {
+        virtua.current?.scrollToIndex(indexToScroll)
+
+        return pause(1).then(() => true)
+      }
     }
+
+    // const indexToScroll = messages.findIndex(
+    //   (m) => m.sequenceId === chat.myLastReadMessageSequenceId!
+    // )
+    // console.log({indexToScroll})
+    // if (indexToScroll !== -1) {
+    //   virtua.current?.scrollToIndex(indexToScroll)
+
+    //   return pause(1).then(() => true)
+    // }
 
     return false
   }
@@ -214,6 +240,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
 
     return () => {
       controller.abort('chat closed')
+      dispatch(messagesActions.toggleChatMessageSelection({active: false}))
     }
   }, [])
 
@@ -232,9 +259,15 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
    * @todo spinner height + лоадер на початку треба робити hidden можливо, я точно не шарю треба розібратись.
    * якщо прибирати startMargin - немає ніяких проблем з мерехтінням
    */
+
+  const className = clsx('message-list', {
+    'is-selecting': isSelectingActive,
+  })
   return (
     <div
+      className={className}
       style={{
+        // height: '100%',
         height: '100vh',
         overflowY: 'auto',
         overflowAnchor: 'none',
@@ -245,7 +278,8 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
       <Virtualizer
         key={chatId}
         ref={virtua}
-        shift={shifting}
+        // shift={shifting}
+        shift={shouldShift}
         // startMargin={SPINNER_HEIGHT}
         onScroll={handleScroll}
         count={messages.length}
@@ -288,6 +322,7 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
           }}
           onClick={() => {
             if (chat?.lastMessage?.sequenceId) {
+              console.log('LAST MSG', chat.lastMessage)
               dispatch(
                 messagesThunks.scrollToMessage({
                   chatId,

@@ -37,7 +37,7 @@ export const MessageInfo: FC<MessageInfoProps> = ({message, isUnread}) => {
   }
   return (
     <span className="message-info">
-      {isEdited && <i className="message-info__item">edited</i>}
+      {/* {isEdited && <i className="message-info__item">edited</i>} */}
 
       {/* it's a «fake» element */}
       {/* <span className="message-info__item">{sendingDate}</span>
@@ -49,7 +49,8 @@ export const MessageInfo: FC<MessageInfoProps> = ({message, isUnread}) => {
       )} */}
 
       <div className="message-info__container">
-        {true && <i className="message-info__item">edited</i>}
+        {/* {true && <i className="message-info__item">edited</i>} */}
+        {isEdited && <i className="message-info__item">edited</i>}
 
         <span className="message-info__item message-info__date">
           {sendingDate}

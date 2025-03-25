@@ -4,6 +4,7 @@ import storage from 'redux-persist/lib/storage'
 
 import type {User} from '../../auth/types'
 import {usersThunks} from '../api'
+import {chatsThunks} from '../../chats/api'
 
 export const usersAdapter = createEntityAdapter<User, string>({
   selectId: (model) => model.id,
@@ -44,6 +45,12 @@ const usersSlice = createSlice({
 
       state.contactIds = Array.from(new Set([...state.contactIds, ...userIds]))
       usersAdapter.setMany(state, users)
+    })
+
+    /** CHATS THUNKS HANDLING */
+
+    builder.addCase(chatsThunks.getChats.fulfilled, (state, action) => {
+      usersAdapter.setMany(state, action.payload.users)
     })
   },
 })

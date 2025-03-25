@@ -32,6 +32,53 @@ export const createMessageListeners = (
     dispatch(messagesActions.addMessage({chatId: chat.id, message}))
   }
 
+  const editedMessage: ListenEvents['message:edited'] = (data) => {
+    dispatch(
+      messagesActions.updateMessage({
+        id: data.id,
+        chatId: data.chatId,
+        changes: {
+          text: data.text,
+          editedAt: data.editedAt,
+        },
+      })
+    )
+    const state = store.getState()
+    const chat = chatsSelectors.selectById(state, data.chatId)
+
+    if (chat.lastMessage?.id === data.id) {
+      dispatch(
+        chatsActions.updateLastMessage({
+          id: chat.id,
+          changes: {
+            text: data.text,
+            editedAt: data.editedAt,
+          },
+        })
+      )
+    }
+  }
+
+  const deletedMessages: ListenEvents['message:deleted'] = (data) => {
+    const state = store.getState()
+    const chat = chatsSelectors.selectById(state, data.chat.id)
+    dispatch(
+      messagesActions.removeManyMessages({chatId: data.chat.id, ids: data.ids})
+    )
+
+    if (
+      data.chat.lastMessage?.id !== chat.lastMessage?.id &&
+      chat.lastMessage
+    ) {
+      dispatch(
+        chatsActions.updateLastMessage({
+          id: chat.id,
+          changes: chat.lastMessage,
+        })
+      )
+    }
+  }
+
   const readByMe: ListenEvents['message:read-by-me'] = (data) => {
     console.log('Я ПРОЧИТАВ ЧИЇСЬ ПОВІДОМЛЕННЯ', data)
 
@@ -65,16 +112,21 @@ export const createMessageListeners = (
   return {
     subscribe() {
       socket.on('message:new', newMessage)
+      socket.on('message:edited', editedMessage)
+      socket.on('message:deleted', deletedMessages)
       socket.on('message:read-by-me', readByMe)
       socket.on('message:read-by-them', readByThem)
     },
     unsubscribe() {
       socket.off('message:new', newMessage)
+      socket.off('message:edited', editedMessage)
+      socket.off('message:deleted', deletedMessages)
       socket.off('message:read-by-me', readByMe)
       socket.off('message:read-by-them', readByThem)
     },
     listeners: {
       newMessage,
+      editedMessage,
       readByMe,
       readByThem,
     },

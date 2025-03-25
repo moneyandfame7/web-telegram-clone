@@ -1,3 +1,19 @@
+@mixin transparentBtn($color, $transparent) {
+  background-color: transparent;
+  color: $color;
+  &:hover {
+    background-color: $transparent !important;
+  }
+  &:disabled {
+    opacity: 0.8;
+    background-color: $transparent !important;
+  }
+
+  .Icon path {
+    fill: $color;
+  }
+}
+
 .button {
   display: flex;
   align-items: center;
@@ -11,7 +27,6 @@
 
   font-size: 16px;
   font-weight: 500;
-  text-transform: uppercase;
   color: #fff;
   background-color: var(--c-primary);
 
@@ -32,11 +47,42 @@
   &--fullWidth {
     width: 100%;
   }
+  &--uppercase {
+    text-transform: uppercase;
+  }
 
   &--loading {
   }
 
   &--small {
     height: 35px;
+  }
+
+  &--transparent {
+    background-color: transparent !important;
+
+    // font-weight: 400;
+
+    &.button--primary {
+      // --c-ripple: var(--c-primary-transparent);
+
+      @include transparentBtn(var(--c-primary), var(--c-primary-transparent));
+    }
+
+    &.button--gray {
+      // --c-ripple: unset;
+      @include transparentBtn(var(--c-font-secondary), var(--c-ripple));
+    }
+
+    &.button--red {
+      // --c-ripple: var(--c-red-transparent);
+      @include transparentBtn(var(--c-danger), var(--c-danger-transparent));
+    }
+
+    &.button--green {
+      // --c-ripple: var(--c-green-transparent);
+
+      @include transparentBtn(var(--c-green), var(--c-green-transparent));
+    }
   }
 }

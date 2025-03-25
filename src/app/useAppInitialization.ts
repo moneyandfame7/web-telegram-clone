@@ -68,7 +68,7 @@ export const useAppInitialization = () => {
         await dispatch(usersThunks.getUser({id: userId})).unwrap()
       }
 
-      const [chats] = await Promise.all([
+      const [{chats}] = await Promise.all([
         await dispatch(chatsThunks.getChats()).unwrap(),
         await dispatch(usersThunks.getContacts()).unwrap(),
       ])

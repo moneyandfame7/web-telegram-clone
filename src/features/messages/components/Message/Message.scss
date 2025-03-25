@@ -1,16 +1,48 @@
 .message {
-  --message-gap: 3px;
-  --message-margin-x: 15px;
+  --message-gap: 5px;
+  --message-margin-x: 35px;
   --message-avatar-size: 30px;
-
+  position: relative;
   display: flex;
   margin-bottom: 5px;
-
-  margin-inline: var(--message-margin-x);
+  padding-inline: var(--message-margin-x);
   gap: var(--message-gap);
   align-items: flex-end;
-  transition: background-color 0.3s ease;
+  // transition: background-color 0.3s ease, opacity 0.3s ease;
+  @include defaultTransition(transform, background-color, opacity);
 
+  &::before {
+    height: calc(100% + 5px);
+    content: '';
+    display: block;
+    background-color: var(--c-ripple);
+    opacity: 0;
+    position: absolute;
+    left: -50vw; // to make it full width strecthed
+    right: -50vw;
+    top: 50%;
+    transform: translateY(-50%);
+    transition: opacity 0.3s ease;
+  }
+
+  &.menu-open,
+  &.is-selected {
+    &::before {
+      opacity: 1;
+    }
+  }
+
+  &.is-selected {
+    .message-checkbox {
+      background-color: var(--c-primary);
+
+      > .icon {
+        @include withAnimations {
+          animation: show-icon 0.3s forwards ease;
+        }
+      }
+    }
+  }
   &.outgoing {
     justify-content: flex-end;
     transform-origin: right;
@@ -71,7 +103,7 @@
   }
 
   &:not(.last-in-group) {
-    margin-left: calc(
+    padding-left: calc(
       var(--message-gap) + var(--message-margin-x) + var(--message-avatar-size)
     );
   }
@@ -95,5 +127,36 @@
     bottom: 0;
     display: none;
     fill: var(--c-message-bg);
+  }
+  &-checkbox {
+    position: absolute;
+    inset: 0;
+    // opacity: 0;
+    opacity: 0;
+    transform-origin: left;
+    // scale
+
+    top: 50%;
+    transform: translateY(-50%);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    border: 2px solid #fff !important;
+    background-color: var(--c-ripple);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    @include defaultTransition(background-color, scale, transform, opacity);
+
+    > .icon {
+      @include withAnimations {
+        animation: hide-icon 0.3s forwards ease;
+      }
+    }
+  }
+
+  > .avatar {
+    @include defaultTransition(transform, scale);
   }
 }

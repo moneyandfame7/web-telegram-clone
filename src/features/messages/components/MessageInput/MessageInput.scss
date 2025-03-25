@@ -1,0 +1,62 @@
+.message-input-container {
+  min-height: var(--chat-input-height);
+  // max-width: 80%;
+  flex: 1;
+
+  @include withAnimations {
+    transition: height 200ms ease;
+  }
+  overflow: hidden;
+}
+.message-input {
+  white-space: pre-line; //!IMPORTANT for correct break space
+  caret-color: var(--c-primary);
+  background-color: transparent;
+  width: 100%;
+  min-height: var(--chat-input-height);
+  position: relative;
+  padding-inline: 15px;
+  padding-block: 15px;
+  height: auto !important; // REALLY IMPORTANT!!!
+  line-height: 1.2;
+  max-height: 350px;
+  @include responsive(mobile) {
+    max-height: 215px;
+  }
+
+  resize: none;
+
+  @include defaultTransition(height, border-color);
+
+  &::after {
+    pointer-events: none;
+    content: attr(data-placeholder);
+    position: absolute;
+    font-size: var(--message-text-size);
+    top: 16px;
+    margin-left: 2px;
+    color: var(--c-placeholder);
+    opacity: 1;
+
+    @include withAnimations {
+      transition: transform 0.15s ease, opacity 0.25s ease;
+      transform: translateX(0);
+    }
+  }
+  &:not(.is-empty) {
+    &::after {
+      opacity: 0;
+
+      @include withAnimations {
+        transform: translateX(1rem);
+        transition: transform 0.35s ease, opacity 0.25s ease;
+      }
+    }
+  }
+
+  border-top: 1px solid transparent;
+
+  &.scrolled {
+    border-color: var(--c-border);
+  }
+}
