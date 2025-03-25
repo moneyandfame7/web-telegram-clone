@@ -53,7 +53,7 @@ interface EmitEvents {
 }
 
 export const socket: Socket<ListenEvents, EmitEvents> = io(
-  'http://localhost:3000',
+  import.meta.env.VITE_API_URL,
   {
     autoConnect: false,
   }
