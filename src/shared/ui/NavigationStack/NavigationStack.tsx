@@ -17,7 +17,6 @@ import {
   NavigationContext,
   type PopItemOptions,
 } from './useNavigationStack'
-import {NavigationBar} from './NavigationBar'
 
 interface NavigationStackProps extends PropsWithChildren {
   initialScreen: ReactNode

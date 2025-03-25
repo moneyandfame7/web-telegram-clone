@@ -257,14 +257,15 @@ const deleteMessages = createAsyncThunk(
       thunkApi.dispatch(
         messagesActions.removeManyMessages({chatId: arg.chatId, ids: arg.ids})
       )
-
-      thunkApi.dispatch(
-        chatsActions.updateLastMessage({
-          id: arg.chatId,
-          changes: result.chat.lastMessage,
-        })
-      )
-    } catch (error) {
+      if (result.chat.lastMessage) {
+        thunkApi.dispatch(
+          chatsActions.updateLastMessage({
+            id: arg.chatId,
+            changes: result.chat.lastMessage,
+          })
+        )
+      }
+    } catch {
       arg.ids.forEach((id) => {
         thunkApi.dispatch(
           updateMessageLocal({id, chatId: arg.chatId, deleteLocal: false})

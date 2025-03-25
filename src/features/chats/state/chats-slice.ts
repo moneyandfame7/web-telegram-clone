@@ -4,7 +4,6 @@ import storage from 'redux-persist/lib/storage'
 import {chatsThunks} from '../api'
 import {chatsAdapter} from './chats-adapter'
 import {Message} from '../../messages/types'
-import {chatsSelectors} from './chats-selectors'
 
 interface ChatsState {
   currentChatId?: string

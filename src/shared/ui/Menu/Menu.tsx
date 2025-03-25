@@ -63,7 +63,7 @@ export const Menu: FC<MenuProps> = memo(
     className,
     unmount,
     elRef,
-    handleAwayClick,
+    // handleAwayClick,
     backdrop = true,
     portal,
     style,

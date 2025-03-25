@@ -1,8 +1,6 @@
-import {RootState} from './../../../app/store'
 import {createSelector} from '@reduxjs/toolkit'
 import {RootState} from '../../../app/store'
 import {messagesAdapter} from './messages-adapter'
-import {chatsSelectors} from '../../chats/state'
 
 const baseMessagesSelectors = messagesAdapter.getSelectors()
 
@@ -16,7 +14,7 @@ const selectAll = createSelector(
 const selectById = createSelector(
   [
     (state: RootState, chatId: string) => state.messages.byChatId[chatId]?.data,
-    (state: RootState, chatId: string, messageId: string) => messageId,
+    (_: RootState, __: string, messageId: string) => messageId,
   ],
   (messagesEntry, messageId) => {
     return messagesEntry

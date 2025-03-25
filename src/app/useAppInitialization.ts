@@ -11,7 +11,6 @@ import {refreshToken} from './api'
 import {ServerError} from './error-code.enum'
 import {socket} from './socket'
 import {useAppDispatch, useAppSelector} from './store'
-import {pause} from '../shared/helpers/pause'
 
 /**
  * * Fetch chats, contacts, user data.

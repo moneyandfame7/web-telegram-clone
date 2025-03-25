@@ -9,7 +9,6 @@ import {
 
 import clsx from 'clsx'
 
-import {useBoolean} from '../../../../shared/hooks/useBoolean'
 import {useLayout} from '../../../../shared/hooks/useLayout'
 
 import {insertTextAtCursor} from '../../../../shared/helpers/selection'
@@ -32,7 +31,6 @@ export const MessageInput: FC<MessageInputProps> = ({
 
   const textRef = useRef(value)
   const {isMobile} = useLayout()
-  const {value: isFocused, setValue: setFocused} = useBoolean()
 
   const maxInputHeight = isMobile ? 215 : 350
 

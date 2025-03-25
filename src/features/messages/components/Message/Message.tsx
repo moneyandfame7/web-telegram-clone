@@ -22,7 +22,6 @@ import './Message.scss'
 import {Icon} from '../../../../shared/ui/Icon/Icon'
 import {DeleteMessagesModal} from '../DeleteMessagesModal/DeleteMessagesModal'
 import {useBoolean} from '../../../../shared/hooks/useBoolean'
-import {MessageReplyInfo} from '../MessageReplyInfo/MessageReplyInfo'
 import {MentionedMessage} from '../MentionedMessage/MentionedMessage'
 import {messagesThunks} from '../../api'
 

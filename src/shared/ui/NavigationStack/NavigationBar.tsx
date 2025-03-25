@@ -5,7 +5,7 @@ import {useNavigationStack} from './useNavigationStack'
 
 import './NavigationBar.scss'
 export const NavigationBar: FC = () => {
-  const {push, pop, currentScreen, direction} = useNavigationStack()
+  const {currentScreen, direction} = useNavigationStack()
 
   return (
     <div className="navigation-bar">

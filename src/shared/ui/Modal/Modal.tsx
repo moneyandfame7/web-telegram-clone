@@ -31,7 +31,7 @@ export const Modal: FC<ModalProps> = ({
   isOpen,
   onClose,
   closeOnBackdrop = true,
-  closeOnEsc = true,
+  // closeOnEsc = true,
   hasCloseButton = true,
   onExitTransition,
   className,

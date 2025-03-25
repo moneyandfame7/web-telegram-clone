@@ -30,10 +30,8 @@ import './MessageList.scss'
 import {pause} from '../../../../shared/helpers/pause'
 import clsx from 'clsx'
 import {messagesActions} from '../../state/messages-slice'
-import {findLte} from '../../../../shared/helpers/findLte'
 import {useShift} from '../../hooks/useShift'
 
-const SPINNER_HEIGHT = 40
 interface MessageListProps {
   chatId: string
 }
@@ -55,20 +53,20 @@ export const MessageList: FC<MessageListProps> = ({chatId}) => {
 
   const shouldShift = useShift(messages)
   // const [shifting, setShifting] = useState(false)
-  const [startFetching, setStartFetching] = useState(false)
-  const [endFetching, setEndFetching] = useState(false)
+  // const [startFetching, setStartFetching] = useState(false)
+  // const [endFetching, setEndFetching] = useState(false)
   const [isAtBottom, setIsAtBottom] = useState(true)
   const fetchMoreMessages = async (params: GetMessagesParams) => {
     // setShifting(params.direction === GetMessagesDirection.OLDER)
 
-    const setFetching =
-      params.direction === GetMessagesDirection.OLDER
-        ? setStartFetching
-        : setEndFetching
+    // const setFetching =
+    //   params.direction === GetMessagesDirection.OLDER
+    //     ? setStartFetching
+    //     : setEndFetching
 
-    setFetching(true)
+    // setFetching(true)
     await dispatch(messagesThunks.getMessages(params)).unwrap()
-    setFetching(false)
+    // setFetching(false)
   }
 
   const {virtua, endFetchedCountRef, startFetchedCountRef} =

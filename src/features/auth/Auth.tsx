@@ -1,11 +1,6 @@
 import {type FC, useEffect, useState} from 'react'
 
-import {
-  persistor,
-  RootState,
-  useAppDispatch,
-  useAppSelector,
-} from '../../app/store'
+import {useAppDispatch, useAppSelector} from '../../app/store'
 
 import {AuthUsername} from './containers/AuthUsername'
 import {AuthPassword} from './containers/AuthPassword'
@@ -15,8 +10,6 @@ import {AuthScreen} from './types'
 import {authThunks} from './api'
 
 import './Auth.scss'
-import {addListener} from '@reduxjs/toolkit'
-import {authActions} from './store/auth-slice'
 
 export const Auth: FC = () => {
   const dispatch = useAppDispatch()

@@ -52,7 +52,7 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
     setFalse: closeDeleteModal,
   } = useBoolean()
 
-  const [isMessageSending, setIsMessageSending] = useState(false)
+  // const [isMessageSending, setIsMessageSending] = useState(false)
   const [text, setText] = useState('')
 
   useLayoutEffect(() => {
@@ -77,7 +77,7 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
       return
     }
 
-    setIsMessageSending(true)
+    // setIsMessageSending(true)
 
     try {
       const result = await dispatch(
@@ -98,7 +98,7 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
     } catch (error) {
       console.error('Send message error', error)
     } finally {
-      setIsMessageSending(false)
+      // setIsMessageSending(false)
     }
   }
 

@@ -9,7 +9,7 @@ import type {
   SignInPayload,
   SignUpPayload,
 } from './types'
-import {ACTION_TYPES, persistor, RootState, store} from '../../app/store'
+import {ACTION_TYPES, persistor, RootState} from '../../app/store'
 import {authActions} from './store/auth-slice'
 
 const getGeolocation = createAsyncThunk<Geolocation, void>(
@@ -21,7 +21,7 @@ const getGeolocation = createAsyncThunk<Geolocation, void>(
       })
 
       return response.data
-    } catch (e) {
+    } catch {
       return thunkApi.rejectWithValue('[auth/getGeolocation] error')
     }
   }
