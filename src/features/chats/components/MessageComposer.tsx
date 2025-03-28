@@ -95,10 +95,10 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
           replace: true,
         })
       }
+      setText('')
+      dispatch(messagesActions.toggleMessageReplying({id: undefined}))
     } catch (error) {
       console.error('Send message error', error)
-    } finally {
-      // setIsMessageSending(false)
     }
   }
 

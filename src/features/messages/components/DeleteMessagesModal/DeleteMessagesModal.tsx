@@ -12,6 +12,7 @@ import {useBoolean} from '../../../../shared/hooks/useBoolean'
 import {Checkbox} from '../../../../shared/ui/Checkbox/Checkbox'
 
 import './DeleteMessagesModal.scss'
+import {messagesActions} from '../../state/messages-slice'
 
 interface DeleteMessagesModalProps {
   chat: Chat
@@ -77,6 +78,9 @@ export const DeleteMessagesModal: FC<DeleteMessagesModalProps> = ({
             variant="transparent"
             onClick={() => {
               onClose()
+              dispatch(
+                messagesActions.toggleChatMessageSelection({active: false})
+              )
               dispatch(
                 messagesThunks.deleteMessages({
                   ids: idsToDelete,
