@@ -9,6 +9,8 @@ import {
   DeleteMessagesParams,
   DeleteMessagesResult,
   EditMessageParams,
+  ForwardMessagesParams,
+  ForwardMessagesResult,
   GetMessagesDirection,
   GetMessagesParams,
   Message,
@@ -285,6 +287,56 @@ const deleteMessages = createAsyncThunk(
   }
 )
 
+const forwardMessages = createAsyncThunk(
+  'messages/forwardMessages',
+  async (arg: ForwardMessagesParams, thunkApi) => {
+    const state = thunkApi.getState() as RootState
+    const chat: Chat | undefined = chatsSelectors.selectById(
+      state,
+      arg.toChatId
+    )
+
+    const result = await emitEventWithHandling<
+      ForwardMessagesParams,
+      ForwardMessagesResult
+    >('message:forward', arg)
+    console.log({result})
+    result.messages.forEach((message) => {
+      thunkApi.dispatch(
+        messagesActions.addMessage({
+          chatId: result.chat.id,
+          message: message,
+        })
+      )
+    })
+
+    if (!chat) {
+      thunkApi.dispatch(chatsActions.addOne(result.chat))
+
+      socket.emit('room:join', `chat-${result.chat.id}`)
+    } else {
+      thunkApi.dispatch(
+        chatsActions.updateOne({
+          id: result.chat.id,
+          changes: {
+            lastMessage: result.chat.lastMessage,
+          },
+        })
+      )
+
+      thunkApi.dispatch(
+        scrollToMessage({
+          chatId: result.chat.id,
+          sequenceId: result.messages[result.messages.length - 1].sequenceId,
+          highlight: false,
+        })
+      )
+    }
+
+    return {chatJustCreated: !chat, chatId: result.chat.id}
+  }
+)
+
 const readHistory = createAsyncThunk(
   'messages/readHistory',
   async (
@@ -358,4 +410,5 @@ export const messagesThunks = {
   readHistory,
   updateMessageLocal,
   deleteMessages,
+  forwardMessages,
 }

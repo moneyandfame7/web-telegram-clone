@@ -10,6 +10,7 @@ export interface Message {
   editedAt?: string
 
   replyInfo?: MessageReplyInfo
+  forwardInfo?: MessageForwardInfo
 
   isOutgoing: boolean
   isSilent: boolean
@@ -23,6 +24,9 @@ export interface MessageReplyInfo {
   sequenceId: number
   text?: string
   senderId: string
+}
+export type MessageForwardInfo = MessageReplyInfo & {
+  fromChatId: string
 }
 export interface SendMessageParams {
   text: string
@@ -78,4 +82,21 @@ export interface DeleteMessagesResult {
   deleteForAll: boolean
 }
 
+export interface ForwardMessagesParams {
+  ids: string[]
+  toChatId: string
+  fromChatId: string
+  noAuthor: boolean
+}
+export interface ForwardMessagesResult {
+  chat: Chat
+  messages: Message[]
+}
+
 export type EditMessageResult = EditMessageParams & {editedAt: string}
+
+export interface ForwardMessages {
+  fromChatId: string
+  messageIds: string[]
+  noAuthor: boolean
+}

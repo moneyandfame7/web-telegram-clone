@@ -60,7 +60,7 @@
 
       > .message-arrow {
         display: block;
-        fill: var(--c-message-bg);
+        fill: var(--c-message-bg) !important;
         right: -9px;
         transform: translateY(1px) scaleX(-1);
       }
@@ -92,9 +92,28 @@
 
       > .message-arrow {
         display: block;
-        fill: var(--c-surface);
+        fill: var(--c-surface) !important;
         left: -9px;
         transform: translateY(1px);
+      }
+      > .message-sender-container {
+        color: var(--c-primary);
+        .icon-forwardFilled path {
+          fill: var(--c-primary) !important;
+        }
+      }
+    }
+
+    .mentioned-message-container.compact > .mentioned-message {
+      &::before {
+        background-color: var(--c-primary) !important;
+      }
+      &:hover {
+        background-color: var(--c-primary-transparent-hover) !important;
+      }
+      background-color: var(--c-primary-transparent);
+      .mentioned-message-title {
+        color: var(--c-primary) !important;
       }
     }
   }
@@ -126,7 +145,7 @@
     position: absolute;
     bottom: 0;
     display: none;
-    fill: var(--c-message-bg);
+    fill: var(--c-message-bg) !important;
   }
   &-checkbox {
     position: absolute;
@@ -152,6 +171,33 @@
     > .icon {
       @include withAnimations {
         animation: hide-icon 0.3s forwards ease;
+      }
+    }
+  }
+
+  &-sender-container {
+    user-select: none;
+    font-size: 13px;
+    display: flex;
+    color: var(--c-message-info);
+    align-items: center;
+    width: 100%;
+    gap: 3px;
+
+    > .message-sender {
+      font-weight: 600;
+      cursor: pointer;
+    }
+    > .avatar {
+      width: 16px;
+      height: 16px;
+      font-size: 7px;
+    }
+    > .icon-forwardFilled {
+      height: 13px;
+      width: 13px;
+      path {
+        fill: var(--c-message-info) !important;
       }
     }
   }

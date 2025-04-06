@@ -63,6 +63,7 @@ import keyboard from './keyboard.svg?react'
 import cloudDownload from './clouddownload.svg?react'
 import reply from './reply.svg?react'
 import forward from './forward.svg?react'
+import forwardFilled from './forward_filled.svg?react'
 import copy from './copy.svg?react'
 import select from './select.svg?react'
 import image from './image.svg?react'
@@ -98,6 +99,7 @@ import mediaSpoilerOff from './mediaspoileroff.svg?react'
 import groupMedia from './groupmedia.svg?react'
 import groupMediaOff from './groupmediaoff.svg?react'
 import newTab from './newtab.svg?react'
+import replace from './replace.svg?react'
 
 export {
   arrowLeft,
@@ -162,6 +164,7 @@ export {
   cloudDownload,
   reply,
   forward,
+  forwardFilled,
   copy,
   select,
   image,
@@ -197,4 +200,5 @@ export {
   groupMedia,
   groupMediaOff,
   newTab,
+  replace,
 }

@@ -79,7 +79,6 @@ export const Modal: FC<ModalProps> = ({
                   title="Close Modal"
                   onClick={onClose}
                   name="close"
-                  color="secondary"
                 />
               )}
               {title && <p className="modal-title">{title}</p>}

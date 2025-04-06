@@ -49,9 +49,14 @@ export const Message: FC<MessageProps> = ({
   const isMessageSelected = useAppSelector((state) =>
     messagesSelectors.selectIsSelected(state, message.id)
   )
-  const isPrivateChat = Boolean(chat?.userId)
+  // const isPrivateChat = Boolean(chat?.userId)
 
-  const shouldShowSenderName = !isPrivateChat && !message.isOutgoing
+  const forwardMessageSender = useAppSelector((state) =>
+    usersSelectors.selectById(state, message.forwardInfo?.senderId ?? '')
+  )
+
+  // const shouldShowSenderName =
+  //   (!isPrivateChat && !message.isOutgoing) || Boolean(forwardMessageSender)
 
   const ref = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -115,8 +120,19 @@ export const Message: FC<MessageProps> = ({
       )}
 
       <div className="message-content">
-        {shouldShowSenderName && (
-          <div className="message-content__sender">SENDER</div>
+        {forwardMessageSender && (
+          <div className="message-sender-container">
+            <Icon name="forwardFilled" title="Forwarded from" size="small" />
+            <span>Forwarded from:</span>
+            <Avatar
+              color={forwardMessageSender.color}
+              size="extra-small"
+              title={getUserTitle(forwardMessageSender)}
+            />
+            <span className="message-sender">
+              {getUserTitle(forwardMessageSender)}
+            </span>
+          </div>
         )}
         {message.replyInfo && (
           <MentionedMessage
@@ -139,9 +155,9 @@ export const Message: FC<MessageProps> = ({
           />
         )}
         <div className="message-content__text">
-          <b>[{message.sequenceId}] </b>
-          LAST READ: {`${chat?.theirLastReadMessageSequenceId}   `}
-          {message.text}
+          {/* <b>[{message.sequenceId}]</b> */}
+          {/* LAST READ: {`${chat?.theirLastReadMessageSequenceId}   `} */}
+          {message.text || message.forwardInfo?.text}
           <MessageInfo
             message={message}
             isUnread={

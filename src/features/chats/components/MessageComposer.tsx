@@ -1,6 +1,6 @@
 import {FC, useLayoutEffect, useRef, useState} from 'react'
 import {useNavigate} from 'react-router-dom'
-import {useAppDispatch, useAppSelector} from '../../../app/store'
+import {store, useAppDispatch, useAppSelector} from '../../../app/store'
 import {messagesThunks} from '../../messages/api'
 
 import {IconButton} from '../../../shared/ui/IconButton/IconButton'
@@ -19,6 +19,11 @@ import {chatsSelectors} from '../state'
 import {DeleteMessagesModal} from '../../messages/components/DeleteMessagesModal/DeleteMessagesModal'
 import {useBoolean} from '../../../shared/hooks/useBoolean'
 import {MentionedMessage} from '../../messages/components/MentionedMessage/MentionedMessage'
+import {ReceiverPicker} from '../../../shared/ui/ReceiverPicker/ReceiverPicker'
+import {Menu} from '../../../shared/ui/Menu/Menu'
+import {useContextMenu} from '../../../shared/hooks/useContextMenu'
+import {MenuItem} from '../../../shared/ui/Menu/MenuItem'
+import {Message} from '../../messages/types'
 
 interface MessageComposerProps {
   chatId: string
@@ -44,6 +49,10 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
     messagesSelectors.selectMessageToReply(state, chatId)
   )
 
+  const forwardMessages = useAppSelector(
+    (state) => state.messages.forwardMessages
+  )
+
   const inputRef = useRef<HTMLDivElement>(null)
 
   const {
@@ -51,6 +60,27 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
     setTrue: openDeleteModal,
     setFalse: closeDeleteModal,
   } = useBoolean()
+
+  const {
+    value: isReceiverPickerOpen,
+    setTrue: openReceiverPicker,
+    setFalse: closeReceiverPicker,
+  } = useBoolean()
+
+  const ref = useRef<HTMLDivElement>(null)
+
+  const menuRef = useRef<HTMLDivElement>(null)
+
+  const {isContextMenuOpen, handleContextMenu, handleContextMenuClose, styles} =
+    useContextMenu({
+      menuRef,
+      triggerRef: ref,
+      getMenuElement: () => {
+        return document
+          .querySelector('#portal')
+          ?.querySelector('.message-composer-menu') as HTMLDivElement | null
+      },
+    })
 
   // const [isMessageSending, setIsMessageSending] = useState(false)
   const [text, setText] = useState('')
@@ -78,32 +108,60 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
     }
 
     // setIsMessageSending(true)
-
     try {
-      const result = await dispatch(
-        messagesThunks.sendMessage({
-          chatId,
-          text,
-          replyToMsgId: messageToReply?.id,
-        })
-      ).unwrap()
+      if (text) {
+        const result = await dispatch(
+          messagesThunks.sendMessage({
+            chatId,
+            text,
+            replyToMsgId: messageToReply?.id,
+          })
+        ).unwrap()
 
-      if (result.chatJustCreated) {
-        navigate(`/${result.chatId}`, {
-          // Коли ми відправляємо повідомлення в приватному чаті, спочатку в URL адресі використовується ID формата `u_userId`, а потім, коли на бекенді створююється чат, змінюємо адресу на ID вже реального, існуючого чату
-          // використовую replace, щоб не можна було повернутись до url адреси де id користувача використовується
-          replace: true,
-        })
+        if (result.chatJustCreated) {
+          navigate(`/${result.chatId}`, {
+            // Коли ми відправляємо повідомлення в приватному чаті, спочатку в URL адресі використовується ID формата `u_userId`, а потім, коли на бекенді створююється чат, змінюємо адресу на ID вже реального, існуючого чату
+            // використовую replace, щоб не можна було повернутись до url адреси де id користувача використовується
+            replace: true,
+          })
+        }
+        setText('')
+        dispatch(messagesActions.toggleMessageReplying({id: undefined}))
       }
-      setText('')
-      dispatch(messagesActions.toggleMessageReplying({id: undefined}))
+      if (forwardMessages) {
+        dispatch(messagesActions.setForwardMessages(null))
+
+        const sortedIds = forwardMessages.messageIds
+          .map((id) => {
+            return messagesSelectors.selectById(
+              store.getState(),
+              forwardMessages.fromChatId,
+              id
+            ) as Message
+          })
+          .sort((a, b) => a.sequenceId - b.sequenceId)
+          .map((m) => m.id)
+        const result = await dispatch(
+          messagesThunks.forwardMessages({
+            toChatId: chatId,
+            fromChatId: forwardMessages.fromChatId,
+            ids: sortedIds,
+            noAuthor: forwardMessages.noAuthor,
+          })
+        ).unwrap()
+        if (result.chatJustCreated) {
+          navigate(`/${result.chatId}`, {
+            replace: true,
+          })
+        }
+      }
     } catch (error) {
       console.error('Send message error', error)
     }
   }
 
   return (
-    <div className="message-composer">
+    <div className="message-composer" ref={ref}>
       {/* <div
         className={`message-selection${
           messageSelection.active ? ' active' : ''
@@ -125,7 +183,6 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
           }}
           name="close"
           title="Cancel selection"
-          color="secondary"
         />
         <p className="text-bold">
           {messageSelection.ids.length} messages selected
@@ -139,16 +196,27 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
           <Icon name="deleteIcon" title="Delete" size="small" color="red" />
           Delete
         </Button>
-        <Button variant="transparent" color="gray" size="small">
+        <Button
+          variant="transparent"
+          color="gray"
+          size="small"
+          onClick={openReceiverPicker}
+        >
           Forward
-          <Icon name="forward" title="Forward" color="secondary" size="small" />
+          <Icon name="forward" title="Forward" size="small" />
         </Button>
       </SingleTransition>
       <MentionedMessage
         size="large"
         messageToEdit={messageToEdit}
         replyInfo={messageToReply}
-        onClick={() => {
+        forwardMessages={forwardMessages}
+        onClick={(e) => {
+          if (forwardMessages) {
+            handleContextMenu(e)
+
+            return
+          }
           const message = messageToEdit || messageToReply
 
           if (!message) {
@@ -166,8 +234,56 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
         onClose={() => {
           dispatch(messagesActions.toggleMessageEditing({}))
           dispatch(messagesActions.toggleMessageReplying({}))
+          dispatch(messagesActions.setForwardMessages(null))
         }}
       />
+      <Menu
+        className="message-composer-menu"
+        onClose={handleContextMenuClose}
+        style={styles}
+        isOpen={isContextMenuOpen}
+        elRef={menuRef}
+        unmount
+        handleAwayClick
+        portal
+        backdrop
+      >
+        <MenuItem
+          title="Show Sender's name"
+          closeOnClick={false}
+          onClick={() => {
+            dispatch(messagesActions.setForwardNoAuthor(false))
+          }}
+          icon={forwardMessages?.noAuthor ? 'placeholder' : 'check'}
+        />
+        <MenuItem
+          title="Hide Sender's name"
+          closeOnClick={false}
+          onClick={() => {
+            dispatch(messagesActions.setForwardNoAuthor(true))
+          }}
+          icon={forwardMessages?.noAuthor ? 'check' : 'placeholder'}
+        />
+
+        <div className="menu__separator" />
+
+        <MenuItem
+          title="Forward to Another Chat"
+          onClick={openReceiverPicker}
+          icon="replace"
+        />
+
+        <MenuItem
+          danger
+          title="Do Not Forward"
+          onClick={() => {
+            dispatch(messagesActions.setForwardMessages(null))
+          }}
+          icon="deleteIcon"
+        />
+
+        {/* {children} */}
+      </Menu>
       <div className="flex-row">
         <MessageInput
           inputRef={inputRef}
@@ -191,6 +307,25 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
           onClose={closeDeleteModal}
         />
       )}
+      <ReceiverPicker
+        isOpen={isReceiverPickerOpen}
+        onClose={closeReceiverPicker}
+        onSelect={(receiverId) => {
+          console.log({receiverId, messageSelection})
+          dispatch(
+            messagesActions.setForwardMessages({
+              fromChatId: chatId,
+              messageIds: messageSelection.ids,
+            })
+          )
+          dispatch(messagesActions.toggleChatMessageSelection({active: false}))
+
+          if (receiverId !== chatId) {
+            navigate(`/${receiverId}`)
+          }
+        }}
+        placeholder="Forward to..."
+      />
     </div>
   )
 }

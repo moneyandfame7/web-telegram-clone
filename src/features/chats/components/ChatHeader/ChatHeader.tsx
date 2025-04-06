@@ -40,9 +40,9 @@ export const ChatHeader: FC<ChatHeaderProps> = ({chatId}) => {
         )}
       </div>
       <div className="chat-utils">
-        <IconButton name="search" title="Search" color="secondary" />
+        <IconButton name="search" title="Search" />
         <DropdownMenu
-          button={<IconButton name="more" title="Menu" color="secondary" />}
+          button={<IconButton name="more" title="Menu" />}
           position="bottom-right"
           transform="top right"
         >

@@ -10,6 +10,7 @@ import {IconName} from '../Icon/Icon'
 import {useContextMenu} from '../../hooks/useContextMenu'
 import {Menu} from '../Menu/Menu'
 import {MenuItem} from '../Menu/MenuItem'
+import {Size} from '../../types/ui-types'
 
 export type MenuContextActions =
   | {
@@ -28,6 +29,7 @@ interface ListItemProps {
   onClick: (e: MouseEvent<HTMLDivElement>) => void
   contextActions?: MenuContextActions[]
   avatarUrl?: string
+  avatarSize?: Size
   itemColor?: ChatColor
 
   checked?: boolean
@@ -41,6 +43,7 @@ export const ListItem: FC<ListItemProps> = ({
   onClick,
   contextActions,
   avatarUrl,
+  avatarSize,
   itemColor,
   checked,
   selected,
@@ -74,7 +77,12 @@ export const ListItem: FC<ListItemProps> = ({
         {typeof checked === 'boolean' && (
           <input type="checkbox" checked={checked} />
         )}
-        <Avatar url={avatarUrl} color={itemColor} title={title} />
+        <Avatar
+          url={avatarUrl}
+          color={itemColor}
+          title={title}
+          size={avatarSize}
+        />
         <div className="list-item__info">
           <div className="list-item__row">
             <p className="list-item__title">{title}</p>

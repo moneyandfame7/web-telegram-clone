@@ -29,6 +29,11 @@ interface MessagesState {
   messageReplying: {
     id?: string
   }
+  forwardMessages?: {
+    fromChatId: string
+    messageIds: string[]
+    noAuthor: boolean
+  }
 }
 const initialState: MessagesState = {
   byChatId: {},
@@ -61,7 +66,6 @@ const messagesSlice = createSlice({
           isLoading: false,
         }
       }
-
       state.byChatId[chatId].data = messagesAdapter.addOne(
         state.byChatId[chatId].data,
         message
@@ -167,8 +171,21 @@ const messagesSlice = createSlice({
       action: PayloadAction<Partial<IdPayload>>
     ) => {
       const {id} = action.payload
-
+      // messagesActions.toggleChatMessageSelection()
       state.messageReplying.id = id
+    },
+    setForwardMessages: (
+      state,
+      action: PayloadAction<{fromChatId: string; messageIds: string[]} | null>
+    ) => {
+      state.forwardMessages = action.payload
+        ? {...action.payload, noAuthor: false}
+        : undefined
+    },
+    setForwardNoAuthor: (state, action: PayloadAction<boolean>) => {
+      if (state.forwardMessages) {
+        state.forwardMessages.noAuthor = action.payload
+      }
     },
   },
   extraReducers: (builder) => {

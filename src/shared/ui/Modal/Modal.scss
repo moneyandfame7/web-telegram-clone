@@ -12,7 +12,7 @@
   z-index: var(--z-modal);
   &-container {
     margin: 10px;
-    padding: 10px;
+    // padding: 10px;
     border-radius: 12px;
     min-height: 200px;
     min-width: 300px;
@@ -32,7 +32,8 @@
     flex: 1;
     padding-block: 15px;
     padding-inline: 5px;
-    max-height: calc(100vh - 20rem);
+    // max-height: calc(100vh - 20rem);
+    overflow-y: auto;
   }
   &-header {
     width: 100%;

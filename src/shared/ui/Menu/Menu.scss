@@ -77,6 +77,8 @@
       // width: 20px;
       // height: 20px;
       margin-right: 10px;
+      width: 18px;
+      height: 18px;
     }
   }
   &__badge {
@@ -85,6 +87,11 @@
   }
   &__title {
     flex: 1;
+  }
+  &__separator {
+    border-top: 1px solid var(--c-border);
+    opacity: 0.6;
+    margin: 5px 0;
   }
 }
 

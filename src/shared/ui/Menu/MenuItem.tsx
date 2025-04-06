@@ -16,17 +16,20 @@ interface MenuItemProps extends PropsWithChildren {
     e: React.MouseEvent<HTMLDivElement, MouseEvent>
   ) => void | Promise<void>
   danger?: boolean
+  closeOnClick?: boolean
 }
 
 export const MenuItem: FC<MenuItemProps> = memo(
-  ({title, icon, badge, danger, onClick}) => {
+  ({title, icon, badge, danger, onClick, closeOnClick = true}) => {
     const {onClose, autoClose} = useMenuContext()
 
     const handleClick = useCallback(
       (e: React.MouseEvent<HTMLDivElement, MouseEvent>) => {
         e.stopPropagation()
         onClick?.(e)
-
+        if (!closeOnClick) {
+          return
+        }
         if (autoClose) {
           onClose()
         }
@@ -46,3 +49,7 @@ export const MenuItem: FC<MenuItemProps> = memo(
     )
   }
 )
+
+export const MenuSeparator: FC = () => {
+  return <hr className="menu__separator" />
+}
