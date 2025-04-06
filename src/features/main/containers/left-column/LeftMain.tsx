@@ -37,14 +37,7 @@ export const LeftMain: FC = () => {
           <DropdownMenu
             position="bottom-left"
             transform="top left"
-            button={
-              <IconButton
-                name="menu"
-                title="Menu"
-                size="medium"
-                color="secondary"
-              />
-            }
+            button={<IconButton name="menu" title="Menu" size="medium" />}
             style={{minWidth: 250}}
           >
             <MenuItem icon="savedMessages" title="Saved Messages" />

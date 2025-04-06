@@ -5,7 +5,8 @@
     width: 18px;
     height: 18px;
 
-    &.icon-check {
+    &.icon-check,
+    &.icon-forwardFilled {
       width: 15px;
       height: 15px;
     }
@@ -17,13 +18,13 @@
 
   &-secondary {
     path {
-      fill: var(--c-font-secondary) !important;
+      fill: var(--c-icon-secondary) !important;
     }
   }
 
   &-default {
     path {
-      fill: var(--c-font-primary) !important;
+      fill: var(--c-icon-primary) !important;
     }
   }
   &-primary {

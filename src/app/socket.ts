@@ -5,6 +5,7 @@ import {
   DeleteMessagesResult,
   EditMessageParams,
   EditMessageResult,
+  ForwardMessagesParams,
   Message,
   ReadHistoryParams,
   ReadMyHistoryResult,
@@ -46,6 +47,7 @@ interface EmitEvents {
   'message:send': EventWithAck<SendMessageParams, Message>
   'message:edit': EventWithAck<EditMessageParams, boolean>
   'message:delete': EventWithAck<DeleteMessagesParams, boolean>
+  'message:forward': EventWithAck<ForwardMessagesParams, boolean>
   'message:read-history': EventWithAck<
     ReadHistoryParams,
     {newUnreadCount: number; chatId: string; maxId: number}

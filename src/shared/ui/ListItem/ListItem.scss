@@ -55,18 +55,24 @@
     gap: 5px;
 
     .icon path {
-      fill: var(--c-primary);
+      fill: var(--c-primary) !important;
     }
   }
 
   &__subtitle {
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    width: 90%;
+    display: flex;
+    align-items: center;
     color: var(--c-font-secondary);
     font-size: 14px;
     line-height: 1.3215;
+    min-width: 0;
+    width: 90%;
+    gap: 3px;
+    p {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
   }
 
   &__row {

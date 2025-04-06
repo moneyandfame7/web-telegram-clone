@@ -2,7 +2,16 @@
   position: relative;
   width: 100%;
   transition: opacity 0.2s ease-out;
-
+  &.input-default {
+    input {
+      &:focus {
+        &::placeholder,
+        ~ label {
+          color: var(--c-placeholder) !important;
+        }
+      }
+    }
+  }
   input {
     transition-duration: 0.2s;
     transition-timing-function: ease;

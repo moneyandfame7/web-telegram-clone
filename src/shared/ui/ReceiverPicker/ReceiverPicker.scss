@@ -1,0 +1,22 @@
+.receiver-picker-modal {
+  .modal-container {
+    width: 400px;
+    height: 600px;
+    .modal-content {
+      padding-block: 0;
+    }
+  }
+  input {
+    font-size: 20px;
+  }
+
+  .no-results {
+    height: 100%;
+    margin: 0;
+    padding: 1rem 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--c-font-secondary);
+  }
+}

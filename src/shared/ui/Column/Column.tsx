@@ -17,12 +17,7 @@ export const Column: FC<ColumnProps> = ({
     <div className="column">
       <div className="column-header">
         {onGoBack && (
-          <IconButton
-            title="Go Back"
-            name="arrowLeft"
-            onClick={onGoBack}
-            color="secondary"
-          />
+          <IconButton title="Go Back" name="arrowLeft" onClick={onGoBack} />
         )}
         {title && <p>{title}</p>}
         {header}

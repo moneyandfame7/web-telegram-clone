@@ -10,7 +10,7 @@ export const NavigationBar: FC = () => {
   return (
     <div className="navigation-bar">
       {currentScreen.id !== 0 && (
-        <IconButton name="arrowLeft" title="Go back" color="secondary" />
+        <IconButton name="arrowLeft" title="Go back" />
       )}
       <h3 className="navigation-bar__title">
         {currentScreen.id}----{direction}

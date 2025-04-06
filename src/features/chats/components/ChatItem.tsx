@@ -15,7 +15,7 @@ interface ChatItemProps {
 }
 export const ChatItem: FC<ChatItemProps> = ({chat}) => {
   const navigate = useNavigate()
-
+  const isPrivateChat = Boolean(chat.userId)
   const currentChatId = useAppSelector((state) => state.chats.currentChatId)
   const lastMessageSender = useAppSelector((state) =>
     usersSelectors.selectById(state, chat.lastMessage?.senderId ?? '')
@@ -57,25 +57,44 @@ export const ChatItem: FC<ChatItemProps> = ({chat}) => {
     // console.log('NO LAST MESSAGE XDD', chat, chat.lastMessage)
 
     if (!chat.lastMessage) {
-      return
+      return '??No message??'
     }
 
-    console.log('MESSAGE EXIST')
     const message = chat.lastMessage
+    const text = <>{message.text || message.forwardInfo?.text}</>
     if (message.isOutgoing) {
-      console.log('MESSAGE OUTGOING')
-
-      return message.text
+      return (
+        <>
+          {!isPrivateChat && <span className="text-primary">You: </span>}
+          {message.forwardInfo && (
+            <Icon
+              name="forwardFilled"
+              title="Forwarded"
+              size="small"
+              color="secondary"
+            />
+          )}
+          <p>{text}</p>
+        </>
+      )
     } else if (lastMessageSender) {
       console.log('lastMessageSender')
 
       return (
-        <p>
+        <>
           <span className="text-primary">
-            {getUserTitle(lastMessageSender)}:
-          </span>{' '}
-          {message.text ?? ''}
-        </p>
+            {getUserTitle(lastMessageSender)}:{' '}
+          </span>
+          {message.forwardInfo && (
+            <Icon
+              name="forwardFilled"
+              title="Forwarded"
+              size="small"
+              color="secondary"
+            />
+          )}
+          <p>{text}</p>
+        </>
       )
     }
   }
