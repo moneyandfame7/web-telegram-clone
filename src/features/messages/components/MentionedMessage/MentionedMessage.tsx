@@ -1,4 +1,4 @@
-import React, {FC, RefObject} from 'react'
+import React, {FC} from 'react'
 
 import './MentionedMessage.scss'
 import {ForwardMessages, Message, MessageReplyInfo} from '../../types'

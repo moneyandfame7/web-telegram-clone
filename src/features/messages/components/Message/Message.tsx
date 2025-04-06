@@ -49,14 +49,14 @@ export const Message: FC<MessageProps> = ({
   const isMessageSelected = useAppSelector((state) =>
     messagesSelectors.selectIsSelected(state, message.id)
   )
-  const isPrivateChat = Boolean(chat?.userId)
+  // const isPrivateChat = Boolean(chat?.userId)
 
   const forwardMessageSender = useAppSelector((state) =>
     usersSelectors.selectById(state, message.forwardInfo?.senderId ?? '')
   )
 
-  const shouldShowSenderName =
-    (!isPrivateChat && !message.isOutgoing) || Boolean(forwardMessageSender)
+  // const shouldShowSenderName =
+  //   (!isPrivateChat && !message.isOutgoing) || Boolean(forwardMessageSender)
 
   const ref = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)

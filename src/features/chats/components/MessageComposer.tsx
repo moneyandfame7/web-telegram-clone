@@ -20,7 +20,6 @@ import {DeleteMessagesModal} from '../../messages/components/DeleteMessagesModal
 import {useBoolean} from '../../../shared/hooks/useBoolean'
 import {MentionedMessage} from '../../messages/components/MentionedMessage/MentionedMessage'
 import {ReceiverPicker} from '../../../shared/ui/ReceiverPicker/ReceiverPicker'
-import {chatsThunks} from '../api'
 import {Menu} from '../../../shared/ui/Menu/Menu'
 import {useContextMenu} from '../../../shared/hooks/useContextMenu'
 import {MenuItem} from '../../../shared/ui/Menu/MenuItem'

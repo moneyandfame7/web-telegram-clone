@@ -1,7 +1,6 @@
-import {FC, useCallback, useMemo, useState} from 'react'
+import {FC, useCallback, useState} from 'react'
 import {useAppSelector} from '../../../app/store'
 import {chatsSelectors} from '../../../features/chats/state'
-import {usersSelectors} from '../../../features/users/state/users-selectors'
 import {Modal} from '../Modal/Modal'
 import {ListItem} from '../ListItem/ListItem'
 import {InputText} from '../Input/Input'
@@ -21,9 +20,9 @@ export const ReceiverPicker: FC<ReceiverPickerProps> = ({
   onClose,
 }) => {
   const chats = useAppSelector((state) => chatsSelectors.selectAll(state))
-  const contacts = useAppSelector((state) =>
-    usersSelectors.selectContacts(state)
-  )
+  // const contacts = useAppSelector((state) =>
+  //   usersSelectors.selectContacts(state)
+  // )
   const [searchText, setSearchText] = useState('')
   /**
    * @TODO  треба сортувати, чати, а потім контакти, з якими немає чатів
