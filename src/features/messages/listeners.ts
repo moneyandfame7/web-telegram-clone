@@ -67,13 +67,13 @@ export const createMessageListeners = (
     )
 
     if (
-      data.chat.lastMessage?.id !== chat.lastMessage?.id &&
-      chat.lastMessage
+      data.chat.lastMessage &&
+      data.chat.lastMessage?.id !== chat.lastMessage?.id
     ) {
       dispatch(
         chatsActions.updateLastMessage({
           id: chat.id,
-          changes: chat.lastMessage,
+          changes: data.chat.lastMessage,
         })
       )
     }
