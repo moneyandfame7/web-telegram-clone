@@ -1,4 +1,5 @@
 // import { FC, lazy } from 'preact/compat'
+import admin from './admin.svg?react'
 import check1 from './1check.svg?react'
 
 import checks2 from './2checks.svg?react'
@@ -100,8 +101,11 @@ import groupMedia from './groupmedia.svg?react'
 import groupMediaOff from './groupmediaoff.svg?react'
 import newTab from './newtab.svg?react'
 import replace from './replace.svg?react'
+import permissions from './permissions.svg?react'
+import link from './link.svg?react'
 
 export {
+  admin,
   arrowLeft,
   arrowRight,
   channel,
@@ -201,4 +205,6 @@ export {
   groupMediaOff,
   newTab,
   replace,
+  permissions,
+  link,
 }

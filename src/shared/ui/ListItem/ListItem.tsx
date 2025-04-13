@@ -1,16 +1,17 @@
-import {MouseEvent, ReactNode, useRef, type FC} from 'react'
+import {ChangeEvent, MouseEvent, ReactNode, useRef, type FC} from 'react'
 import {Avatar} from '../Avatar/Avatar'
 
 import {ChatColor} from '../../../app/types'
 
 import clsx from 'clsx'
 
-import './ListItem.scss'
-import {IconName} from '../Icon/Icon'
+import {Icon, IconName} from '../Icon/Icon'
 import {useContextMenu} from '../../hooks/useContextMenu'
 import {Menu} from '../Menu/Menu'
 import {MenuItem} from '../Menu/MenuItem'
 import {Size} from '../../types/ui-types'
+
+import './ListItem.scss'
 
 export type MenuContextActions =
   | {
@@ -23,30 +24,43 @@ export type MenuContextActions =
 
 interface ListItemProps {
   title: string
+  startContent?: ReactNode
   titleRight?: ReactNode
   subtitle?: ReactNode
   subtitleRight?: ReactNode
   onClick: (e: MouseEvent<HTMLDivElement>) => void
+  onToggle?: (e: ChangeEvent<HTMLInputElement>) => void
   contextActions?: MenuContextActions[]
   avatarUrl?: string
   avatarSize?: Size
   itemColor?: ChatColor
-
+  className?: string
+  withAvatar?: boolean
   checked?: boolean
   selected?: boolean
+  fullwidth?: boolean
+  danger?: boolean
+  disabled?: boolean
 }
 export const ListItem: FC<ListItemProps> = ({
   title,
+  startContent,
   titleRight,
   subtitle,
   subtitleRight,
   onClick,
+  onToggle,
   contextActions,
   avatarUrl,
   avatarSize,
   itemColor,
+  className,
+  withAvatar = true,
   checked,
   selected,
+  fullwidth = true,
+  danger,
+  disabled,
 }) => {
   const ref = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -62,27 +76,38 @@ export const ListItem: FC<ListItemProps> = ({
       },
     })
 
-  const className = clsx('list-item', {
+  const buildedClassname = clsx('list-item', className, {
     'list-item--selected': selected,
     'list-item--menu-open': isContextMenuOpen,
+    'list-item--clickable': Boolean(onClick),
+    'list-item--fullwidth': fullwidth,
+    'list-item--danger': danger,
+    'list-item--disabled': disabled,
   })
+
   return (
-    <div className="list-item-container">
+    <>
       <div
         ref={ref}
-        className={className}
-        onClick={onClick}
+        className={buildedClassname}
+        onClick={disabled ? undefined : onClick}
         onContextMenu={handleContextMenu}
       >
         {typeof checked === 'boolean' && (
-          <input type="checkbox" checked={checked} />
+          <label className="list-item__checkbox">
+            <input type="checkbox" checked={checked} />
+            <Icon title="Check" name="check" color="white" size="small" />
+          </label>
         )}
-        <Avatar
-          url={avatarUrl}
-          color={itemColor}
-          title={title}
-          size={avatarSize}
-        />
+        {startContent}
+        {withAvatar && (
+          <Avatar
+            url={avatarUrl}
+            color={itemColor}
+            title={title}
+            size={avatarSize}
+          />
+        )}
         <div className="list-item__info">
           <div className="list-item__row">
             <p className="list-item__title">{title}</p>
@@ -123,6 +148,6 @@ export const ListItem: FC<ListItemProps> = ({
           })}
         </Menu>
       )}
-    </div>
+    </>
   )
 }

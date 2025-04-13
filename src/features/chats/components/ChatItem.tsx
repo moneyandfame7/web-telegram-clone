@@ -10,6 +10,7 @@ import {usersSelectors} from '../../users/state/users-selectors'
 import {User} from '../../auth/types'
 import {getUserTitle} from '../../users/helpers'
 
+import './ChatItem.scss'
 interface ChatItemProps {
   chat: Chat
 }
@@ -20,7 +21,10 @@ export const ChatItem: FC<ChatItemProps> = ({chat}) => {
   const lastMessageSender = useAppSelector((state) =>
     usersSelectors.selectById(state, chat.lastMessage?.senderId ?? '')
   ) as User | undefined
-
+  /**
+   * @todo оновити тут селектор, щоб викликалось лише тоді, коли senderId змінився???
+   *
+   */
   const renderTitleRight = () => {
     if (!chat?.lastMessage) {
       return (
@@ -101,6 +105,8 @@ export const ChatItem: FC<ChatItemProps> = ({chat}) => {
 
   return (
     <ListItem
+      fullwidth={false}
+      className="chat-item"
       title={chat.title}
       titleRight={renderTitleRight()}
       subtitle={renderSubtitle()}

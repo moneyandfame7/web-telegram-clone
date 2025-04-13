@@ -1,4 +1,9 @@
 .receiver-picker-modal {
+  .modal-header {
+    .input-container {
+      margin: 0;
+    }
+  }
   .modal-container {
     width: 400px;
     height: 600px;
@@ -6,6 +11,7 @@
       padding-block: 0;
     }
   }
+
   input {
     font-size: 20px;
   }

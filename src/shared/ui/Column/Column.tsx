@@ -6,15 +6,17 @@ export interface ColumnProps extends PropsWithChildren {
   title?: string
   header?: ReactNode
   onGoBack?: VoidFunction
+  className?: string
 }
 export const Column: FC<ColumnProps> = ({
   title,
   header,
   onGoBack,
   children,
+  className,
 }) => {
   return (
-    <div className="column">
+    <div className={`column${className ? ` ${className}` : ``}`}>
       <div className="column-header">
         {onGoBack && (
           <IconButton title="Go Back" name="arrowLeft" onClick={onGoBack} />

@@ -5,11 +5,14 @@ import {Modal} from '../Modal/Modal'
 import {ListItem} from '../ListItem/ListItem'
 import {InputText} from '../Input/Input'
 import './ReceiverPicker.scss'
+import {User} from '../../../features/auth/types'
+import {getUserTitle} from '../../../features/users/helpers'
 interface ReceiverPickerProps {
   isOpen: boolean
   placeholder: string
   onSelect: (receiverId: string) => void
   onClose: VoidFunction
+  users?: User[]
 }
 
 // This is a Chat-Or-User picker
@@ -18,6 +21,7 @@ export const ReceiverPicker: FC<ReceiverPickerProps> = ({
   placeholder,
   onSelect,
   onClose,
+  users,
 }) => {
   const chats = useAppSelector((state) => chatsSelectors.selectAll(state))
   // const contacts = useAppSelector((state) =>
@@ -29,10 +33,33 @@ export const ReceiverPicker: FC<ReceiverPickerProps> = ({
    */
 
   const renderList = useCallback(() => {
+    if (users) {
+      const filteredList = users.filter((user) =>
+        getUserTitle(user).includes(searchText)
+      )
+      if (filteredList.length) {
+        return filteredList.map((user) => (
+          <ListItem
+            fullwidth={false}
+            title={getUserTitle(user)}
+            subtitle={'status'}
+            avatarSize="small"
+            itemColor={user.color}
+            key={user.id}
+            onClick={() => {
+              onSelect(user.id)
+              onClose()
+            }}
+          />
+        ))
+      }
+    }
+
     const filteredList = chats.filter((chat) => chat.title.includes(searchText))
     if (filteredList.length) {
       return filteredList.map((chat) => (
         <ListItem
+          fullwidth={false}
           title={chat.title}
           subtitle={`${chat.membersCount} members`}
           key={chat.id}
@@ -48,7 +75,7 @@ export const ReceiverPicker: FC<ReceiverPickerProps> = ({
     }
 
     return <p className="no-results">No results.</p>
-  }, [searchText, onSelect, chats, onClose])
+  }, [searchText, onSelect, chats, onClose, users])
   return (
     <Modal
       isOpen={isOpen}

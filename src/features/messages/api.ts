@@ -152,7 +152,7 @@ const sendMessage = createAsyncThunk(
     if (!chat) {
       thunkApi.dispatch(chatsActions.addOne(result.chat))
 
-      socket.emit('room:join', `chat-${result.chat.id}`)
+      // socket.emit('room:join', `chat-${result.chat.id}`)
     } else {
       thunkApi.dispatch(
         chatsActions.updateOne({
@@ -313,7 +313,7 @@ const forwardMessages = createAsyncThunk(
     if (!chat) {
       thunkApi.dispatch(chatsActions.addOne(result.chat))
 
-      socket.emit('room:join', `chat-${result.chat.id}`)
+      // socket.emit('room:join', `chat-${result.chat.id}`)
     } else {
       thunkApi.dispatch(
         chatsActions.updateOne({
