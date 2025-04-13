@@ -237,16 +237,28 @@ const deleteMessages = createAsyncThunk(
           arg.chatId
         )
 
-        if (!newLastMessage) {
-          return
-        }
-
         thunkApi.dispatch(
-          chatsActions.updateLastMessage({
-            id: arg.chatId,
-            changes: newLastMessage,
+          chatsActions.setLastMessage({
+            chatId: arg.chatId,
+            message: newLastMessage ?? null,
           })
         )
+        // if (!newLastMessage) {
+        //   thunkApi.dispatch(
+        //     chatsActions.setLastMessage({
+        //       id: arg.chatId,
+        //       changes: null,
+        //     })
+        //   )
+        //   return
+        // }
+
+        // thunkApi.dispatch(
+        //   chatsActions.updateLastMessage({
+        //     id: arg.chatId,
+        //     changes: newLastMessage,
+        //   })
+        // )
       }
     })
 
@@ -261,9 +273,9 @@ const deleteMessages = createAsyncThunk(
       )
       if (result.chat.lastMessage) {
         thunkApi.dispatch(
-          chatsActions.updateLastMessage({
-            id: arg.chatId,
-            changes: result.chat.lastMessage,
+          chatsActions.setLastMessage({
+            chatId: arg.chatId,
+            message: result.chat.lastMessage,
           })
         )
       }
@@ -278,9 +290,9 @@ const deleteMessages = createAsyncThunk(
       }
 
       thunkApi.dispatch(
-        chatsActions.updateLastMessage({
-          id: arg.chatId,
-          changes: chat.lastMessage,
+        chatsActions.setLastMessage({
+          chatId: arg.chatId,
+          message: chat.lastMessage,
         })
       )
     }

@@ -60,6 +60,25 @@ const chatsSlice = createSlice({
         },
       })
     },
+    setLastMessage: (
+      state,
+      action: PayloadAction<{chatId: string; message: Message | null}>
+    ) => {
+      const {chatId, message} = action.payload
+
+      const chat = state.entities[chatId] as Chat | undefined
+
+      if (!chat) {
+        console.warn(`Chat ${chatId} not found for settings last message.`)
+        return
+      }
+      chatsAdapter.updateOne(state, {
+        id: chatId,
+        changes: {
+          lastMessage: message ?? undefined,
+        },
+      })
+    },
     updateChatMember: (
       state,
       action: PayloadAction<{
