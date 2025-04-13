@@ -19,7 +19,7 @@ export const NewChatStep2: FC<NewChatStep2Props> = ({isGroup, selectedIds}) => {
   const [isLoading, setIsLoading] = useState(false)
   const [title, setTitle] = useState('')
   const [description, setDescription] = useState('')
-  const [error, setError] = useState<string | null>(null)
+  const [error, setError] = useState<string | undefined>(undefined)
   const chatType = isGroup ? 'Group' : 'Channel'
 
   const handleSubmit = async () => {
@@ -81,10 +81,10 @@ export const NewChatStep2: FC<NewChatStep2Props> = ({isGroup, selectedIds}) => {
       )}
       <Modal
         isOpen={!!error}
-        onClose={() => setError(null)}
+        onClose={() => setError(undefined)}
         content={error}
         header={'Something went wrong'}
-        actions={<Button onClick={() => setError(null)}>Ok</Button>}
+        actions={<Button onClick={() => setError(undefined)}>Ok</Button>}
       />
     </Column>
   )

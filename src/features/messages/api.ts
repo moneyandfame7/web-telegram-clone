@@ -240,7 +240,7 @@ const deleteMessages = createAsyncThunk(
         thunkApi.dispatch(
           chatsActions.setLastMessage({
             chatId: arg.chatId,
-            message: newLastMessage ?? null,
+            message: newLastMessage,
           })
         )
         // if (!newLastMessage) {

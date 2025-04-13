@@ -129,7 +129,7 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
         dispatch(messagesActions.toggleMessageReplying({id: undefined}))
       }
       if (forwardMessages) {
-        dispatch(messagesActions.setForwardMessages(null))
+        dispatch(messagesActions.setForwardMessages(undefined))
 
         const sortedIds = forwardMessages.messageIds
           .map((id) => {
@@ -234,7 +234,7 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
         onClose={() => {
           dispatch(messagesActions.toggleMessageEditing({}))
           dispatch(messagesActions.toggleMessageReplying({}))
-          dispatch(messagesActions.setForwardMessages(null))
+          dispatch(messagesActions.setForwardMessages(undefined))
         }}
       />
       <Menu
@@ -277,7 +277,7 @@ export const MessageComposer: FC<MessageComposerProps> = ({chatId}) => {
           danger
           title="Do Not Forward"
           onClick={() => {
-            dispatch(messagesActions.setForwardMessages(null))
+            dispatch(messagesActions.setForwardMessages(undefined))
           }}
           icon="deleteIcon"
         />

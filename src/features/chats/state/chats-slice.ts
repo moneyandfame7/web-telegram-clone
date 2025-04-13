@@ -62,7 +62,7 @@ const chatsSlice = createSlice({
     },
     setLastMessage: (
       state,
-      action: PayloadAction<{chatId: string; message: Message | null}>
+      action: PayloadAction<{chatId: string; message: Message | undefined}>
     ) => {
       const {chatId, message} = action.payload
 
@@ -75,7 +75,7 @@ const chatsSlice = createSlice({
       chatsAdapter.updateOne(state, {
         id: chatId,
         changes: {
-          lastMessage: message ?? undefined,
+          lastMessage: message,
         },
       })
     },
@@ -102,11 +102,11 @@ const chatsSlice = createSlice({
         changes,
       })
 
-      if (typeof changes.adminPermissions !== 'undefined') {
+      if ('adminPermissions' in changes) {
         const alreadyAdmin = details.adminIds.includes(userId)
         if (changes.adminPermissions && !alreadyAdmin) {
           details.adminIds.push(userId)
-        } else if (changes.adminPermissions === null) {
+        } else if (!changes.adminPermissions) {
           details.adminIds = details.adminIds.filter((id) => id !== userId)
         }
       }

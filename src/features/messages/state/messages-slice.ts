@@ -176,7 +176,9 @@ const messagesSlice = createSlice({
     },
     setForwardMessages: (
       state,
-      action: PayloadAction<{fromChatId: string; messageIds: string[]} | null>
+      action: PayloadAction<
+        {fromChatId: string; messageIds: string[]} | undefined
+      >
     ) => {
       state.forwardMessages = action.payload
         ? {...action.payload, noAuthor: false}

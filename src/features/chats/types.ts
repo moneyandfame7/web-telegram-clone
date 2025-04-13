@@ -32,7 +32,7 @@ export interface ChatDetails {
 export interface ChatMember {
   userId: string
   chatId: string
-  adminPermissions?: AdminPermissions | null
+  adminPermissions?: AdminPermissions
 }
 
 export interface GetChatsResult {
@@ -60,5 +60,5 @@ export interface AdminPermissions {
 export interface UpdateAdminParams {
   chatId: string
   userId: string
-  adminPermissions: AdminPermissions | null
+  adminPermissions?: AdminPermissions
 }
