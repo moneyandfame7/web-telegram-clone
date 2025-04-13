@@ -12,10 +12,15 @@ import {
   SendMessageParams,
 } from '../features/messages/types'
 
-import type {Chat, CreateChatParams} from '../features/chats/types'
+import type {
+  Chat,
+  CreateChatParams,
+  UpdateAdminParams,
+} from '../features/chats/types'
 
 export interface ListenEvents {
   ['chat:created']: (chat: Chat) => void
+  ['chat:admin-updated']: (data: UpdateAdminParams) => void
   ['auth:unauthorized']: () => void
 
   ['message:new']: (message: Message, chat: Chat) => void
@@ -40,6 +45,7 @@ interface EmitEvents {
    * CHAT
    */
   'chat:create': EventWithAck<CreateChatParams, Chat>
+  'chat:update-admin': EventWithAck<UpdateAdminParams, boolean>
 
   /**
    * MESSAGES

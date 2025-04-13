@@ -60,14 +60,15 @@ export const useAppInitialization = () => {
   // subscribe to events
   useEffect(() => {
     ;(async () => {
+      console.time('>>> INIT <<<')
+
       dispatch(uiActions.setIsUpdating(true))
-      console.log('INIT')
 
       if (userId) {
         await dispatch(usersThunks.getUser({id: userId})).unwrap()
       }
 
-      const [{chats}] = await Promise.all([
+      await Promise.all([
         await dispatch(chatsThunks.getChats()).unwrap(),
         await dispatch(usersThunks.getContacts()).unwrap(),
       ])
@@ -79,7 +80,7 @@ export const useAppInitialization = () => {
         console.warn('[socket.io]: Disconnected!')
       })
 
-      chats.forEach((chat) => socket.emit('room:join', `chat-${chat.id}`))
+      // chats.forEach((chat) => socket.emit('room:join', `chat-${chat.id}`))
 
       const chatListeners = createChatListeners(dispatch)
       const messageListeners = createMessageListeners(
@@ -91,6 +92,7 @@ export const useAppInitialization = () => {
       messageListeners.subscribe()
 
       dispatch(uiActions.setIsUpdating(false))
+      console.timeEnd('>>> INIT <<<')
 
       return () => {
         chatListeners.unsubscribe()

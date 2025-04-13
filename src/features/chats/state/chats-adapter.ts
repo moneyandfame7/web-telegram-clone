@@ -1,5 +1,6 @@
 import {createEntityAdapter} from '@reduxjs/toolkit'
-import {Chat} from '../types'
+import {Chat, ChatMember} from '../types'
+import {ChatDetailsState} from './chats-slice'
 
 const chatsSortComparer = (a: Chat, b: Chat) => {
   if (!a.lastMessage || !b.lastMessage) {
@@ -15,4 +16,13 @@ const chatsSortComparer = (a: Chat, b: Chat) => {
 export const chatsAdapter = createEntityAdapter<Chat, string>({
   selectId: (chat) => chat.id,
   sortComparer: chatsSortComparer,
+})
+
+export const chatDetailsAdapter = createEntityAdapter<ChatDetailsState, string>(
+  {
+    selectId: (details) => details.chatId,
+  }
+)
+export const chatMembersAdapter = createEntityAdapter<ChatMember, string>({
+  selectId: (member) => member.userId,
 })

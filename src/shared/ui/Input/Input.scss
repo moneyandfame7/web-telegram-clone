@@ -2,6 +2,8 @@
   position: relative;
   width: 100%;
   transition: opacity 0.2s ease-out;
+  margin-bottom: 18px;
+
   &.input-default {
     input {
       &:focus {

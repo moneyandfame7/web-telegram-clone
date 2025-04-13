@@ -1,5 +1,11 @@
 import {createAsyncThunk} from '@reduxjs/toolkit'
-import type {Chat, CreateChatParams, GetChatsResult} from './types'
+import {
+  ChatDetails,
+  UpdateAdminParams,
+  type Chat,
+  type CreateChatParams,
+  type GetChatsResult,
+} from './types'
 import {api} from '../../app/api'
 import {AxiosError} from 'axios'
 import {IdPayload} from '../../app/types'
@@ -53,6 +59,25 @@ const getChat = createAsyncThunk<Chat | undefined, string>(
   }
 )
 
+const getChatDetails = createAsyncThunk<ChatDetails, string>(
+  'chats/getChatDetails',
+  async (arg, thunkApi) => {
+    try {
+      const res = await api.get<ChatDetails>(`/chats/${arg}/details`)
+
+      return res.data
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.message || 'Unknown error'
+        )
+      }
+
+      return thunkApi.rejectWithValue('[chats/getChat] error')
+    }
+  }
+)
+
 const openChat = createAsyncThunk<void, IdPayload>(
   'chats/openChat',
   async (arg, thunkApi) => {
@@ -89,4 +114,43 @@ const openChat = createAsyncThunk<void, IdPayload>(
   }
 )
 
-export const chatsThunks = {createChat, getChats, getChat, openChat}
+const updateAdmin = createAsyncThunk<boolean, UpdateAdminParams>(
+  'chats/updateAdmin',
+  async (arg, thunkApi) => {
+    try {
+      const res = await emitEventWithHandling<UpdateAdminParams, boolean>(
+        'chat:update-admin',
+        arg
+      )
+
+      thunkApi.dispatch(
+        chatsActions.updateChatMember({
+          chatId: arg.chatId,
+          userId: arg.userId,
+          changes: {
+            adminPermissions: arg.adminPermissions,
+          },
+        })
+      )
+
+      return res
+    } catch (error) {
+      if (error instanceof AxiosError) {
+        return thunkApi.rejectWithValue(
+          error.response?.data?.message || 'Unknown error'
+        )
+      }
+
+      return thunkApi.rejectWithValue('[chats/getChat] error')
+    }
+  }
+)
+
+export const chatsThunks = {
+  createChat,
+  getChats,
+  getChat,
+  getChatDetails,
+  openChat,
+  updateAdmin,
+}

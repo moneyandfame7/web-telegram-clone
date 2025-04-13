@@ -17,10 +17,12 @@ export const IconButton: FC<IconButtonProps> = ({
   size,
   style,
   isLoading,
+  className,
   ...iconProps
 }) => {
   const buildedClass = clsx(
     'icon-button',
+    className,
     {
       'icon-button--loading': isLoading,
     },

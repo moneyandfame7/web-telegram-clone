@@ -2,13 +2,13 @@ import {FC} from 'react'
 
 import {SingleTransition} from '../../../../shared/ui/Transition/Transition'
 
+import {useAppSelector} from '../../../../app/store'
+import {NavigationStack} from '../../../../shared/ui/NavigationStack/NavigationStack'
+import {ChatInfo} from './ChatInfo/ChatInfo'
+
 import './RightColumn.scss'
-import {useAppDispatch, useAppSelector} from '../../../../app/store'
-import {Column} from '../../../../shared/ui/Column/Column'
-import {uiActions} from '../../../../shared/store/ui-slice'
 
 export const RightColumn: FC = () => {
-  const dispatch = useAppDispatch()
   const rightColumnScreen = useAppSelector(
     (state) => state.ui.rightColumnScreen
   )
@@ -22,11 +22,7 @@ export const RightColumn: FC = () => {
       timeout={300}
       className="right-column"
     >
-      <Column
-        onGoBack={() => {
-          dispatch(uiActions.setRightColumn())
-        }}
-      ></Column>
+      <NavigationStack initialScreen={<ChatInfo />} />
     </SingleTransition>
   )
 }

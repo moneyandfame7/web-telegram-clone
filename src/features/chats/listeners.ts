@@ -7,15 +7,29 @@ export const createChatListeners = (dispatch: AppDispatch) => {
     console.log(`New chat added: [${chat.id}]`)
 
     dispatch(chatsActions.addOne(chat))
-    socket.emit('room:join', `chat-${chat.id}`)
+    // socket.emit('room:join', `chat-${chat.id}`)
+  }
+
+  const adminUpdated: ListenEvents['chat:admin-updated'] = (data) => {
+    dispatch(
+      chatsActions.updateChatMember({
+        userId: data.userId,
+        chatId: data.chatId,
+        changes: {
+          adminPermissions: data.adminPermissions,
+        },
+      })
+    )
   }
 
   return {
     subscribe() {
       socket.on('chat:created', chatCreated)
+      socket.on('chat:admin-updated', adminUpdated)
     },
     unsubscribe() {
       socket.off('chat:created', chatCreated)
+      socket.off('chat:admin-updated', adminUpdated)
     },
     listeners: {
       chatCreated,
