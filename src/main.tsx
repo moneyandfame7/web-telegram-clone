@@ -19,18 +19,8 @@ if (DEBUG) {
 
 createRoot(document.getElementById('root')!).render(
   <Provider store={store}>
-    <PersistGate
-      onBeforeLift={async () => {
-        await new Promise((res) => setTimeout(res, 1000))
-      }}
-      persistor={persistor}
-      loading={
-        <div>
-          <h1>LOADING...</h1>
-        </div>
-      }
-    >
-      <App />
+    <PersistGate persistor={persistor}>
+      {(bootstrapped) => <App bootstrapped={bootstrapped} />}
     </PersistGate>
   </Provider>
 )

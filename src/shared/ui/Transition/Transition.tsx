@@ -147,7 +147,6 @@ export const SingleTransition = forwardRef<
       inAnimation,
       easing
     )
-
     const buildedClassname = clsx(className, 'transition-item', {
       'transition-item_ui-lock': shouldLockUI,
     })
