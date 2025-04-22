@@ -1,4 +1,4 @@
-import {FC} from 'react'
+import {FC, useState} from 'react'
 import {Column} from '../../../../shared/ui/Column/Column'
 import {Chat} from '../../../chats/types'
 import {FloatButton} from '../../../../shared/ui/FloatButton/FloatButton'
@@ -12,6 +12,8 @@ import {getUserTitle} from '../../../users/helpers'
 import {useNavigationStack} from '../../../../shared/ui/NavigationStack/useNavigationStack'
 import {ChatAdministratorPermissions} from './ChatAdministratorPermissions'
 import {User} from '../../../auth/types'
+import {InputText} from '../../../../shared/ui/Input/Input'
+import {Section} from '../../../../shared/ui/Section/Section'
 
 interface ChatAdministratorsProps {
   chat: Chat
@@ -21,12 +23,14 @@ export const ChatAdministrators: FC<ChatAdministratorsProps> = ({chat}) => {
   const {value: isMemberPickerOpen, toggle: toggleMemberPicker} = useBoolean()
 
   const members = useAppSelector((state) =>
-    chatsSelectors.selectMembers(state, chat.id, {excludeSelf: true})
+    chatsSelectors.selectMembers(state, chat.id, true)
   )
 
   const admins = useAppSelector((state) =>
     chatsSelectors.selectAdmins(state, chat.id)
   )
+
+  const [count, setCount] = useState(0)
 
   const renderAdminList = () => {
     return admins.map((user) => {
@@ -51,14 +55,30 @@ export const ChatAdministrators: FC<ChatAdministratorsProps> = ({chat}) => {
           }
           avatarSize="small"
           fullwidth={false}
-          onClick={() => {}}
+          onClick={() => {
+            push(<ChatAdministratorPermissions member={member!} user={user} />)
+          }}
         />
       )
     })
   }
   return (
-    <Column className="chat-management" onGoBack={pop}>
-      <h5>CHAT ADMINS LIST???</h5>
+    <Column className="chat-management" title="Administrators" onGoBack={pop}>
+      <Section>
+        <InputText
+          variant="default"
+          value=""
+          placeholder="Search..."
+          onChange={() => {}}
+        />
+      </Section>
+      <h5
+        onClick={() => {
+          setCount((prev) => prev + 1)
+        }}
+      >
+        CHAT ADMINS LIST??? {count}
+      </h5>
       {renderAdminList()}
       <FloatButton
         isVisible

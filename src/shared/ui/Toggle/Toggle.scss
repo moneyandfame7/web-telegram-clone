@@ -1,0 +1,94 @@
+.toggle {
+  pointer-events: none; // to allow onChange on input
+  position: relative;
+  display: inline-block;
+  width: 40px;
+  height: 24px;
+  // margin: 10px;
+
+  &__input {
+    display: none;
+  }
+
+  &__label {
+    position: absolute;
+    top: 0;
+    left: 0;
+    // width: 40px;
+    // height: 24px;
+
+    width: inherit;
+    height: inherit;
+
+    background-color: var(--c-danger);
+    border-radius: 34px;
+    cursor: pointer;
+    // transition: background-color 0.3s;
+    // @include bgAndColorTransition();
+    &::before {
+      content: '';
+      position: absolute;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      top: 2px;
+      left: 2px;
+      background-color: #fff;
+      // box-shadow: 0px 2px 5px 0px rgba(0, 0, 0, 0.3);
+      border: 1px solid var(--c-danger);
+      @include defaultTransition(transform);
+      // @include bgAndColorTransition(transform);
+    }
+  }
+
+  &__input:checked + &__label {
+    background-color: var(--c-primary);
+
+    &::before {
+      transform: translateX(16px);
+      border-color: var(--c-primary);
+    }
+  }
+
+  &--small {
+    height: 10px;
+    width: 20px;
+    > .toggle__label {
+      height: inherit;
+      border-radius: 15px;
+      &::before {
+        width: 8px;
+        height: 8px;
+        top: 1px;
+        left: 1px;
+      }
+    }
+    > .toggle-input:checked + .toggle-label {
+      &::before {
+        transform: translateX(10px);
+      }
+    }
+  }
+
+  &--medium {
+    height: 15px;
+    width: 30px;
+
+    > .toggle__label {
+      height: inherit;
+      border-radius: 15px;
+      &::before {
+        width: 20px;
+        height: 20px;
+        top: -2px;
+        left: -2px;
+        border-width: 2px;
+      }
+    }
+    > .toggle__input:checked + .toggle__label {
+      &::before {
+        transform: translateX(14px);
+      }
+    }
+  }
+}

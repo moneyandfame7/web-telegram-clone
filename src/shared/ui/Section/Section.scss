@@ -4,4 +4,20 @@
   flex-direction: column;
   background-color: var(--c-surface);
   padding-inline: 5px;
+
+  &__heading {
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--c-primary);
+    margin-block: 10px;
+    margin-inline: 20px;
+  }
+
+  &__subheading {
+    font-size: 14px;
+    color: var(--c-font-secondary);
+    // margin-block: 10px;
+    margin: 10px 20px 40px;
+    font-weight: 400;
+  }
 }

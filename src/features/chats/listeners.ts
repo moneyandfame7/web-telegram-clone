@@ -20,6 +20,10 @@ export const createChatListeners = (dispatch: AppDispatch) => {
         },
       })
     )
+
+    // dispatch(chatsActions.updateOne({
+    //   id:data.chatId
+    // }))
   }
 
   return {

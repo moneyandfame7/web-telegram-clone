@@ -51,7 +51,7 @@ export const ChatInfo: FC = () => {
           }}
         />
       )
-    } else if (currentChat?.isOwner) {
+    } else if (currentChat?.isOwner || currentChat?.adminPermissions) {
       return (
         <IconButton
           name="edit"

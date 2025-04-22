@@ -41,14 +41,13 @@ const selectMembers = createSelector(
     (state: RootState) => state.users.entities,
     (state: RootState, chatId: string) =>
       state.chats.details.entities[chatId]?.members,
-    (_, __, filters: {excludeSelf?: true}) => filters,
+    (_, __, excludeSelf?: true) => excludeSelf,
   ],
-  (userRecords, membersEntry, filters) => {
+  (userRecords, membersEntry, excludeSelf) => {
     if (!membersEntry) {
       return []
     }
-
-    const {excludeSelf} = filters
+    console.log('RESELECT MEMBERS')
 
     return membersEntry.ids
       .map((userId) => {
@@ -62,11 +61,14 @@ const selectMembers = createSelector(
 const selectAdmins = createSelector(
   [
     (state: RootState) => state.users.entities,
-    (state: RootState, chatId: string) =>
-      state.chats.details.entities[chatId]?.adminIds,
+    (_: RootState, chatId: string) => chatId,
+    (state: RootState) => state.chats.details.entities,
   ],
-  (userRecords, adminIds) => {
-    return adminIds?.map((id) => userRecords[id]).filter(Boolean)
+  (userRecords, chatId, chatDetailsRecords) => {
+    console.log('RESELECT')
+    const adminIds = chatDetailsRecords[chatId]?.adminIds
+    if (!adminIds) return []
+    return adminIds.map((id) => userRecords[id]).filter(Boolean)
   }
 )
 

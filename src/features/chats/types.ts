@@ -60,5 +60,5 @@ export interface AdminPermissions {
 export interface UpdateAdminParams {
   chatId: string
   userId: string
-  adminPermissions?: AdminPermissions
+  adminPermissions: AdminPermissions | undefined
 }

@@ -22,6 +22,8 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
 
   const {value: chatHistory, toggle: toggleChatHistory} = useBoolean()
 
+  const canEdit = chat.isOwner || chat.adminPermissions?.changeInfo
+  const canBan = chat.isOwner || chat.adminPermissions?.banUsers
   return (
     <Column className="chat-management" title="Edit" onGoBack={pop}>
       <Section>
@@ -39,6 +41,7 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
               setTitle(e.currentTarget.value)
             }}
             label="Title (required)"
+            isDisabled={!canEdit}
           />
           <InputText
             value={description}
@@ -48,64 +51,68 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
             label="Description (optional)"
             withIndicator
             maxLength={200}
+            isDisabled={!canEdit}
           />
         </div>
       </Section>
 
       <p className="chat-management__caption">
-        You can provide an optional information for your group.
+        You
+        {canEdit ? ' can ' : ' can`t '}
+        provide an optional information for your group.
       </p>
-
+      {canEdit && (
+        <Section>
+          <ListItem
+            startContent={<Icon name="lock" title="Group type" />}
+            withAvatar={false}
+            fullwidth={false}
+            title="Group Type"
+            subtitle="Coming soon"
+            onClick={() => {}}
+          />
+          <ListItem
+            disabled
+            startContent={<Icon title="Invite Links" name={'link'} />}
+            withAvatar={false}
+            fullwidth={false}
+            title="Invite Links"
+            subtitle="Coming soon"
+            onClick={() => {}}
+          />
+          <ListItem
+            disabled
+            startContent={<Icon title="Join Requests" name={'addUser'} />}
+            withAvatar={false}
+            fullwidth={false}
+            title="Join Requests"
+            subtitle="Coming soon"
+            onClick={() => {}}
+          />
+          <ListItem
+            disabled
+            startContent={<Icon title="Permissions" name={'permissions'} />}
+            subtitle="Coming soon"
+            withAvatar={false}
+            fullwidth={false}
+            title="Permissions"
+            onClick={() => {}}
+          />
+        </Section>
+      )}
       <Section>
-        <ListItem
-          disabled
-          startContent={<Icon name="lock" title="Group type" />}
-          withAvatar={false}
-          fullwidth={false}
-          title="Group Type"
-          subtitle="Coming soon"
-          onClick={() => {}}
-        />
-        <ListItem
-          disabled
-          startContent={<Icon title="Invite Links" name={'link'} />}
-          withAvatar={false}
-          fullwidth={false}
-          title="Invite Links"
-          subtitle="Coming soon"
-          onClick={() => {}}
-        />
-        <ListItem
-          disabled
-          startContent={<Icon title="Join Requests" name={'addUser'} />}
-          withAvatar={false}
-          fullwidth={false}
-          title="Join Requests"
-          subtitle="Coming soon"
-          onClick={() => {}}
-        />
-        <ListItem
-          disabled
-          startContent={<Icon title="Permissions" name={'permissions'} />}
-          subtitle="Coming soon"
-          withAvatar={false}
-          fullwidth={false}
-          title="Permissions"
-          onClick={() => {}}
-        />
-      </Section>
-
-      <Section>
-        <ListItem
-          startContent={<Icon title="Administrators" name={'admin'} />}
-          subtitle={chat.membersCount}
-          withAvatar={false}
-          fullwidth={false}
-          title="Administrators"
-          onClick={() => {
-            push(<ChatAdministrators chat={chat} />)
-          }}
-        />
+        {canEdit && (
+          <ListItem
+            startContent={<Icon title="Administrators" name={'admin'} />}
+            subtitle={chat.membersCount}
+            withAvatar={false}
+            fullwidth={false}
+            title="Administrators"
+            onClick={() => {
+              push(<ChatAdministrators chat={chat} />)
+            }}
+          />
+        )}
         <ListItem
           startContent={<Icon title="Members" name={'users'} />}
           subtitle={chat.membersCount}
@@ -114,40 +121,44 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
           title="Members"
           onClick={() => {}}
         />
-
-        <ListItem
-          startContent={<Icon title="Removed users" name={'deleteUser'} />}
-          subtitle={'No removed users'}
-          withAvatar={false}
-          fullwidth={false}
-          title="Removed users"
-          onClick={() => {}}
-        />
+        {canBan && (
+          <ListItem
+            startContent={<Icon title="Removed users" name={'deleteUser'} />}
+            subtitle={'No removed users'}
+            withAvatar={false}
+            fullwidth={false}
+            title="Removed users"
+            onClick={() => {}}
+          />
+        )}
       </Section>
 
-      <Section>
-        <ListItem
-          withAvatar={false}
-          fullwidth={false}
-          title="Chat history for new members"
-          onClick={toggleChatHistory}
-          checked={chatHistory}
-        />
-        {/* <ListItem startContent={<Checkbox />} /> */}
-      </Section>
+      {canEdit && (
+        <Section>
+          <ListItem
+            withAvatar={false}
+            fullwidth={false}
+            title="Chat history for new members"
+            onClick={toggleChatHistory}
+            checked={chatHistory}
+          />
 
-      <Section>
-        <ListItem
-          startContent={<Icon title="Delete" name="deleteIcon" />}
-          // subtitle={'No removed users'}
-          withAvatar={false}
-          fullwidth={false}
-          title="Delete Group"
-          onClick={() => {}}
-          danger
-        />
-      </Section>
-
+          {/* <ListItem startContent={<Checkbox />} /> */}
+        </Section>
+      )}
+      {chat.isOwner && (
+        <Section>
+          <ListItem
+            startContent={<Icon title="Delete" name="deleteIcon" />}
+            // subtitle={'No removed users'}
+            withAvatar={false}
+            fullwidth={false}
+            title="Delete Group"
+            onClick={() => {}}
+            danger
+          />
+        </Section>
+      )}
       <FloatButton
         isVisible={
           title !== chat.title || description !== (chat.description ?? '')

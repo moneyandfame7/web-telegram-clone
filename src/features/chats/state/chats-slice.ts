@@ -103,6 +103,12 @@ const chatsSlice = createSlice({
       })
 
       if ('adminPermissions' in changes) {
+        chatsAdapter.updateOne(state, {
+          id: chatId,
+          changes: {
+            adminPermissions: changes.adminPermissions,
+          },
+        })
         const alreadyAdmin = details.adminIds.includes(userId)
         if (changes.adminPermissions && !alreadyAdmin) {
           details.adminIds.push(userId)

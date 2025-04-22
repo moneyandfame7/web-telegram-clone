@@ -6,7 +6,7 @@ interface SectionProps extends PropsWithChildren {
 }
 export const Section: FC<SectionProps> = ({children, className}) => {
   return (
-    <div className={`section ${className ? ` ${className}` : ''}`}>
+    <div className={`section${className ? ` ${className}` : ''}`}>
       {children}
     </div>
   )

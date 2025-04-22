@@ -42,10 +42,12 @@
     }
   }
   &--clickable {
-    cursor: pointer;
-    &.list-item--menu-open,
-    &:hover {
-      background-color: var(--c-ripple);
+    &:not(.list-item--disabled) {
+      cursor: pointer;
+      &.list-item--menu-open,
+      &:hover {
+        background-color: var(--c-ripple);
+      }
     }
   }
   &--disabled {
@@ -62,7 +64,7 @@
 
   &__title {
     // font-weight: 600;
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.3215;
     white-space: nowrap;
     overflow: hidden;

@@ -21,7 +21,7 @@ export const Column: FC<ColumnProps> = ({
         {onGoBack && (
           <IconButton title="Go Back" name="arrowLeft" onClick={onGoBack} />
         )}
-        {title && <p>{title}</p>}
+        {title && <h1 className="column__title">{title}</h1>}
         {header}
       </div>
       <div className="column-content">{children}</div>
