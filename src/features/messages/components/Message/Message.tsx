@@ -43,6 +43,9 @@ export const Message: FC<MessageProps> = ({
   const sender = useAppSelector((state) =>
     usersSelectors.selectById(state, message.senderId)
   ) as User | undefined
+  const member = useAppSelector((state) =>
+    chatsSelectors.selectMemberById(state, message.chatId, sender?.id ?? '')
+  )
   const isSelectionActive = useAppSelector(
     messagesSelectors.selectIsSelectingActive
   )
@@ -54,6 +57,10 @@ export const Message: FC<MessageProps> = ({
   const forwardMessageSender = useAppSelector((state) =>
     usersSelectors.selectById(state, message.forwardInfo?.senderId ?? '')
   )
+
+  const customTitle =
+    member?.adminPermissions?.customTitle ??
+    (member?.isOwner ? 'Owner' : member?.adminPermissions ? 'Admin' : undefined)
 
   // const shouldShowSenderName =
   //   (!isPrivateChat && !message.isOutgoing) || Boolean(forwardMessageSender)
@@ -89,15 +96,20 @@ export const Message: FC<MessageProps> = ({
     }
   }
 
-  const buildedClass = clsx('message', {
-    outgoing: message.isOutgoing,
-    incoming: !message.isOutgoing,
-    highlighted: message.isHighlighted,
-    'last-in-group': isLastInGroup,
-    'first-in-group': isFirstInGroup,
-    'menu-open': isContextMenuOpen,
-    'is-selected': isMessageSelected,
-  })
+  const buildedClass = clsx(
+    'message',
+    sender && `message--color-${sender.color}`,
+    {
+      outgoing: message.isOutgoing,
+      incoming: !message.isOutgoing,
+      highlighted: message.isHighlighted,
+      'last-in-group': isLastInGroup,
+      'first-in-group': isFirstInGroup,
+      'menu-open': isContextMenuOpen,
+      'is-selected': isMessageSelected,
+      forwarded: !!forwardMessageSender,
+    }
+  )
 
   return (
     <div
@@ -121,7 +133,7 @@ export const Message: FC<MessageProps> = ({
 
       <div className="message-content">
         {forwardMessageSender && (
-          <div className="message-sender-container">
+          <div className="message-sender-container message--forward">
             <Icon name="forwardFilled" title="Forwarded from" size="small" />
             <span>Forwarded from:</span>
             <Avatar
@@ -132,6 +144,14 @@ export const Message: FC<MessageProps> = ({
             <span className="message-sender">
               {getUserTitle(forwardMessageSender)}
             </span>
+          </div>
+        )}
+        {!forwardMessageSender && !chat?.userId && sender && !sender.isSelf && (
+          <div className="message-sender-container">
+            <span className="message-sender">{getUserTitle(sender)}</span>
+            {customTitle && (
+              <span className="message-custom-title">{customTitle}</span>
+            )}
           </div>
         )}
         {message.replyInfo && (
@@ -223,12 +243,16 @@ export const Message: FC<MessageProps> = ({
             )
           }}
         />
-        <MenuItem
-          title="Delete"
-          icon="deleteIcon"
-          danger
-          onClick={openDeleteModal}
-        />
+        {(sender?.isSelf ||
+          chat?.isOwner ||
+          chat?.adminPermissions?.deleteMessages) && (
+          <MenuItem
+            title="Delete"
+            icon="deleteIcon"
+            danger
+            onClick={openDeleteModal}
+          />
+        )}
       </Menu>
 
       {chat && (

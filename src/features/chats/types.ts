@@ -33,6 +33,7 @@ export interface ChatMember {
   userId: string
   chatId: string
   adminPermissions?: AdminPermissions
+  isOwner: boolean
 }
 
 export interface GetChatsResult {

@@ -53,11 +53,13 @@ export const DeleteMessagesModal: FC<DeleteMessagesModalProps> = ({
       content={
         <>
           Are you sure you want to delete these message?
-          <Checkbox
-            checked={value}
-            onToggle={toggle}
-            label={`Also delete for ${isPrivateChat ? chat.title : 'all'}`}
-          />
+          {isPrivateChat && (
+            <Checkbox
+              checked={value}
+              onToggle={toggle}
+              label={`Also delete for ${chat.title}`}
+            />
+          )}
         </>
       }
       actions={
@@ -85,7 +87,7 @@ export const DeleteMessagesModal: FC<DeleteMessagesModalProps> = ({
                 messagesThunks.deleteMessages({
                   ids: idsToDelete,
                   chatId: chat.id,
-                  deleteForAll: value,
+                  deleteForAll: chat.userId ? value : true,
                 })
               )
             }}

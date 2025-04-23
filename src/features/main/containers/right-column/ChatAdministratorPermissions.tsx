@@ -37,13 +37,14 @@ export const ChatAdministratorPermissions: FC<
   const dispatch = useAppDispatch()
 
   const [adminPermissions, setAdminPermissions] = useState<
-    Omit<AdminPermissions, 'promotedByUserId'>
+    Required<Omit<AdminPermissions, 'promotedByUserId'>>
   >({
-    addNewAdmins: true,
-    banUsers: true,
-    changeInfo: true,
-    deleteMessages: true,
-    pinMessages: true,
+    addNewAdmins: member.adminPermissions?.addNewAdmins ?? true,
+    banUsers: member.adminPermissions?.banUsers ?? true,
+    changeInfo: member.adminPermissions?.changeInfo ?? true,
+    deleteMessages: member.adminPermissions?.deleteMessages ?? true,
+    pinMessages: member.adminPermissions?.pinMessages ?? true,
+    customTitle: member.adminPermissions?.customTitle ?? '',
   })
   return (
     <Column
@@ -112,7 +113,7 @@ export const ChatAdministratorPermissions: FC<
         <h2 className="section__heading">Custom title</h2>
 
         <InputText
-          value={adminPermissions.customTitle ?? ''}
+          value={adminPermissions.customTitle}
           onChange={(e) => {
             setAdminPermissions({
               ...adminPermissions,

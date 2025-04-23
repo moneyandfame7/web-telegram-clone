@@ -85,6 +85,13 @@
       }
     }
 
+    &.forwarded {
+      > .message-content .message-sender-container,
+      .message-sender {
+        color: var(--c-primary) !important;
+      }
+    }
+
     > .message-content {
       border-top-right-radius: 0.975rem;
       border-bottom-right-radius: 0.975rem;
@@ -97,13 +104,37 @@
         transform: translateY(1px);
       }
       > .message-sender-container {
-        color: var(--c-primary);
+        // color: var(--c-primary);
+        justify-content: space-between;
+        > .message-custom-title {
+          font-size: 12px;
+        }
+        &.message--forward {
+          justify-content: flex-start;
+        }
         .icon-forwardFilled path {
           fill: var(--c-primary) !important;
         }
       }
     }
+    $user-colors: (
+      YELLOW: var(--user-yellow),
+      BLUE: var(--user-blue),
+      GREEN: var(--user-green),
+      PINK: var(--user-pink),
+      ORANGE: var(--user-orange),
+      PURPLE: var(--user-purple),
+    );
 
+    &.message--color {
+      @each $name, $value in $user-colors {
+        &-#{$name} {
+          > .message-content .message-sender {
+            color: $value;
+          }
+        }
+      }
+    }
     .mentioned-message-container.compact > .mentioned-message {
       &::before {
         background-color: var(--c-primary) !important;
@@ -120,6 +151,11 @@
   &.highlighted {
     background-color: rgba(0, 0, 0, 0.1);
   }
+  // &.forwarded {
+  //   .message-sender {
+  //     color: var(--c-primary);
+  //   }
+  // }
 
   &:not(.last-in-group) {
     padding-left: calc(
