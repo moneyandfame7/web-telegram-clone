@@ -9,15 +9,18 @@ interface FloatButtonProps {
   isVisible: boolean
   title: string
   onClick: VoidFunction
+  isLoading?: boolean
 }
 export const FloatButton: FC<FloatButtonProps> = ({
   iconName,
   title,
   onClick,
   isVisible,
+  isLoading,
 }) => {
   const className = clsx('float-button', {
     'is-visible': isVisible,
+    'is-loading': isLoading,
   })
   return (
     <IconButton
@@ -28,6 +31,7 @@ export const FloatButton: FC<FloatButtonProps> = ({
       color="white"
       size="large"
       variant="primary"
+      isLoading={isLoading}
     />
   )
 }

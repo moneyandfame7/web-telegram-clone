@@ -14,12 +14,18 @@ import {
 
 import type {
   Chat,
+  ChatInfoUpdateParams,
+  ChatPrivacyUpdateParams,
+  ChatUpdateResult,
   CreateChatParams,
   UpdateAdminParams,
 } from '../features/chats/types'
 
 export interface ListenEvents {
   ['chat:created']: (chat: Chat) => void
+  ['chat:updated']: (data: ChatUpdateResult) => void
+  ['chat:info-updated']: (data: ChatInfoUpdateParams) => void
+  ['chat:privacy-updated']: (data: ChatPrivacyUpdateParams) => void
   ['chat:admin-updated']: (data: UpdateAdminParams) => void
   ['auth:unauthorized']: () => void
 
@@ -45,6 +51,8 @@ interface EmitEvents {
    * CHAT
    */
   'chat:create': EventWithAck<CreateChatParams, Chat>
+  'chat:update-info': EventWithAck<ChatInfoUpdateParams, boolean>
+  'chat:update-privacy': EventWithAck<ChatPrivacyUpdateParams, boolean>
   'chat:update-admin': EventWithAck<UpdateAdminParams, boolean>
 
   /**

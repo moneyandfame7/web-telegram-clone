@@ -4,10 +4,17 @@ import {chatsActions} from './state'
 
 export const createChatListeners = (dispatch: AppDispatch) => {
   const chatCreated: ListenEvents['chat:created'] = (chat) => {
-    console.log(`New chat added: [${chat.id}]`)
-
     dispatch(chatsActions.addOne(chat))
-    // socket.emit('room:join', `chat-${chat.id}`)
+  }
+
+  const chatUpdated: ListenEvents['chat:updated'] = (data) => {
+    const {chatId, ...changes} = data
+    dispatch(
+      chatsActions.updateOne({
+        id: chatId,
+        changes,
+      })
+    )
   }
 
   const adminUpdated: ListenEvents['chat:admin-updated'] = (data) => {
@@ -20,20 +27,18 @@ export const createChatListeners = (dispatch: AppDispatch) => {
         },
       })
     )
-
-    // dispatch(chatsActions.updateOne({
-    //   id:data.chatId
-    // }))
   }
 
   return {
     subscribe() {
       socket.on('chat:created', chatCreated)
       socket.on('chat:admin-updated', adminUpdated)
+      socket.on('chat:updated', chatUpdated)
     },
     unsubscribe() {
       socket.off('chat:created', chatCreated)
       socket.off('chat:admin-updated', adminUpdated)
+      socket.off('chat:updated', chatUpdated)
     },
     listeners: {
       chatCreated,

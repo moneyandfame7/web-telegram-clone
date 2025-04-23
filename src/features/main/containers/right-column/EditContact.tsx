@@ -65,7 +65,9 @@ export const EditContact: FC<EditContactProps> = ({user}) => {
         isVisible={
           firstName !== user.firstName || lastName !== (user.lastName ?? '')
         }
-        onClick={() => {}}
+        onClick={() => {
+          pop()
+        }}
       />
     </Column>
   )

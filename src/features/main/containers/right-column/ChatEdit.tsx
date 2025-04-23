@@ -10,34 +10,35 @@ import {ListItem} from '../../../../shared/ui/ListItem/ListItem'
 import {Icon} from '../../../../shared/ui/Icon/Icon'
 import {useBoolean} from '../../../../shared/hooks/useBoolean'
 import {ChatAdministrators} from './ChatAdministrators'
+import {ChatPrivacyType} from './ChatPrivacyType'
+import {useAppDispatch} from '../../../../app/store'
+import {chatsThunks} from '../../../chats/api'
 
 interface ChatEditProps {
   chat: Chat
 }
 export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
   const {pop, push} = useNavigationStack()
-
+  const dispatch = useAppDispatch()
   const [title, setTitle] = useState(chat.title)
   const [description, setDescription] = useState(chat.description ?? '')
-
+  const {value: isLoading, toggle: toggleIsLoading} = useBoolean()
   const {value: chatHistory, toggle: toggleChatHistory} = useBoolean()
-
+  const {value: isEdited, setValue: setIsEdited} = useBoolean()
   const canEdit = chat.isOwner || chat.adminPermissions?.changeInfo
   const canBan = chat.isOwner || chat.adminPermissions?.banUsers
+  // const isEdited =
+  //   title !== chat.title || description !== (chat.description ?? '')
   return (
     <Column className="chat-management" title="Edit" onGoBack={pop}>
       <Section>
         <Avatar color={chat.color} title={chat.title} size="large" />
 
-        <h5 className="chat-management__title">{chat.title}</h5>
-        <span className="chat-management__subtitle">
-          {chat.membersCount} members
-        </span>
-
         <div className="chat-management__inputs">
           <InputText
             value={title}
             onChange={(e) => {
+              setIsEdited(true)
               setTitle(e.currentTarget.value)
             }}
             label="Title (required)"
@@ -46,6 +47,7 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
           <InputText
             value={description}
             onChange={(e) => {
+              setIsEdited(true)
               setDescription(e.currentTarget.value)
             }}
             label="Description (optional)"
@@ -55,58 +57,59 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
           />
         </div>
       </Section>
-
-      <p className="chat-management__caption">
+      <h3 className="section__subheading">
         You
         {canEdit ? ' can ' : ' can`t '}
         provide an optional information for your group.
-      </p>
-      {canEdit && (
-        <Section>
+      </h3>
+
+      <Section>
+        {chat.isOwner && (
           <ListItem
             startContent={<Icon name="lock" title="Group type" />}
             withAvatar={false}
-            fullwidth={false}
             title="Group Type"
-            subtitle="Coming soon"
-            onClick={() => {}}
+            subtitle={chat.privacyType === 'PRIVATE' ? 'Private' : 'Public'}
+            onClick={() => {
+              push(<ChatPrivacyType chat={chat} />)
+            }}
           />
-          <ListItem
-            disabled
-            startContent={<Icon title="Invite Links" name={'link'} />}
-            withAvatar={false}
-            fullwidth={false}
-            title="Invite Links"
-            subtitle="Coming soon"
-            onClick={() => {}}
-          />
-          <ListItem
-            disabled
-            startContent={<Icon title="Join Requests" name={'addUser'} />}
-            withAvatar={false}
-            fullwidth={false}
-            title="Join Requests"
-            subtitle="Coming soon"
-            onClick={() => {}}
-          />
-          <ListItem
-            disabled
-            startContent={<Icon title="Permissions" name={'permissions'} />}
-            subtitle="Coming soon"
-            withAvatar={false}
-            fullwidth={false}
-            title="Permissions"
-            onClick={() => {}}
-          />
-        </Section>
-      )}
+        )}
+        {canEdit && (
+          <>
+            <ListItem
+              disabled
+              startContent={<Icon title="Invite Links" name={'link'} />}
+              withAvatar={false}
+              title="Invite Links"
+              subtitle="Coming soon"
+              onClick={() => {}}
+            />
+            <ListItem
+              disabled
+              startContent={<Icon title="Join Requests" name={'addUser'} />}
+              withAvatar={false}
+              title="Join Requests"
+              subtitle="Coming soon"
+              onClick={() => {}}
+            />
+            <ListItem
+              disabled
+              startContent={<Icon title="Permissions" name={'permissions'} />}
+              subtitle="Coming soon"
+              withAvatar={false}
+              title="Permissions"
+              onClick={() => {}}
+            />
+          </>
+        )}
+      </Section>
       <Section>
         {canEdit && (
           <ListItem
             startContent={<Icon title="Administrators" name={'admin'} />}
             subtitle={chat.membersCount}
             withAvatar={false}
-            fullwidth={false}
             title="Administrators"
             onClick={() => {
               push(<ChatAdministrators chat={chat} />)
@@ -117,7 +120,6 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
           startContent={<Icon title="Members" name={'users'} />}
           subtitle={chat.membersCount}
           withAvatar={false}
-          fullwidth={false}
           title="Members"
           onClick={() => {}}
         />
@@ -126,7 +128,6 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
             startContent={<Icon title="Removed users" name={'deleteUser'} />}
             subtitle={'No removed users'}
             withAvatar={false}
-            fullwidth={false}
             title="Removed users"
             onClick={() => {}}
           />
@@ -137,7 +138,6 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
         <Section>
           <ListItem
             withAvatar={false}
-            fullwidth={false}
             title="Chat history for new members"
             onClick={toggleChatHistory}
             checked={chatHistory}
@@ -152,7 +152,6 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
             startContent={<Icon title="Delete" name="deleteIcon" />}
             // subtitle={'No removed users'}
             withAvatar={false}
-            fullwidth={false}
             title="Delete Group"
             onClick={() => {}}
             danger
@@ -160,12 +159,22 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
         </Section>
       )}
       <FloatButton
-        isVisible={
-          title !== chat.title || description !== (chat.description ?? '')
-        }
+        isVisible={isEdited}
         iconName="check"
         title="Edit"
-        onClick={() => {}}
+        isLoading={isLoading}
+        onClick={async () => {
+          toggleIsLoading()
+          await dispatch(
+            chatsThunks.updateChatInfo({
+              chatId: chat.id,
+              title: title.trim(),
+              description: description.trim(),
+            })
+          ).unwrap()
+          toggleIsLoading()
+          setIsEdited(false)
+        }}
       />
     </Column>
   )

@@ -5,6 +5,7 @@ import {Message} from '../messages/types'
 export interface Chat {
   id: string
   userId?: string
+  type: ChatType
   color: ChatColor
   title: string
   description?: string
@@ -15,7 +16,9 @@ export interface Chat {
   theirLastReadMessageSequenceId?: number
   unreadCount: number
   createdAt: Date
+  privacyType: ChatPrivacyType
   adminPermissions?: AdminPermissions
+  allowSavingContent: boolean
   isSavedMessages: boolean
   isPinned: boolean
   isMuted: boolean
@@ -49,6 +52,8 @@ export interface CreateChatParams {
 
 export type ChatType = 'PRIVATE' | 'GROUP' | 'CHANNEL'
 
+export type ChatPrivacyType = 'PRIVATE' | 'PUBLIC'
+
 export interface AdminPermissions {
   changeInfo: boolean
   deleteMessages: boolean
@@ -58,6 +63,17 @@ export interface AdminPermissions {
   customTitle?: string
   promotedByUserId: string
 }
+export interface ChatInfoUpdateParams {
+  chatId: string
+  title?: string
+  description?: string
+}
+export interface ChatPrivacyUpdateParams {
+  chatId: string
+  allowSavingContent?: boolean
+  privacyType?: ChatPrivacyType
+}
+export type ChatUpdateResult = ChatInfoUpdateParams & ChatPrivacyUpdateParams
 export interface UpdateAdminParams {
   chatId: string
   userId: string

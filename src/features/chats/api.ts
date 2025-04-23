@@ -1,6 +1,8 @@
 import {createAsyncThunk} from '@reduxjs/toolkit'
 import {
   ChatDetails,
+  ChatInfoUpdateParams,
+  ChatPrivacyUpdateParams,
   UpdateAdminParams,
   type Chat,
   type CreateChatParams,
@@ -114,6 +116,48 @@ const openChat = createAsyncThunk<void, IdPayload>(
   }
 )
 
+const updateChatInfo = createAsyncThunk<boolean, ChatInfoUpdateParams>(
+  'chats/updateChatInfo',
+  async (arg, thunkApi) => {
+    const result = await emitEventWithHandling<ChatInfoUpdateParams, boolean>(
+      'chat:update-info',
+      arg
+    )
+
+    thunkApi.dispatch(
+      chatsActions.updateOne({
+        id: arg.chatId,
+        changes: {
+          title: arg.title,
+          ...('description' in arg && {description: arg.description}),
+        },
+      })
+    )
+    return result
+  }
+)
+
+const updateChatPrivacy = createAsyncThunk<boolean, ChatPrivacyUpdateParams>(
+  'chats/updateChatPrivacy',
+  async (arg, thunkApi) => {
+    const result = await emitEventWithHandling<
+      ChatPrivacyUpdateParams,
+      boolean
+    >('chat:update-privacy', arg)
+
+    thunkApi.dispatch(
+      chatsActions.updateOne({
+        id: arg.chatId,
+        changes: {
+          allowSavingContent: arg.allowSavingContent,
+          privacyType: arg.privacyType,
+        },
+      })
+    )
+    return result
+  }
+)
+
 const updateAdmin = createAsyncThunk<boolean, UpdateAdminParams>(
   'chats/updateAdmin',
   async (arg, thunkApi) => {
@@ -152,5 +196,7 @@ export const chatsThunks = {
   getChat,
   getChatDetails,
   openChat,
+  updateChatInfo,
+  updateChatPrivacy,
   updateAdmin,
 }

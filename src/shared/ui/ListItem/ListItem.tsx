@@ -38,7 +38,6 @@ interface ListItemProps {
   withAvatar?: boolean
   checked?: boolean
   selected?: boolean
-  fullwidth?: boolean
   danger?: boolean
   disabled?: boolean
 }
@@ -58,7 +57,6 @@ export const ListItem: FC<ListItemProps> = ({
   withAvatar = true,
   checked,
   selected,
-  fullwidth = true,
   danger,
   disabled,
 }) => {
@@ -80,7 +78,6 @@ export const ListItem: FC<ListItemProps> = ({
     'list-item--selected': selected,
     'list-item--menu-open': isContextMenuOpen,
     'list-item--clickable': Boolean(onClick),
-    'list-item--fullwidth': fullwidth,
     'list-item--danger': danger,
     'list-item--disabled': disabled,
   })

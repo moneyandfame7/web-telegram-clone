@@ -4,7 +4,7 @@
   flex-direction: column;
   background-color: var(--c-surface);
   padding-inline: 5px;
-
+  margin-bottom: 10px;
   &__heading {
     font-weight: 600;
     font-size: 16px;
@@ -17,7 +17,7 @@
     font-size: 14px;
     color: var(--c-font-secondary);
     // margin-block: 10px;
-    margin: 10px 20px 40px;
+    margin: 0px 20px 20px;
     font-weight: 400;
   }
 }

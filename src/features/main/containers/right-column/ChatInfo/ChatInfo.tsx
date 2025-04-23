@@ -14,6 +14,7 @@ import {ListItem} from '../../../../../shared/ui/ListItem/ListItem'
 import {Icon} from '../../../../../shared/ui/Icon/Icon'
 import {getUserTitle} from '../../../../users/helpers'
 import {Avatar} from '../../../../../shared/ui/Avatar/Avatar'
+import {Toggle} from '../../../../../shared/ui/Toggle/Toggle'
 
 export const ChatInfo: FC = () => {
   const {push} = useNavigationStack()
@@ -99,10 +100,11 @@ export const ChatInfo: FC = () => {
 
           {currentChat?.description && (
             <ListItem
-              startContent={<Icon name="info" title="Info" size="large" />}
+              startContent={<Icon name="info2" title="Info" size="large" />}
               title={currentChat.description}
               subtitle="Info"
               onClick={() => {}}
+              withAvatar={false}
             />
           )}
           {user?.username && (
@@ -120,7 +122,7 @@ export const ChatInfo: FC = () => {
             startContent={<Icon name="unmute" title="Notification" />}
             withAvatar={false}
             title="Notifications"
-            titleRight={'TOGGLE INPUT'}
+            titleRight={<Toggle checked />}
             onClick={() => {}}
           />
         </Section>

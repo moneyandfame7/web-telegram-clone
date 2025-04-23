@@ -1,5 +1,5 @@
 .right-column {
-  width: 400px !important;
+  width: 420px !important;
   left: auto;
   right: 0;
 
@@ -11,7 +11,9 @@
     gap: 15px;
     background-color: var(--c-bg);
   }
-
+  .input-container {
+    margin-block: 18px;
+  }
   .chat-management {
     .avatar {
       margin: 20px auto;
