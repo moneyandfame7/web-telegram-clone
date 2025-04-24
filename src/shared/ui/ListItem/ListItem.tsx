@@ -40,6 +40,7 @@ interface ListItemProps {
   selected?: boolean
   danger?: boolean
   disabled?: boolean
+  variant?: 'default' | 'secondary'
 }
 export const ListItem: FC<ListItemProps> = ({
   title,
@@ -59,6 +60,7 @@ export const ListItem: FC<ListItemProps> = ({
   selected,
   danger,
   disabled,
+  variant = 'default',
 }) => {
   const ref = useRef<HTMLDivElement>(null)
   const menuRef = useRef<HTMLDivElement>(null)
@@ -80,6 +82,7 @@ export const ListItem: FC<ListItemProps> = ({
     'list-item--clickable': Boolean(onClick),
     'list-item--danger': danger,
     'list-item--disabled': disabled,
+    'list-item--secondary': variant === 'secondary',
   })
 
   return (

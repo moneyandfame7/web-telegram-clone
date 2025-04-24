@@ -39,6 +39,9 @@
       color: var(--c-primary);
     }
   }
+  &--secondary {
+    background-color: var(--c-ripple);
+  }
   &--clickable {
     &:not(.list-item--disabled) {
       cursor: pointer;
@@ -75,7 +78,7 @@
     align-items: center;
     gap: 5px;
 
-    .icon path {
+    > .icon path {
       fill: var(--c-primary) !important;
     }
   }
