@@ -10,12 +10,15 @@ import {Icon} from '../../../../shared/ui/Icon/Icon'
 import {Toggle} from '../../../../shared/ui/Toggle/Toggle'
 import {useBoolean} from '../../../../shared/hooks/useBoolean'
 import {FloatButton} from '../../../../shared/ui/FloatButton/FloatButton'
+import {useLocation, useNavigate} from 'react-router-dom'
 
 interface ChatPrivacyTypeProps {
   chat: Chat
 }
 export const ChatPrivacyType: FC<ChatPrivacyTypeProps> = ({chat}) => {
   const {pop} = useNavigationStack()
+  const navigate = useNavigate()
+  const location = useLocation()
   const [privacyType, setPrivacyType] = useState(chat.privacyType)
   const [publicLink, setPublicLink] = useState('link://')
   const {value: allowSavingContent, toggle: toggleAllowSavingContent} =
@@ -60,7 +63,13 @@ export const ChatPrivacyType: FC<ChatPrivacyTypeProps> = ({chat}) => {
               withAvatar={false}
               title="link.com/joinchat/:id"
               subtitle="People can join your group by following this link. You can revoke the link any time."
-              onClick={() => {}}
+              onClick={() => {
+                navigate('invite/123', {
+                  state: {
+                    previousLocation: location,
+                  },
+                })
+              }}
             />
             <ListItem
               withAvatar={false}

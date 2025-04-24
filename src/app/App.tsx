@@ -1,5 +1,5 @@
 import {FC, useCallback, useLayoutEffect, useState} from 'react'
-import {BrowserRouter, Route, Routes} from 'react-router-dom'
+import {Route, Routes, useLocation} from 'react-router-dom'
 
 import {AppScreen} from '../shared/types/ui-types'
 import {Auth} from '../features/auth/Auth'
@@ -11,6 +11,7 @@ import {Transition} from '../shared/ui/Transition/Transition'
 import {Spinner} from '../shared/ui/Spinner/Spinner'
 
 import './App.scss'
+import {TestModal} from '../features/chats/components/TestModal/TestModal'
 interface AppProps {
   bootstrapped: boolean
 }
@@ -18,6 +19,8 @@ interface AppProps {
 export const App: FC<AppProps> = ({bootstrapped}) => {
   const session = useAppSelector((state) => state.auth.session)
   const [rootScreen, setRootScreen] = useState(AppScreen.Loading)
+  const location = useLocation()
+  const previousLocation = location.state?.previousLocation
 
   useLayoutEffect(() => {
     console.log('UPDATE!!', {bootstrapped})
@@ -35,17 +38,7 @@ export const App: FC<AppProps> = ({bootstrapped}) => {
       case AppScreen.Auth:
         return <Auth />
       case AppScreen.Chat:
-        return (
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Main />}>
-                <Route path="/:chatId" element={<Chat />} />
-
-                <Route index element={<div>Select a chat from the list</div>} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        )
+        return <Main />
       case AppScreen.Loading:
         return (
           <div className="app-loading">
@@ -56,14 +49,34 @@ export const App: FC<AppProps> = ({bootstrapped}) => {
   }, [rootScreen])
 
   return (
-    <Transition
-      shouldCleanup
-      activeKey={rootScreen}
-      transitionName="fade"
-      timeout={200}
-    >
-      {renderScreen()}
-    </Transition>
+    <>
+      <Routes location={previousLocation || location}>
+        <Route
+          path="/"
+          element={
+            <Transition
+              shouldCleanup
+              activeKey={rootScreen}
+              transitionName="fade"
+              timeout={200}
+            >
+              {renderScreen()}
+            </Transition>
+          }
+        >
+          {/* <Route index element={<div>Select a chat from the list</div>} /> */}
+          <Route path="*" element={<h1>NO MATCH</h1>} />
+          <Route path="/:chatId" element={<Chat />} />
+          <Route path="/invite/:inviteId" element={<TestModal />} />
+        </Route>
+        <Route />
+      </Routes>
+      {previousLocation && (
+        <Routes>
+          <Route path="/invite/:inviteId" element={<TestModal />} />
+        </Routes>
+      )}
+    </>
   )
 }
 

@@ -9,6 +9,7 @@ import App from './app/App'
 import {DEBUG} from './app/environment'
 
 import './shared/styles/index.scss'
+import {BrowserRouter} from 'react-router-dom'
 
 if (DEBUG) {
   window.addEventListener('dblclick', () => {
@@ -18,9 +19,11 @@ if (DEBUG) {
 }
 
 createRoot(document.getElementById('root')!).render(
-  <Provider store={store}>
-    <PersistGate persistor={persistor}>
-      {(bootstrapped) => <App bootstrapped={bootstrapped} />}
-    </PersistGate>
-  </Provider>
+  <BrowserRouter>
+    <Provider store={store}>
+      <PersistGate persistor={persistor}>
+        {(bootstrapped) => <App bootstrapped={bootstrapped} />}
+      </PersistGate>
+    </Provider>
+  </BrowserRouter>
 )
