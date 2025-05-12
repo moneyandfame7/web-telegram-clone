@@ -60,8 +60,9 @@
 
   &--transparent {
     background-color: transparent !important;
-
-    // font-weight: 400;
+    justify-content: start;
+    gap: 25px;
+    font-weight: 400;
 
     &.button--primary {
       // --c-ripple: var(--c-primary-transparent);

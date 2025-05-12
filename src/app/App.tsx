@@ -67,13 +67,13 @@ export const App: FC<AppProps> = ({bootstrapped}) => {
           {/* <Route index element={<div>Select a chat from the list</div>} /> */}
           <Route path="*" element={<h1>NO MATCH</h1>} />
           <Route path="/:chatId" element={<Chat />} />
-          <Route path="/invite/:inviteId" element={<TestModal />} />
+          <Route path="/chat-invite/:inviteId" element={<TestModal />} />
         </Route>
         <Route />
       </Routes>
       {previousLocation && (
         <Routes>
-          <Route path="/invite/:inviteId" element={<TestModal />} />
+          <Route path="/chat-invite/:inviteId" element={<TestModal />} />
         </Routes>
       )}
     </>

@@ -249,10 +249,7 @@ export const persistedMessagesReducer = persistReducer(
   {
     key: 'messages',
     storage: storage,
-    blacklist: [
-      'messageEditing',
-      'messageSelection',
-    ] as (keyof MessagesState)[],
+    whitelist: ['byChatId'] as (keyof MessagesState)[],
   },
   messagesSlice.reducer
 )

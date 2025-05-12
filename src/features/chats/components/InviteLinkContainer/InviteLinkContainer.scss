@@ -1,0 +1,19 @@
+.invite-link {
+  padding-bottom: 10px;
+  padding-inline: 15px;
+  > .section__heading {
+    margin-inline: 0;
+  }
+  > .list-item {
+    margin-inline: 0;
+  }
+  > .button {
+    margin-block: 5px 10px;
+  }
+
+  &__subtitle {
+    text-align: center;
+    color: var(--c-primary);
+    cursor: pointer;
+  }
+}

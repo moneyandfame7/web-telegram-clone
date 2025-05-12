@@ -15,11 +15,13 @@ import {Icon} from '../../../../../shared/ui/Icon/Icon'
 import {getUserTitle} from '../../../../users/helpers'
 import {Avatar} from '../../../../../shared/ui/Avatar/Avatar'
 import {Toggle} from '../../../../../shared/ui/Toggle/Toggle'
+import {composeInviteLink} from '../../../../chats/helpers'
 
 export const ChatInfo: FC = () => {
   const {push} = useNavigationStack()
   const dispatch = useAppDispatch()
   const currentChat = useAppSelector(chatsSelectors.selectCurrentChat)
+
   const isPrivate = Boolean(currentChat?.userId)
 
   const user = useAppSelector((state) =>
@@ -68,7 +70,7 @@ export const ChatInfo: FC = () => {
     <Column
       className="chat-management"
       onGoBack={() => {
-        dispatch(uiActions.setRightColumn())
+        dispatch(uiActions.setRightColumnActive(false))
       }}
       title={user ? 'User Info' : 'Chat Info'}
       header={renderHeader()}
@@ -105,6 +107,15 @@ export const ChatInfo: FC = () => {
               subtitle="Info"
               onClick={() => {}}
               withAvatar={false}
+            />
+          )}
+          {currentChat.inviteLinkId && (
+            <ListItem
+              withAvatar={false}
+              startContent={<Icon name="link" title="Invite Link" />}
+              title={composeInviteLink(currentChat.inviteLinkId)}
+              subtitle="Link"
+              onClick={() => {}}
             />
           )}
           {user?.username && (

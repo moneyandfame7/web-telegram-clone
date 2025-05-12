@@ -5,7 +5,6 @@ import {
   chatMembersAdapter,
   chatsAdapter,
 } from './chats-adapter'
-import {RootState} from '../../../app/store'
 import {User} from '../../auth/types'
 import {ChatMember} from '../types'
 
@@ -71,7 +70,8 @@ const selectAdmins = createSelector(
     return adminIds.map((id) => userRecords[id]).filter(Boolean)
   }
 )
-
+const selectChatInviteLinks = (state: RootState, chatId: string) =>
+  state.chats.inviteLinks[chatId]
 const selectMemberById = (
   state: RootState,
   chatId: string,
@@ -84,6 +84,7 @@ export const chatsSelectors = {
   selectCurrentChat,
   selectByUserId,
   selectChatDetails: baseChatDetailsSelectors.selectById,
+  selectChatInviteLinks,
   selectMembers,
   selectMemberById,
   selectAdmins,

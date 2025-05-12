@@ -2,7 +2,10 @@ import {createAsyncThunk} from '@reduxjs/toolkit'
 import {
   ChatDetails,
   ChatInfoUpdateParams,
+  ChatInviteLink,
+  ChatInviteLinks,
   ChatPrivacyUpdateParams,
+  CreateChatInviteLinkParams,
   UpdateAdminParams,
   type Chat,
   type CreateChatParams,
@@ -79,6 +82,26 @@ const getChatDetails = createAsyncThunk<ChatDetails, string>(
     }
   }
 )
+
+const getChatInviteLinks = createAsyncThunk<ChatInviteLinks, string>(
+  'chats/getChatInviteLinks',
+  async (arg) => {
+    const res = await api.get<ChatInviteLinks>(`/chats/${arg}/invite-links`)
+
+    return res.data
+  }
+)
+
+const createChatInviteLink = createAsyncThunk<
+  ChatInviteLink,
+  CreateChatInviteLinkParams
+>('chats/createChatInviteLink', async (arg) => {
+  const res = await api.post<ChatInviteLink>(
+    `/chats/${arg.chatId}/invite-links`,
+    arg
+  )
+  return res.data
+})
 
 const openChat = createAsyncThunk<void, IdPayload>(
   'chats/openChat',
@@ -195,6 +218,8 @@ export const chatsThunks = {
   getChats,
   getChat,
   getChatDetails,
+  getChatInviteLinks,
+  createChatInviteLink,
   openChat,
   updateChatInfo,
   updateChatPrivacy,

@@ -18,6 +18,7 @@ export interface Chat {
   createdAt: Date
   privacyType: ChatPrivacyType
   adminPermissions?: AdminPermissions
+  inviteLinkId?: string
   allowSavingContent: boolean
   isSavedMessages: boolean
   isPinned: boolean
@@ -31,7 +32,31 @@ export interface ChatDetails {
   adminIds: string[]
   kickedIds: string[]
 }
-
+export interface ChatInviteLink {
+  id: string
+  name?: string
+  adminApproval: boolean
+  limitUserCount?: number
+  createdAt: string
+  expiresAt?: string
+  createdByUserId?: string
+  joinedCount: number
+}
+export interface ChatInviteLinks {
+  primary: ChatInviteLink
+  additional: ChatInviteLink[]
+}
+export interface JoinedMemberViaLink {
+  userId: string
+  joinedAt: Date
+}
+export interface CreateChatInviteLinkParams {
+  chatId: string
+  name?: string
+  adminApproval: boolean
+  limitUserCount?: number
+  expiresAt?: string
+}
 export interface ChatMember {
   userId: string
   chatId: string

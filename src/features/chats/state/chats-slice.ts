@@ -13,11 +13,13 @@ import {
   chatsAdapter,
 } from './chats-adapter'
 import {Message} from '../../messages/types'
-import {Chat, ChatMember} from '../types'
+import {Chat, ChatInviteLinks, ChatMember} from '../types'
+import {sortByCreatedAtDesc} from '../helpers'
 
 interface ChatsState {
   currentChatId?: string
   details: EntityState<ChatDetailsState, string>
+  inviteLinks: Record<string, ChatInviteLinks | undefined>
 }
 
 export interface ChatDetailsState {
@@ -31,6 +33,7 @@ const chatsSlice = createSlice({
   name: 'chatsSlice',
   initialState: chatsAdapter.getInitialState<ChatsState>({
     details: chatDetailsAdapter.getInitialState({}),
+    inviteLinks: {},
   }),
   reducers: {
     setCurrentChat: (state, action: PayloadAction<string | undefined>) => {
@@ -163,12 +166,10 @@ const chatsSlice = createSlice({
 
     builder.addCase(chatsThunks.getChatDetails.fulfilled, (state, action) => {
       if (action.payload) {
-        const {adminIds, kickedIds, members, chatId} = action.payload
+        const {members, ...data} = action.payload
 
         chatDetailsAdapter.setOne(state.details, {
-          chatId,
-          kickedIds,
-          adminIds,
+          ...data,
           members: chatMembersAdapter.setAll(
             chatMembersAdapter.getInitialState(),
             members
@@ -176,6 +177,41 @@ const chatsSlice = createSlice({
         })
       }
     })
+
+    builder.addCase(
+      chatsThunks.getChatInviteLinks.fulfilled,
+      (state, action) => {
+        if (!action.payload) {
+          return
+        }
+
+        const {additional, primary} = action.payload
+        const chatId = action.meta.arg
+
+        state.inviteLinks[chatId] = {
+          primary,
+          additional: sortByCreatedAtDesc(additional),
+        }
+      }
+    )
+    builder.addCase(
+      chatsThunks.createChatInviteLink.fulfilled,
+      (state, action) => {
+        if (!action.payload) {
+          return
+        }
+        const chatId = action.meta.arg.chatId
+        const chatInviteLinks = state.inviteLinks[chatId]
+
+        if (!chatInviteLinks) {
+          return
+        }
+        chatInviteLinks.additional.push(action.payload)
+        chatInviteLinks.additional = sortByCreatedAtDesc(
+          chatInviteLinks.additional
+        )
+      }
+    )
   },
 })
 

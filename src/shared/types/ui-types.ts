@@ -5,9 +5,3 @@ export enum AppScreen {
   Loading,
   Error,
 }
-
-export enum RightColumnScreen {
-  Info,
-  Edit,
-  Search,
-}

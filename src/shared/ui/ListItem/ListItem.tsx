@@ -91,7 +91,7 @@ export const ListItem: FC<ListItemProps> = ({
         ref={ref}
         className={buildedClassname}
         onClick={disabled ? undefined : onClick}
-        onContextMenu={handleContextMenu}
+        onContextMenu={contextActions && handleContextMenu}
       >
         {typeof checked === 'boolean' && (
           <label className="list-item__checkbox">

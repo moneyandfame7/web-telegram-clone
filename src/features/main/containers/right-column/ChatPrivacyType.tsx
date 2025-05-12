@@ -11,6 +11,7 @@ import {Toggle} from '../../../../shared/ui/Toggle/Toggle'
 import {useBoolean} from '../../../../shared/hooks/useBoolean'
 import {FloatButton} from '../../../../shared/ui/FloatButton/FloatButton'
 import {useLocation, useNavigate} from 'react-router-dom'
+import {composeInviteLink} from '../../../chats/helpers'
 
 interface ChatPrivacyTypeProps {
   chat: Chat
@@ -20,7 +21,7 @@ export const ChatPrivacyType: FC<ChatPrivacyTypeProps> = ({chat}) => {
   const navigate = useNavigate()
   const location = useLocation()
   const [privacyType, setPrivacyType] = useState(chat.privacyType)
-  const [publicLink, setPublicLink] = useState('link://')
+  const [publicLink, setPublicLink] = useState(window.location.origin)
   const {value: allowSavingContent, toggle: toggleAllowSavingContent} =
     useBoolean()
   const isEdited =
@@ -57,14 +58,14 @@ export const ChatPrivacyType: FC<ChatPrivacyTypeProps> = ({chat}) => {
         />
       </Section>
       <Section>
-        {privacyType === 'PRIVATE' ? (
+        {privacyType === 'PRIVATE' && chat.inviteLinkId ? (
           <>
             <ListItem
               withAvatar={false}
-              title="link.com/joinchat/:id"
+              title={composeInviteLink(chat.inviteLinkId)}
               subtitle="People can join your group by following this link. You can revoke the link any time."
               onClick={() => {
-                navigate('invite/123', {
+                navigate(`chat-invite/${chat.inviteLinkId}`, {
                   state: {
                     previousLocation: location,
                   },
@@ -84,8 +85,8 @@ export const ChatPrivacyType: FC<ChatPrivacyTypeProps> = ({chat}) => {
             label="Public link"
             onChange={(e) => {
               const raw = e.currentTarget.value
-              if (!raw.startsWith('link://')) {
-                setPublicLink('link://')
+              if (!raw.startsWith(window.location.origin)) {
+                setPublicLink(window.location.origin)
               } else {
                 setPublicLink(raw)
               }

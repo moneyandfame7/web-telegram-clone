@@ -2,24 +2,27 @@ export function formatMessageTime({
   date,
   hour12 = false,
   onlyTime = true,
+  withToday = false,
 }: {
   date: Date
   hour12?: boolean
   onlyTime?: boolean
-}) {
+  withToday?: boolean
+}): string {
   const now = new Date()
 
   const isToday =
     date.getFullYear() === now.getFullYear() &&
     date.getMonth() === now.getMonth() &&
     date.getDate() === now.getDate()
-
-  if (onlyTime || isToday) {
-    return date.toLocaleTimeString(navigator.language, {
+  if (isToday || onlyTime) {
+    const todayDate = date.toLocaleTimeString(navigator.language, {
       hour: 'numeric',
       minute: 'numeric',
       hour12,
     })
+
+    return withToday && !onlyTime ? `Today at ${todayDate}` : todayDate
   }
 
   const isThisWeek = isDateInThisWeek(date)

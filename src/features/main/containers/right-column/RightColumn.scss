@@ -13,6 +13,8 @@
   }
   .input-container {
     margin-block: 18px;
+    margin-inline: 15px;
+    width: calc(100% - 30px);
   }
   .chat-management {
     .avatar {
@@ -37,6 +39,11 @@
       font-size: 14px;
       margin-block-end: 15px;
       padding-inline: 15px;
+    }
+  }
+
+  .invite-link {
+    .input-text {
     }
   }
 }

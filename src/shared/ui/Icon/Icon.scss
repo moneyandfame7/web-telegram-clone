@@ -2,6 +2,11 @@
   flex-shrink: 0;
 
   &-small {
+    &.icon--contained {
+      padding: 6px;
+      min-width: 24px;
+      min-height: 24px;
+    }
     width: 18px;
     height: 18px;
 
@@ -14,6 +19,12 @@
   &-medium {
     height: 24px;
     width: 24px;
+
+    &.icon--contained {
+      padding: 6px;
+      min-width: 30px;
+      min-height: 30px;
+    }
   }
 
   &-secondary {
@@ -48,6 +59,15 @@
     &.icon-arrowRight,
     &.icon-plus {
       stroke: #fff;
+    }
+  }
+
+  &--contained {
+    background-color: var(--c-primary);
+    border-radius: 50%;
+
+    path {
+      fill: #fff !important;
     }
   }
 }

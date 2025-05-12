@@ -13,3 +13,15 @@ export function isAdminPermissionsChanged(
     return adminPermissions[k] !== rights[k]
   })
 }
+
+export function composeInviteLink(inviteLinkId: string): string {
+  return `${window.location.host}/chat-invite/${inviteLinkId}`
+}
+
+export function sortByCreatedAtDesc<T extends {createdAt: string}>(
+  array: T[]
+): T[] {
+  return [...array].sort(
+    (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+  )
+}

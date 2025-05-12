@@ -1,4 +1,4 @@
-import {FC, useState} from 'react'
+import {FC, useEffect, useState} from 'react'
 import {Column} from '../../../../shared/ui/Column/Column'
 import {useNavigationStack} from '../../../../shared/ui/NavigationStack/useNavigationStack'
 import {Chat} from '../../../chats/types'
@@ -11,8 +11,10 @@ import {Icon} from '../../../../shared/ui/Icon/Icon'
 import {useBoolean} from '../../../../shared/hooks/useBoolean'
 import {ChatAdministrators} from './ChatAdministrators'
 import {ChatPrivacyType} from './ChatPrivacyType'
-import {useAppDispatch} from '../../../../app/store'
+import {useAppDispatch, useAppSelector} from '../../../../app/store'
 import {chatsThunks} from '../../../chats/api'
+import {chatsSelectors} from '../../../chats/state'
+import {ChatInviteLinks} from './ChatInviteLinks'
 
 interface ChatEditProps {
   chat: Chat
@@ -27,6 +29,13 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
   const {value: isEdited, setValue: setIsEdited} = useBoolean()
   const canEdit = chat.isOwner || chat.adminPermissions?.changeInfo
   const canBan = chat.isOwner || chat.adminPermissions?.banUsers
+  const chatLinks = useAppSelector((state) =>
+    chatsSelectors.selectChatInviteLinks(state, chat.id)
+  )
+
+  useEffect(() => {
+    dispatch(chatsThunks.getChatInviteLinks(chat.id))
+  }, [])
   // const isEdited =
   //   title !== chat.title || description !== (chat.description ?? '')
   return (
@@ -78,12 +87,19 @@ export const ChatEdit: FC<ChatEditProps> = ({chat}) => {
         {canEdit && (
           <>
             <ListItem
-              disabled
+              disabled={!chatLinks}
               startContent={<Icon title="Invite Links" name={'link'} />}
               withAvatar={false}
               title="Invite Links"
-              subtitle="Coming soon"
-              onClick={() => {}}
+              subtitle={
+                chatLinks ? chatLinks.additional.length + 1 : 'Loading...'
+              }
+              onClick={() => {
+                if (!chatLinks) {
+                  return
+                }
+                push(<ChatInviteLinks chat={chat} inviteLinks={chatLinks} />)
+              }}
             />
             <ListItem
               disabled

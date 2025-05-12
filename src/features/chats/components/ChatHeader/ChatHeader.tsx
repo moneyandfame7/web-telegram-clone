@@ -30,7 +30,7 @@ export const ChatHeader: FC<ChatHeaderProps> = ({chatId}) => {
       <div
         className="chat-info"
         onClick={() => {
-          dispatch(uiActions.setRightColumn(RightColumnScreen.Info))
+          dispatch(uiActions.setRightColumnActive(true))
         }}
       >
         {chat?.userId || isUserId(chatId) ? (
@@ -50,14 +50,14 @@ export const ChatHeader: FC<ChatHeaderProps> = ({chatId}) => {
             icon="info2"
             title="Info"
             onClick={() => {
-              dispatch(uiActions.setRightColumn(RightColumnScreen.Info))
+              dispatch(uiActions.setRightColumnActive(true))
             }}
           />
           <MenuItem
             icon="edit"
             title="Edit"
             onClick={() => {
-              dispatch(uiActions.setRightColumn(RightColumnScreen.Edit))
+              dispatch(uiActions.setRightColumnActive(true))
             }}
           />
         </DropdownMenu>

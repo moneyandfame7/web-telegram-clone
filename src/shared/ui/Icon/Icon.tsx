@@ -19,6 +19,8 @@ export interface IconProps {
    */
   color?: IconColor
 
+  variant?: 'contained' | 'transparent'
+
   /**
    * @default 24
    */
@@ -36,6 +38,7 @@ export interface IconProps {
 export const Icon: FC<IconProps> = ({
   name,
   color = 'default',
+  variant = 'transparent',
   heightAndWidth = 24,
   size = 'medium',
   className,
@@ -49,7 +52,10 @@ export const Icon: FC<IconProps> = ({
     'icon',
     `icon-${name}`,
     `icon-${size}`,
-    `icon-${color}`
+    `icon-${color}`,
+    {
+      'icon--contained': variant === 'contained',
+    }
   )
   return IconComponent ? (
     <IconComponent

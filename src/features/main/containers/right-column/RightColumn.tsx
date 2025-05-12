@@ -9,15 +9,15 @@ import {ChatInfo} from './ChatInfo/ChatInfo'
 import './RightColumn.scss'
 
 export const RightColumn: FC = () => {
-  const rightColumnScreen = useAppSelector(
-    (state) => state.ui.rightColumnScreen
+  const isRightColumnActive = useAppSelector(
+    (state) => state.ui.isRightColumnActive
   )
   const currentChatId = useAppSelector((state) => state.chats.currentChatId)
   return (
     <SingleTransition
       transitionName="slide"
       animationToggle
-      in={rightColumnScreen !== undefined}
+      in={isRightColumnActive}
       appear={!!currentChatId}
       timeout={300}
       className="right-column"
